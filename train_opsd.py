@@ -57,38 +57,71 @@ def kl_divergence_loss(
     student_logits: torch.Tensor,
     teacher_logits: torch.Tensor,
     temperature: float = 2.0,
+    pixel_weights: torch.Tensor = None,
 ) -> torch.Tensor:
     """
-    计算教师到学生的 KL 散度蒸馏损失。
+    计算教师到学生的掩码加权 KL 散度蒸馏损失。
 
-    使用温度缩放（Temperature Scaling）软化概率分布，
-    防止教师分布过于尖锐导致学生无法有效学习。
+    背景：VIL 雷达图中 80%+ 的像素是晴空（值为 0）。
+    如果对全图像素做 batchmean，大量零值区域产生的微小 KL 损失会在数量上
+    彻底淹没强对流核心区域的梯度，导致模型退化为"全图薄雾"预测。
+    解决方案：对每个像素位置的 KL 值乘以空间权重，再做加权平均。
 
-    L_KL = T^2 * KL(softmax(teacher/T) || log_softmax(student/T))
+    L_KL = T^2 * mean( pixel_weights * KL_per_pixel(P_teacher || P_student) )
 
     Args:
         student_logits: [N, num_bins, H, W]
         teacher_logits: [N, num_bins, H, W]
-        temperature:    蒸馏温度 T
+        temperature:    蒸馏温度 T（越大分布越软，默认 2.0）
+        pixel_weights:  [N, H, W] 每个像素位置的权重（None 时退化为均匀加权）
 
     Returns:
         scalar loss
     """
-    # 在 num_bins 维度（dim=1）上计算 softmax
-    teacher_probs = F.softmax(teacher_logits / temperature, dim=1)
+    teacher_probs = F.softmax(teacher_logits / temperature, dim=1)   # [N, num_bins, H, W]
     student_log_probs = F.log_softmax(student_logits / temperature, dim=1)
 
-    # KL(P_teacher || P_student) = sum(P_teacher * (log P_teacher - log P_student))
-    # F.kl_div 期望输入为 log_probs，target 为 probs
-    # reduction='batchmean' 对 batch 维度取平均
-    kl_loss = F.kl_div(
-        student_log_probs,
-        teacher_probs,
-        reduction="batchmean",
-        log_target=False,
-    )
-    # 乘以 T^2 以补偿温度缩放对梯度幅度的影响（Hinton et al., 2015）
-    return kl_loss * (temperature ** 2)
+    # 逐像素计算 KL 散度，在 num_bins 维度求和
+    # kl_per_pixel: [N, H, W]，每个空间位置的 KL 值
+    kl_per_pixel = (teacher_probs * (
+        torch.log(teacher_probs + 1e-8) - student_log_probs
+    )).sum(dim=1)  # sum over num_bins
+
+    if pixel_weights is not None:
+        # 加权平均：强对流区域权重高，晴空区域权重低
+        loss = (kl_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
+    else:
+        loss = kl_per_pixel.mean()
+
+    # 乘以 T^2 补偿温度缩放对梯度幅度的影响（Hinton et al., 2015）
+    return loss * (temperature ** 2)
+
+
+def build_pixel_weights(
+    targets_flat: torch.Tensor,
+    num_bins: int,
+    foreground_weight: float = 5.0,
+) -> torch.Tensor:
+    """
+    根据真实 bin 标签构建逐像素空间权重。
+
+    策略：bin > 0（有回波）的像素权重为 foreground_weight，
+          bin == 0（晴空无回波）的像素权重为 1.0。
+    这样强对流区域的梯度贡献被放大 foreground_weight 倍，
+    防止大面积晴空区域的背景噪声淹没真正有意义的气象信号。
+
+    Args:
+        targets_flat:      [N, H, W]，int64，bin 索引
+        num_bins:          bin 总数（未使用，保留接口一致性）
+        foreground_weight: 有回波区域的权重倍数（默认 5.0）
+
+    Returns:
+        weights: [N, H, W]，float32
+    """
+    # bin > 0 表示有雷达回波（非晴空）
+    has_echo = (targets_flat > 0).float()
+    weights = 1.0 + has_echo * (foreground_weight - 1.0)
+    return weights
 
 
 def train_one_epoch_opsd(
@@ -111,11 +144,14 @@ def train_one_epoch_opsd(
     kl_meter = AverageMeter("KL_Loss")
     ce_meter = AverageMeter("CE_Loss")
 
-    criterion_ce = nn.CrossEntropyLoss()
+    # 使用 reduction='none' 的 CE，以便后续手动做加权平均
+    criterion_ce_none = nn.CrossEntropyLoss(reduction="none")
     train_cfg = cfg["training"]
     kl_weight = train_cfg["opsd_kl_weight"]
     ce_weight = train_cfg["opsd_ce_weight"]
+    foreground_weight = train_cfg.get("foreground_weight", 5.0)
     log_interval = train_cfg["log_interval"]
+    num_bins = cfg["model"]["num_bins"]
 
     for step, (input_frames, target_bins, future_frames) in enumerate(loader):
         input_frames = input_frames.to(device, non_blocking=True)
@@ -139,13 +175,23 @@ def train_one_epoch_opsd(
             # 展平时间维度，逐帧计算损失
             student_flat = student_logits.view(B * T_out, C_bins, H, W)
             teacher_flat = teacher_logits.view(B * T_out, C_bins, H, W)
-            targets_flat = target_bins.view(B * T_out, H, W)
+            targets_flat = target_bins.view(B * T_out, H, W)   # [B*T_out, H, W]
 
-            # KL 散度损失（OPSD 核心）
-            loss_kl = kl_divergence_loss(student_flat, teacher_flat, temperature)
+            # 构建逐像素空间权重：有回波区域权重 foreground_weight，晴空区域权重 1.0
+            # 这是解决 VIL 大面积零值区域淹没强对流梯度的关键
+            pixel_weights = build_pixel_weights(
+                targets_flat, num_bins, foreground_weight
+            )  # [B*T_out, H, W]，float32
 
-            # 交叉熵辅助损失（防止蒸馏过度，保持对真实标签的对齐）
-            loss_ce = criterion_ce(student_flat, targets_flat)
+            # KL 散度损失（OPSD 核心，掩码加权版）
+            loss_kl = kl_divergence_loss(
+                student_flat, teacher_flat, temperature, pixel_weights
+            )
+
+            # 交叉熵辅助损失（掩码加权版，防止蒸馏过度）
+            # ce_per_pixel: [B*T_out, H, W]
+            ce_per_pixel = criterion_ce_none(student_flat, targets_flat)
+            loss_ce = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
 
             # 总损失
             loss = kl_weight * loss_kl + ce_weight * loss_ce

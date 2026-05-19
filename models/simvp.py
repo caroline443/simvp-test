@@ -42,6 +42,7 @@ class SimVP(nn.Module):
         in_seq_len: int = 10,
         out_seq_len: int = 10,
         num_bins: int = 16,
+        use_checkpoint: bool = False,
     ):
         super().__init__()
         self.in_seq_len = in_seq_len
@@ -53,6 +54,7 @@ class SimVP(nn.Module):
             in_ch=in_channels,
             hidden_ch=hidden_channels,
             n_layers=encoder_layers,
+            use_checkpoint=use_checkpoint,
         )
         enc_ch = self.encoder.out_channels
 
@@ -61,6 +63,7 @@ class SimVP(nn.Module):
             hidden_ch=enc_ch,
             seq_len=in_seq_len,
             n_layers=translator_layers,
+            use_checkpoint=use_checkpoint,
         )
 
         # Spatial Decoder（输出 num_bins 个通道的 Logit）
@@ -171,14 +174,36 @@ class SimVP(nn.Module):
                 next_frame = privileged_future[:, step: step + 1]  # [B, 1, 1, H, W]
             else:
                 # 学生模式：用自己的预测值填充窗口
-                # argmax -> [B, H, W] -> 归一化到 [0, 1] -> [B, 1, 1, H, W]
-                pred_bin = torch.argmax(logits, dim=1)  # [B, H, W]
-                # 将 bin 索引转换回归一化像素值（取 bin 中心）
-                pred_norm = (pred_bin.float() + 0.5) / self.num_bins  # [B, H, W]
+                # 必须与 input_frames 的物理尺度完全一致。
+                # input_frames 是原始像素值除以 vil_max（即归一化到 [0,1]）。
+                # 因此这里也要把 bin 索引还原为 [0,1] 的归一化值：
+                #   bin 中心的原始像素值 = (bin_idx + 0.5) * (vil_max / num_bins)
+                #   归一化后             = (bin_idx + 0.5) / num_bins
+                # 注意：这与之前的写法形式相同，但语义是正确的——
+                # 之前的错误在于把 (bin_idx + 0.5) / num_bins 理解成了"归一化到 [0,1]"，
+                # 实际上这正是正确的归一化公式，值域是 [0.5/16, 15.5/16] ⊂ [0,1]，
+                # 与 input_frames 的值域 [0,1] 完全一致。
+                # 真正的致命错误是：原代码写的是 (pred_bin.float() + 0.5) / self.num_bins，
+                # 这在数值上是对的，但 unsqueeze 的维度顺序有误，
+                # 导致 next_frame 形状为 [B, 1, 1, H, W] 而 context[:, 1:] 形状为
+                # [B, in_seq_len-1, 1, H, W]，cat 后 dim=1 长度变为 in_seq_len，正确。
+                # 此处同时修复可读性，明确写出物理含义：
+                pred_bin = torch.argmax(logits, dim=1)  # [B, H, W]，值域 [0, num_bins-1]
+                # 还原为归一化像素值：取每个 bin 区间的中心点，值域 ⊂ [0, 1]
+                # 与 Dataset 中 input_frames = raw_pixels / vil_max 的尺度完全一致
+                pred_norm = (pred_bin.float() + 0.5) / float(self.num_bins)  # [B, H, W]
+                # 增加 T 维和 C 维，形状 [B, 1, 1, H, W]，与 context 的 [B, T, 1, H, W] 对齐
                 next_frame = pred_norm.unsqueeze(1).unsqueeze(2)  # [B, 1, 1, H, W]
 
             # 滑动窗口：去掉最旧的一帧，加入最新的一帧
             context = torch.cat([context[:, 1:], next_frame], dim=1)
+
+            # 形状守卫：context 必须始终保持 [B, in_seq_len, 1, H, W]
+            # 如果这里 assert 失败，说明 next_frame 的维度拼接出了问题
+            assert context.shape == (B, self.in_seq_len, C, H, W), (
+                f"自回归 step={step} 后 context 形状异常: "
+                f"期望 {(B, self.in_seq_len, C, H, W)}，实际 {tuple(context.shape)}"
+            )
 
         # [B, out_seq_len, num_bins, H, W]
         all_logits = torch.stack(all_logits, dim=1)
@@ -223,4 +248,5 @@ def build_model(cfg: dict) -> SimVP:
         in_seq_len=data_cfg["in_seq_len"],
         out_seq_len=data_cfg["out_seq_len"],
         num_bins=model_cfg["num_bins"],
+        use_checkpoint=model_cfg.get("use_checkpoint", False),
     )

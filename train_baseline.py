@@ -46,10 +46,12 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
     """执行一个 epoch 的训练，返回平均 loss。"""
     model.train()
     loss_meter = AverageMeter("CE_Loss")
-    criterion = nn.CrossEntropyLoss()
+    # reduction='none'：逐像素计算 CE，以便后续手动做加权平均
+    criterion_none = nn.CrossEntropyLoss(reduction="none")
 
     log_interval = cfg["training"]["log_interval"]
     num_bins = cfg["model"]["num_bins"]
+    foreground_weight = cfg["training"].get("foreground_weight", 5.0)
 
     for step, (input_frames, target_bins, _future_frames) in enumerate(loader):
         # input_frames:  [B, in_seq_len, 1, H, W]  float32
@@ -70,7 +72,14 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
             logits_flat = all_logits.view(B * T_out, C_bins, H, W)
             targets_flat = target_bins.view(B * T_out, H, W)
 
-            loss = criterion(logits_flat, targets_flat)
+            # 构建逐像素权重：有回波区域权重 foreground_weight，晴空区域权重 1.0
+            # 防止大面积晴空零值区域的 CE 损失淹没强对流区域的梯度
+            has_echo = (targets_flat > 0).float()
+            pixel_weights = 1.0 + has_echo * (foreground_weight - 1.0)  # [B*T_out, H, W]
+
+            # 加权交叉熵：ce_per_pixel [B*T_out, H, W]
+            ce_per_pixel = criterion_none(logits_flat, targets_flat)
+            loss = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
 
         scaler.scale(loss).backward()
         # 梯度裁剪，防止梯度爆炸

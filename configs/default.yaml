@@ -20,24 +20,36 @@ model:
   translator_layers: 4
   decoder_layers: 4
   num_bins: 16           # 与 data.num_bins 保持一致
+  # 梯度检查点：384x384 高分辨率下强烈建议开启。
+  # 原理：前向传播不保存中间激活值，反向传播时重新计算，以约 20% 的额外计算
+  # 换取约 60% 的激活值显存释放。对 16G 显卡跑 10 步自回归至关重要。
+  use_checkpoint: true
 
 training:
   # Baseline 阶段
   baseline_epochs: 50
   baseline_lr: 1.0e-3
-  baseline_batch_size: 4
+  # 384x384 + 10步自回归 + 16G显存：batch_size=2 是安全上限。
+  # 如果开启 use_checkpoint 后仍然 OOM，请降到 1。
+  baseline_batch_size: 2
   baseline_weight_decay: 1.0e-4
   baseline_ckpt_dir: "checkpoints/baseline"
 
   # OPSD 阶段
   opsd_epochs: 50
   opsd_lr: 5.0e-4
-  opsd_batch_size: 4
+  # OPSD 训练时学生和教师各跑一次前向，显存压力更大，batch_size 保守设为 2。
+  opsd_batch_size: 2
   opsd_weight_decay: 1.0e-4
   opsd_kl_weight: 1.0    # KL 散度损失权重
   opsd_ce_weight: 0.5    # 交叉熵辅助损失权重（防止蒸馏过度）
   opsd_ckpt_dir: "checkpoints/opsd"
   opsd_pretrained: "checkpoints/baseline/best.pth"  # 从 Baseline 权重热启动
+
+  # 掩码加权损失：有回波区域的权重倍数。
+  # VIL 图中 80%+ 是晴空零值，不加权会导致强对流区域梯度被淹没。
+  # 5.0 表示有回波像素的损失权重是晴空像素的 5 倍。
+  foreground_weight: 5.0
 
   # 通用
   log_interval: 10       # 每隔多少 step 打印一次 log

@@ -8,6 +8,7 @@ SimVP 子模块
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint as grad_checkpoint
 
 
 # ---------------------------------------------------------------------------
@@ -44,10 +45,17 @@ class SpatialEncoder(nn.Module):
     将单帧图像 [B, in_ch, H, W] 编码为特征图 [B, hidden_ch, H/16, W/16]。
     使用 4 层步长为 2 的卷积进行下采样（每层 stride=2，共 2^4=16 倍下采样）。
     384x384 -> 24x24
+
+    use_checkpoint: 启用梯度检查点（Gradient Checkpointing）。
+        原理：前向传播时不保存中间激活值，反向传播时重新计算。
+        代价：约增加 20% 计算时间。
+        收益：激活值显存占用降低约 60%，对 384x384 高分辨率场景至关重要。
     """
 
-    def __init__(self, in_ch: int = 1, hidden_ch: int = 64, n_layers: int = 4):
+    def __init__(self, in_ch: int = 1, hidden_ch: int = 64, n_layers: int = 4,
+                 use_checkpoint: bool = False):
         super().__init__()
+        self.use_checkpoint = use_checkpoint
         layers = []
         ch = in_ch
         for i in range(n_layers):
@@ -55,12 +63,19 @@ class SpatialEncoder(nn.Module):
             out_ch = min(out_ch, hidden_ch * 4)    # 上限 256
             layers.append(ConvBnAct(ch, out_ch, kernel_size=3, stride=2, padding=1))
             ch = out_ch
-        self.encoder = nn.Sequential(*layers)
+        # 拆成 ModuleList 以便逐层应用 checkpoint
+        self.layers = nn.ModuleList(layers)
         self.out_channels = ch
 
     def forward(self, x):
         # x: [B, in_ch, H, W]
-        return self.encoder(x)  # [B, out_channels, H/16, W/16]
+        for layer in self.layers:
+            if self.use_checkpoint and x.requires_grad:
+                # 梯度检查点：不保存该层的中间激活值，反向时重算
+                x = grad_checkpoint(layer, x, use_reentrant=False)
+            else:
+                x = layer(x)
+        return x  # [B, out_channels, H/16, W/16]
 
 
 # ---------------------------------------------------------------------------
@@ -133,10 +148,12 @@ class TemporalTranslator(nn.Module):
     3. reshape 回 [B*T, C, h, w]。
     """
 
-    def __init__(self, hidden_ch: int, seq_len: int, n_layers: int = 4):
+    def __init__(self, hidden_ch: int, seq_len: int, n_layers: int = 4,
+                 use_checkpoint: bool = False):
         super().__init__()
         self.hidden_ch = hidden_ch
         self.seq_len = seq_len
+        self.use_checkpoint = use_checkpoint
         temporal_ch = hidden_ch * seq_len
 
         # 时序融合：将 T 帧特征在通道维度拼接后用 Inception 处理
@@ -160,7 +177,10 @@ class TemporalTranslator(nn.Module):
         x = x.view(B, T * C, h, w)
         x = self.temporal_conv(x)
         for block in self.inception_blocks:
-            x = block(x)
+            if self.use_checkpoint and x.requires_grad:
+                x = grad_checkpoint(block, x, use_reentrant=False)
+            else:
+                x = block(x)
         x = self.out_proj(x)
         # [B*T, C, h, w]
         x = x.view(B * T, C, h, w)
