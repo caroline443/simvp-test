@@ -1,7 +1,9 @@
 data:
-  # SEVIR VIL 数据根目录，Windows 路径示例：C:/data/sevir
-  # 目录下应包含 SEVIR_CATALOG.csv 和 data/vil/*.h5 文件
-  data_root: "C:/data/sevir"
+  # SEVIR VIL 数据根目录，直接指向存放 *.h5 文件的目录
+  # Windows 路径示例：F:/zyx/dataset/sevir_data
+  # 该目录下应直接包含 SEVIR_VIL_*.h5 文件（不需要 data/vil/ 子目录）
+  # h5 文件内 vil 数据集维度为 [N, H, W, T]，代码会自动转置为 [N, T, H, W]
+  data_root: "F:/zyx/dataset/sevir_data"
   img_size: 384          # 原始分辨率，不做下采样
   in_seq_len: 10         # 输入历史帧数
   out_seq_len: 10        # 预测未来帧数

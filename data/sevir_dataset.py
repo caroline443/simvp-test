@@ -5,12 +5,12 @@ SEVIR VIL Dataset Loader
 
 SEVIR 目录结构预期：
     <data_root>/
-        SEVIR_CATALOG.csv
-        data/
-            vil/
-                *.h5
+        SEVIR_VIL_RANDOMEVENTS_2017_0501_0831.h5
+        SEVIR_VIL_RANDOMEVENTS_2018_xxxx_xxxx.h5
+        ...
 
 每个 .h5 文件包含多个事件（event），每个事件为 49 帧，空间分辨率 384x384。
+h5 文件中 vil 数据集的维度顺序为 [N, H, W, T]，读取后自动转置为 [N, T, H, W]。
 本模块从每个事件中随机采样连续 (in_seq_len + out_seq_len) 帧，
 并将像素值离散化为 num_bins 个类别。
 """
@@ -113,13 +113,13 @@ class SEVIRVILDataset(Dataset):
         self.vil_max = vil_max
         self.split = split
 
-        # 扫描所有 VIL h5 文件
-        vil_dir = os.path.join(data_root, "data", "vil")
-        h5_files = sorted(glob.glob(os.path.join(vil_dir, "*.h5")))
+        # 扫描 data_root 目录下所有 VIL h5 文件
+        # data_root 直接指向存放 *.h5 文件的目录
+        h5_files = sorted(glob.glob(os.path.join(data_root, "*.h5")))
         if len(h5_files) == 0:
             raise FileNotFoundError(
-                f"在 {vil_dir} 下未找到任何 .h5 文件，"
-                f"请确认 SEVIR 数据已正确放置。"
+                f"在 {data_root} 下未找到任何 .h5 文件，"
+                f"请确认 data_root 指向包含 SEVIR VIL .h5 文件的目录。"
             )
 
         # 构建 (文件路径, 事件索引) 的样本列表
@@ -129,8 +129,10 @@ class SEVIRVILDataset(Dataset):
                 with h5py.File(fpath, "r") as f:
                     if VIL_KEY not in f:
                         continue
-                    n_events = f[VIL_KEY].shape[0]
-                    n_frames = f[VIL_KEY].shape[1]
+                    # h5 中 vil 维度为 [N, H, W, T]，T 在最后一维
+                    shape = f[VIL_KEY].shape
+                    n_events = shape[0]
+                    n_frames = shape[3]   # T 轴
                     # 每个事件必须有足够的帧数
                     if n_frames < self.total_seq_len:
                         continue
@@ -184,8 +186,11 @@ class SEVIRVILDataset(Dataset):
         end = start + self.total_seq_len
 
         with h5py.File(fpath, "r") as f:
-            # shape: [total_seq_len, H, W]
-            frames = f[VIL_KEY][event_idx, start:end].astype(np.float32)
+            # h5 原始 shape: [N, H, W, T]，按时间轴切片后为 [H, W, total_seq_len]
+            # 使用 numpy 切片：先取事件，再取时间范围
+            raw = f[VIL_KEY][event_idx, :, :, start:end].astype(np.float32)
+            # raw shape: [H, W, total_seq_len] -> 转置为 [total_seq_len, H, W]
+            frames = np.transpose(raw, (2, 0, 1))
 
         # 归一化到 [0, 1]
         frames_norm = frames / self.vil_max  # [T, H, W]
