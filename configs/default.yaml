@@ -1,7 +1,6 @@
 data:
   # SEVIR VIL 数据根目录，直接指向存放 *.h5 文件的目录
-  # Windows 路径示例：F:/zyx/dataset/sevir_data
-  # 该目录下应直接包含 SEVIR_VIL_*.h5 文件（不需要 data/vil/ 子目录）
+  # 该目录下应直接包含 SEVIR_VIL_*.h5 文件（不需要子目录）
   # h5 文件内 vil 数据集维度为 [N, H, W, T]，代码会自动转置为 [N, T, H, W]
   data_root: "F:/zyx/dataset/sevir_data"
   img_size: 384          # 原始分辨率，不做下采样
@@ -10,9 +9,14 @@ data:
   num_bins: 16           # dBZ 离散化 Bin 数量
   vil_max: 255.0         # VIL 像素最大值（用于归一化）
   num_workers: 4
-  train_ratio: 0.8
+
+  # 数据集划分策略（按文件名年份，与 SEVIR 论文一致，避免时间泄露）
+  # train + val：使用 train_years 对应的所有文件（RANDOM + STORM）
+  # test：       使用 test_years 对应的所有文件，完全不参与训练
+  # val 从 train_years 的事件中随机留出 val_ratio 比例
+  train_years: [2017, 2018]
+  test_years: [2019]
   val_ratio: 0.1
-  # test_ratio: 0.1
 
 model:
   # SimVP 网络超参数
