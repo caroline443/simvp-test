@@ -1,0 +1,56 @@
+data:
+  # SEVIR VIL 数据根目录，Windows 路径示例：C:/data/sevir
+  # 目录下应包含 SEVIR_CATALOG.csv 和 data/vil/*.h5 文件
+  data_root: "C:/data/sevir"
+  img_size: 384          # 原始分辨率，不做下采样
+  in_seq_len: 10         # 输入历史帧数
+  out_seq_len: 10        # 预测未来帧数
+  num_bins: 16           # dBZ 离散化 Bin 数量
+  vil_max: 255.0         # VIL 像素最大值（用于归一化）
+  num_workers: 4
+  train_ratio: 0.8
+  val_ratio: 0.1
+  # test_ratio: 0.1
+
+model:
+  # SimVP 网络超参数
+  in_channels: 1
+  hidden_channels: 64
+  encoder_layers: 4
+  translator_layers: 4
+  decoder_layers: 4
+  num_bins: 16           # 与 data.num_bins 保持一致
+
+training:
+  # Baseline 阶段
+  baseline_epochs: 50
+  baseline_lr: 1.0e-3
+  baseline_batch_size: 4
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints/baseline"
+
+  # OPSD 阶段
+  opsd_epochs: 50
+  opsd_lr: 5.0e-4
+  opsd_batch_size: 4
+  opsd_weight_decay: 1.0e-4
+  opsd_kl_weight: 1.0    # KL 散度损失权重
+  opsd_ce_weight: 0.5    # 交叉熵辅助损失权重（防止蒸馏过度）
+  opsd_ckpt_dir: "checkpoints/opsd"
+  opsd_pretrained: "checkpoints/baseline/best.pth"  # 从 Baseline 权重热启动
+
+  # 通用
+  log_interval: 10       # 每隔多少 step 打印一次 log
+  save_interval: 5       # 每隔多少 epoch 保存一次 checkpoint
+  seed: 42
+
+eval:
+  # 评估阈值（VIL 像素值，对应不同降水强度）
+  thresholds: [16, 74, 133, 160, 181, 219]
+  # 对应物理含义（参考 SEVIR 文档）：
+  # 16  -> 轻微回波
+  # 74  -> 中等对流
+  # 133 -> 强对流
+  # 160 -> 极强对流
+  # 181 -> 冰雹风险
+  # 219 -> 极端强对流
