@@ -67,7 +67,12 @@ def kl_divergence_loss(
     彻底淹没强对流核心区域的梯度，导致模型退化为"全图薄雾"预测。
     解决方案：对每个像素位置的 KL 值乘以空间权重，再做加权平均。
 
-    L_KL = T^2 * mean( pixel_weights * KL_per_pixel(P_teacher || P_student) )
+    L_KL = T^2 * weighted_mean( KL_per_pixel(P_teacher || P_student) )
+
+    使用 F.kl_div(reduction='none') 而非手写 log，原因：
+    - PyTorch 内部对 log_softmax + kl_div 做了联合数值优化，避免 log(p+eps) 在
+      p→0 时产生的 -20.7 * p 浮点震荡，从根本上消除 NaN 风险。
+    - F.kl_div 的输入约定：input=log(Q)，target=P，计算 P*(log(P)-log(Q))。
 
     Args:
         student_logits: [N, num_bins, H, W]
@@ -78,14 +83,15 @@ def kl_divergence_loss(
     Returns:
         scalar loss
     """
-    teacher_probs = F.softmax(teacher_logits / temperature, dim=1)   # [N, num_bins, H, W]
-    student_log_probs = F.log_softmax(student_logits / temperature, dim=1)
+    # log Q（学生）和 P（教师），均在 bin 维度做 softmax
+    log_p_student = F.log_softmax(student_logits / temperature, dim=1)  # [N, C, H, W]
+    p_teacher     = F.softmax(teacher_logits / temperature, dim=1)       # [N, C, H, W]
 
-    # 逐像素计算 KL 散度，在 num_bins 维度求和
-    # kl_per_pixel: [N, H, W]，每个空间位置的 KL 值
-    kl_per_pixel = (teacher_probs * (
-        torch.log(teacher_probs + 1e-8) - student_log_probs
-    )).sum(dim=1)  # sum over num_bins
+    # F.kl_div(input=log Q, target=P, reduction='none') -> [N, C, H, W]
+    # 每个元素 = P * (log P - log Q)，在 bin 维度求和得到逐像素 KL
+    kl_per_pixel = F.kl_div(
+        log_p_student, p_teacher, reduction="none", log_target=False
+    ).sum(dim=1)  # [N, H, W]
 
     if pixel_weights is not None:
         # 加权平均：强对流区域权重高，晴空区域权重低
