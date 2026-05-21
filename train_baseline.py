@@ -81,10 +81,17 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
             ce_per_pixel = criterion_none(logits_flat, targets_flat)
             loss = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
 
+        # NaN 检测：loss 为 NaN 时跳过该 batch，防止污染模型参数
+        if not torch.isfinite(loss):
+            print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
+            optimizer.zero_grad()
+            scaler.update()  # 保持 scaler 状态同步
+            continue
+
         scaler.scale(loss).backward()
         # 梯度裁剪，防止梯度爆炸
         scaler.unscale_(optimizer)
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
         scaler.step(optimizer)
         scaler.update()
 

@@ -16,7 +16,13 @@ from torch.utils.checkpoint import checkpoint as grad_checkpoint
 # ---------------------------------------------------------------------------
 
 class ConvBnAct(nn.Module):
-    """Conv2d + GroupNorm + LeakyReLU"""
+    """Conv2d + GroupNorm + LeakyReLU
+
+    GroupNorm 在 AMP 半精度（float16）下计算方差时极易溢出产生 NaN，
+    这是 PyTorch 的已知问题（https://github.com/pytorch/pytorch/issues/66707）。
+    解决方案：Conv 在 float16 下运行（速度快），GroupNorm 强制转回 float32 计算，
+    结果再转回输入的原始 dtype，对速度影响极小。
+    """
 
     def __init__(self, in_ch: int, out_ch: int, kernel_size: int = 3,
                  stride: int = 1, padding: int = 1, groups: int = 1):
@@ -33,7 +39,10 @@ class ConvBnAct(nn.Module):
         self.act = nn.LeakyReLU(0.2, inplace=True)
 
     def forward(self, x):
-        return self.act(self.norm(self.conv(x)))
+        x = self.conv(x)
+        # GroupNorm 强制在 float32 下计算，防止 AMP 半精度溢出 NaN
+        x = self.norm(x.float()).to(x.dtype)
+        return self.act(x)
 
 
 # ---------------------------------------------------------------------------
