@@ -12,17 +12,30 @@ from torch.utils.checkpoint import checkpoint as grad_checkpoint
 
 
 # ---------------------------------------------------------------------------
+# AMP 安全的 GroupNorm
+# ---------------------------------------------------------------------------
+
+class SafeGroupNorm(nn.GroupNorm):
+    """
+    AMP 安全版 GroupNorm。
+
+    PyTorch 已知问题：GroupNorm 在 float16 下计算均值/方差时极易溢出产生 NaN
+    （https://github.com/pytorch/pytorch/issues/66707）。
+    解决方案：强制在 float32 下完成归一化，再转回输入的原始 dtype。
+    Conv 仍在 float16 下运行（享受速度），只有 GroupNorm 升精度，开销极小。
+    """
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        orig_dtype = x.dtype
+        return super().forward(x.float()).to(orig_dtype)
+
+
+# ---------------------------------------------------------------------------
 # 基础卷积块
 # ---------------------------------------------------------------------------
 
 class ConvBnAct(nn.Module):
-    """Conv2d + GroupNorm + LeakyReLU
-
-    GroupNorm 在 AMP 半精度（float16）下计算方差时极易溢出产生 NaN，
-    这是 PyTorch 的已知问题（https://github.com/pytorch/pytorch/issues/66707）。
-    解决方案：Conv 在 float16 下运行（速度快），GroupNorm 强制转回 float32 计算，
-    结果再转回输入的原始 dtype，对速度影响极小。
-    """
+    """Conv2d + SafeGroupNorm + LeakyReLU"""
 
     def __init__(self, in_ch: int, out_ch: int, kernel_size: int = 3,
                  stride: int = 1, padding: int = 1, groups: int = 1):
@@ -35,14 +48,11 @@ class ConvBnAct(nn.Module):
             in_ch, out_ch, kernel_size, stride=stride,
             padding=padding, bias=False
         )
-        self.norm = nn.GroupNorm(num_groups, out_ch)
+        self.norm = SafeGroupNorm(num_groups, out_ch)
         self.act = nn.LeakyReLU(0.2, inplace=True)
 
     def forward(self, x):
-        x = self.conv(x)
-        # GroupNorm 强制在 float32 下计算，防止 AMP 半精度溢出 NaN
-        x = self.norm(x.float()).to(x.dtype)
-        return self.act(x)
+        return self.act(self.norm(self.conv(x)))
 
 
 # ---------------------------------------------------------------------------
@@ -95,6 +105,7 @@ class InceptionBlock(nn.Module):
     """
     轻量化 Inception 模块，在特征图的空间维度上捕捉多尺度局部模式。
     输入输出通道数相同，便于堆叠。
+    所有 GroupNorm 均使用 SafeGroupNorm，防止 AMP 下 NaN。
     """
 
     def __init__(self, ch: int):
@@ -103,30 +114,30 @@ class InceptionBlock(nn.Module):
 
         self.branch1 = nn.Sequential(
             nn.Conv2d(ch, branch_ch, 1, bias=False),
-            nn.GroupNorm(max(1, branch_ch // 4), branch_ch),
+            SafeGroupNorm(max(1, branch_ch // 4), branch_ch),
             nn.LeakyReLU(0.2, inplace=True),
         )
         self.branch3 = nn.Sequential(
             nn.Conv2d(ch, branch_ch, 1, bias=False),
             nn.Conv2d(branch_ch, branch_ch, 3, padding=1, bias=False),
-            nn.GroupNorm(max(1, branch_ch // 4), branch_ch),
+            SafeGroupNorm(max(1, branch_ch // 4), branch_ch),
             nn.LeakyReLU(0.2, inplace=True),
         )
         self.branch5 = nn.Sequential(
             nn.Conv2d(ch, branch_ch, 1, bias=False),
             nn.Conv2d(branch_ch, branch_ch, 5, padding=2, bias=False),
-            nn.GroupNorm(max(1, branch_ch // 4), branch_ch),
+            SafeGroupNorm(max(1, branch_ch // 4), branch_ch),
             nn.LeakyReLU(0.2, inplace=True),
         )
         self.branch_pool = nn.Sequential(
             nn.MaxPool2d(3, stride=1, padding=1),
             nn.Conv2d(ch, branch_ch, 1, bias=False),
-            nn.GroupNorm(max(1, branch_ch // 4), branch_ch),
+            SafeGroupNorm(max(1, branch_ch // 4), branch_ch),
             nn.LeakyReLU(0.2, inplace=True),
         )
         self.proj = nn.Sequential(
             nn.Conv2d(branch_ch * 4, ch, 1, bias=False),
-            nn.GroupNorm(max(1, ch // 4), ch),
+            SafeGroupNorm(max(1, ch // 4), ch),
         )
         self.act = nn.LeakyReLU(0.2, inplace=True)
 
@@ -166,9 +177,10 @@ class TemporalTranslator(nn.Module):
         temporal_ch = hidden_ch * seq_len
 
         # 时序融合：将 T 帧特征在通道维度拼接后用 Inception 处理
+        # SafeGroupNorm 防止 AMP 下 NaN
         self.temporal_conv = nn.Sequential(
             nn.Conv2d(temporal_ch, temporal_ch, 1, bias=False),
-            nn.GroupNorm(max(1, seq_len), temporal_ch),
+            SafeGroupNorm(max(1, seq_len), temporal_ch),
             nn.LeakyReLU(0.2, inplace=True),
         )
         self.inception_blocks = nn.ModuleList(
@@ -205,6 +217,7 @@ class SpatialDecoder(nn.Module):
     将特征图 [B, enc_ch, H/16, W/16] 解码回 [B, num_bins, H, W]。
     使用 4 层转置卷积进行上采样（每层 stride=2，共 2^4=16 倍上采样）。
     24x24 -> 384x384
+    所有 GroupNorm 均使用 SafeGroupNorm，防止 AMP 下 NaN。
     """
 
     def __init__(self, enc_ch: int, hidden_ch: int = 64,
@@ -217,7 +230,7 @@ class SpatialDecoder(nn.Module):
             out_ch = max(hidden_ch, ch // 2)
             layers.append(nn.Sequential(
                 nn.ConvTranspose2d(ch, out_ch, kernel_size=4, stride=2, padding=1, bias=False),
-                nn.GroupNorm(max(1, out_ch // 4), out_ch),
+                SafeGroupNorm(max(1, out_ch // 4), out_ch),
                 nn.LeakyReLU(0.2, inplace=True),
             ))
             ch = out_ch
