@@ -15,8 +15,16 @@ OPSD 训练脚本
   KL 散度使用 temperature softmax 软化教师分布，防止教师过于自信导致蒸馏退化。
 
 用法：
+  # 标准 OPSD（KL 各步等权重）
   python train_opsd.py --config configs/default.yaml
-  python train_opsd.py --config configs/default.yaml --pretrained checkpoints/baseline/best.pth
+
+  # Reward-Weighted OPSD（KL 按每步 CSI 反向加权，难帧得到更大梯度）
+  python train_opsd.py --config configs/default.yaml --reward_weight
+
+  # 对比评估两个变体
+  python evaluate.py --config configs/default.yaml \
+      --ckpt checkpoints/opsd/best.pth checkpoints/opsd_rw/best.pth \
+      --tag opsd opsd_rw
 """
 
 import os
@@ -50,6 +58,10 @@ def parse_args():
                         help="指定设备，如 cuda:0 或 cpu")
     parser.add_argument("--temperature", type=float, default=2.0,
                         help="KL 蒸馏温度（默认 2.0，越大教师分布越软）")
+    parser.add_argument("--reward_weight", action="store_true",
+                        help="启用 Reward-Weighted OPSD：KL 损失按每步 CSI 的反向值加权，"
+                             "预测质量差的帧获得更大的蒸馏梯度。"
+                             "checkpoint 保存在 opsd_rw_ckpt_dir（默认 checkpoints/opsd_rw）")
     return parser.parse_args()
 
 
@@ -130,8 +142,48 @@ def build_pixel_weights(
     return weights
 
 
+@torch.no_grad()
+def compute_step_csi(
+    logits: torch.Tensor,
+    target_bins: torch.Tensor,
+    num_bins: int,
+    vil_max: float,
+    threshold: float,
+) -> float:
+    """
+    计算单步预测的批均 CSI，用作奖励信号（不参与梯度计算）。
+
+    Args:
+        logits:      [B, num_bins, H, W]，学生当前步的 logit
+        target_bins: [B, H, W]，int64，当前步的真实 bin 索引
+        num_bins:    bin 总数
+        vil_max:     VIL 像素最大值（用于还原物理量）
+        threshold:   VIL 像素阈值，用于二值化（如 74 对应中等对流）
+
+    Returns:
+        mean_csi: float，批内各样本 CSI 的均值，值域 [0, 1]
+    """
+    bin_width = vil_max / num_bins
+    # argmax -> VIL 像素值（取 bin 中心）
+    pred_vil = (logits.argmax(dim=1).float() + 0.5) * bin_width   # [B, H, W]
+    true_vil = (target_bins.float() + 0.5) * bin_width             # [B, H, W]
+
+    pred_pos = pred_vil >= threshold   # [B, H, W] bool
+    true_pos = true_vil >= threshold
+
+    # 逐样本统计（dim=(-2,-1) 对 H×W 求和，保留 B 维）
+    hits        = (pred_pos & true_pos).float().sum(dim=(-2, -1))   # [B]
+    misses      = (~pred_pos & true_pos).float().sum(dim=(-2, -1))
+    false_alarms = (pred_pos & ~true_pos).float().sum(dim=(-2, -1))
+
+    denom = hits + misses + false_alarms
+    csi = torch.where(denom > 0, hits / denom.clamp(min=1e-8), torch.zeros_like(hits))
+    return csi.mean().item()   # Python float，脱离计算图
+
+
 def train_one_epoch_opsd(
-    model, loader, optimizer, scaler, device, cfg, epoch, temperature
+    model, loader, optimizer, scaler, device, cfg, epoch, temperature,
+    use_reward_weight: bool = False,
 ):
     """
     执行一个 epoch 的 OPSD 训练。
@@ -146,63 +198,73 @@ def train_one_epoch_opsd(
     """
     model.train()
 
-    loss_meter = AverageMeter("Total_Loss")
-    kl_meter = AverageMeter("KL_Loss")
-    ce_meter = AverageMeter("CE_Loss")
+    loss_meter   = AverageMeter("Total_Loss")
+    kl_meter     = AverageMeter("KL_Loss")
+    ce_meter     = AverageMeter("CE_Loss")
+    reward_meter = AverageMeter("CSI_Reward")  # 仅 reward_weight 模式下有意义
 
-    # 使用 reduction='none' 的 CE，以便后续手动做加权平均
     criterion_ce_none = nn.CrossEntropyLoss(reduction="none")
-    train_cfg = cfg["training"]
-    kl_weight = train_cfg["opsd_kl_weight"]
-    ce_weight = train_cfg["opsd_ce_weight"]
+    train_cfg        = cfg["training"]
+    kl_weight        = train_cfg["opsd_kl_weight"]
+    ce_weight        = train_cfg["opsd_ce_weight"]
     foreground_weight = train_cfg.get("foreground_weight", 5.0)
-    log_interval = train_cfg["log_interval"]
-    num_bins = cfg["model"]["num_bins"]
+    log_interval     = train_cfg["log_interval"]
+    num_bins         = cfg["model"]["num_bins"]
+    vil_max          = cfg["data"]["vil_max"]
+    reward_threshold = float(train_cfg.get("reward_threshold", 74))
 
     for step, (input_frames, target_bins, future_frames) in enumerate(loader):
-        input_frames = input_frames.to(device, non_blocking=True)
-        target_bins = target_bins.to(device, non_blocking=True)
+        input_frames  = input_frames.to(device, non_blocking=True)
+        target_bins   = target_bins.to(device, non_blocking=True)
         future_frames = future_frames.to(device, non_blocking=True)
 
         optimizer.zero_grad()
 
         with autocast():
-            # ---- 学生分支（需要梯度）----
-            # student_logits: [B, out_seq_len, num_bins, H, W]
             student_logits = model(input_frames, privileged_future=None)
-
-            # ---- 教师分支（不需要梯度，只做前向传播）----
-            # 教师使用真实未来帧作为特权上下文
             with torch.no_grad():
                 teacher_logits = model(input_frames, privileged_future=future_frames)
 
             B, T_out, C_bins, H, W = student_logits.shape
+            student_flat  = student_logits.view(B * T_out, C_bins, H, W)
+            teacher_flat  = teacher_logits.view(B * T_out, C_bins, H, W)
+            targets_flat  = target_bins.view(B * T_out, H, W)
+            pixel_weights = build_pixel_weights(targets_flat, num_bins, foreground_weight)
 
-            # 展平时间维度，逐帧计算损失
-            student_flat = student_logits.view(B * T_out, C_bins, H, W)
-            teacher_flat = teacher_logits.view(B * T_out, C_bins, H, W)
-            targets_flat = target_bins.view(B * T_out, H, W)   # [B*T_out, H, W]
+            if use_reward_weight:
+                # ---- Reward-Weighted KL ----
+                # 逐步计算 KL，以 (1 - CSI_t) 作为步权重：
+                # 预测越差（CSI 低）→ 权重越大 → 该步蒸馏梯度越强。
+                # compute_step_csi 带 @torch.no_grad，CSI 值仅作常数权重，不参与梯度。
+                kl_accum  = torch.zeros((), device=device)
+                step_csis = []
+                for t in range(T_out):
+                    s_t   = student_logits[:, t]   # [B, num_bins, H, W]，梯度正常流
+                    tea_t = teacher_logits[:, t]
+                    tgt_t = target_bins[:, t]
+                    pw_t  = build_pixel_weights(tgt_t, num_bins, foreground_weight)
 
-            # 构建逐像素空间权重：有回波区域权重 foreground_weight，晴空区域权重 1.0
-            # 这是解决 VIL 大面积零值区域淹没强对流梯度的关键
-            pixel_weights = build_pixel_weights(
-                targets_flat, num_bins, foreground_weight
-            )  # [B*T_out, H, W]，float32
+                    csi_t  = compute_step_csi(s_t, tgt_t, num_bins, vil_max, reward_threshold)
+                    step_w = 1.0 - csi_t           # Python float：难帧权重大，易帧权重小
+                    kl_accum = kl_accum + step_w * kl_divergence_loss(
+                        s_t, tea_t, temperature, pw_t
+                    )
+                    step_csis.append(csi_t)
 
-            # KL 散度损失（OPSD 核心，掩码加权版）
-            loss_kl = kl_divergence_loss(
-                student_flat, teacher_flat, temperature, pixel_weights
-            )
+                loss_kl = kl_accum / T_out
+                reward_meter.update(sum(step_csis) / len(step_csis), B)
+            else:
+                # ---- 标准 OPSD：各步 KL 等权重 ----
+                loss_kl = kl_divergence_loss(
+                    student_flat, teacher_flat, temperature, pixel_weights
+                )
 
-            # 交叉熵辅助损失（掩码加权版，防止蒸馏过度）
-            # ce_per_pixel: [B*T_out, H, W]
+            # CE 辅助损失（两种模式共用）
             ce_per_pixel = criterion_ce_none(student_flat, targets_flat)
             loss_ce = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
 
-            # 总损失
             loss = kl_weight * loss_kl + ce_weight * loss_ce
 
-        # NaN 检测：loss 为 NaN 时跳过该 batch，防止污染模型参数
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
@@ -220,14 +282,18 @@ def train_one_epoch_opsd(
         ce_meter.update(loss_ce.item(), B)
 
         if (step + 1) % log_interval == 0:
+            reward_str = (
+                f" | CSI@{reward_threshold:.0f}: {reward_meter.avg:.4f}"
+                if use_reward_weight else ""
+            )
             print(
                 f"  [Epoch {epoch}] Step {step+1}/{len(loader)} | "
                 f"Total: {loss_meter.val:.4f} | "
                 f"KL: {kl_meter.val:.4f} | "
-                f"CE: {ce_meter.val:.4f}"
+                f"CE: {ce_meter.val:.4f}{reward_str}"
             )
 
-    return loss_meter.avg, kl_meter.avg, ce_meter.avg
+    return loss_meter.avg, kl_meter.avg, ce_meter.avg, reward_meter.avg
 
 
 @torch.no_grad()
@@ -282,18 +348,23 @@ def main():
         device = torch.device(args.device)
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"[Device] 使用设备：{device}")
-    print(f"[OPSD] 蒸馏温度 T = {args.temperature}")
+
+    train_cfg = cfg["training"]
+    mode_tag = "OPSD+RW" if args.reward_weight else "OPSD"
+    print(f"[Device] {device}  |  [Mode] {mode_tag}  |  [T] {args.temperature}")
+    if args.reward_weight:
+        print(f"[RW] CSI 奖励阈值: {train_cfg.get('reward_threshold', 74)}")
 
     print("[Data] 正在加载 SEVIR VIL 数据集...")
-    train_loader, val_loader, _ = build_dataloaders(cfg)
+    train_loader, val_loader, _ = build_dataloaders(
+        cfg, batch_size=train_cfg["opsd_batch_size"]
+    )
 
     print("[Model] 正在构建 SimVP 模型...")
     model = build_model(cfg).to(device)
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"[Model] 可训练参数量：{total_params / 1e6:.2f}M")
 
-    train_cfg = cfg["training"]
     optimizer = optim.AdamW(
         model.parameters(),
         lr=train_cfg["opsd_lr"],
@@ -306,52 +377,57 @@ def main():
     )
     scaler = GradScaler()
 
-    start_epoch = 1
+    start_epoch   = 1
     best_val_loss = float("inf")
 
-    # 优先级：--pretrained > 配置文件中的 opsd_pretrained
+    # 热启动：--pretrained > 配置文件中的 opsd_pretrained
     pretrained_path = args.pretrained or train_cfg.get("opsd_pretrained")
     if pretrained_path and os.path.exists(pretrained_path):
         print(f"[Pretrained] 从 Baseline 权重热启动：{pretrained_path}")
         ckpt = torch.load(pretrained_path, map_location=str(device))
         model.load_state_dict(ckpt["model_state_dict"])
-        print(f"  Baseline 最佳 Val Loss: {ckpt.get('best_val_loss', '?'):.4f}")
+        best = ckpt.get("best_val_loss", float("nan"))
+        print(f"  Baseline 最佳 Val Loss: {best:.4f}")
     elif pretrained_path:
-        print(f"[WARNING] 未找到预训练权重：{pretrained_path}，从随机初始化开始训练")
+        print(f"[WARNING] 未找到预训练权重：{pretrained_path}，从随机初始化开始")
 
-    # 如果指定了 --resume，则覆盖 pretrained 加载
     if args.resume:
         ckpt = load_checkpoint(args.resume, model, optimizer, device=str(device))
-        start_epoch = ckpt.get("epoch", 0) + 1
+        start_epoch   = ckpt.get("epoch", 0) + 1
         best_val_loss = ckpt.get("best_val_loss", float("inf"))
 
-    ckpt_dir = train_cfg["opsd_ckpt_dir"]
+    # reward_weight 模式存到独立目录，方便直接对比 checkpoint
+    ckpt_dir = (
+        train_cfg.get("opsd_rw_ckpt_dir", "checkpoints/opsd_rw")
+        if args.reward_weight
+        else train_cfg["opsd_ckpt_dir"]
+    )
     os.makedirs(ckpt_dir, exist_ok=True)
 
-    print(f"\n[Train] 开始 OPSD 训练，共 {train_cfg['opsd_epochs']} 个 Epoch")
+    print(f"\n[Train] {mode_tag} 训练，共 {train_cfg['opsd_epochs']} Epoch  →  {ckpt_dir}")
     print(f"        KL 权重: {train_cfg['opsd_kl_weight']} | CE 权重: {train_cfg['opsd_ce_weight']}")
     print("=" * 60)
 
     for epoch in range(start_epoch, train_cfg["opsd_epochs"] + 1):
         t0 = time.time()
 
-        train_loss, kl_loss, ce_loss = train_one_epoch_opsd(
-            model, train_loader, optimizer, scaler, device, cfg, epoch, args.temperature
+        train_loss, kl_loss, ce_loss, mean_reward = train_one_epoch_opsd(
+            model, train_loader, optimizer, scaler, device, cfg, epoch,
+            args.temperature, use_reward_weight=args.reward_weight,
         )
 
         val_loss, val_metrics = validate(model, val_loader, device, cfg)
-
         scheduler.step()
         elapsed = time.time() - t0
 
+        reward_str = f" | Reward: {mean_reward:.4f}" if args.reward_weight else ""
         print(
             f"[Epoch {epoch:03d}/{train_cfg['opsd_epochs']}] "
-            f"Train: {train_loss:.4f} (KL:{kl_loss:.4f} CE:{ce_loss:.4f}) | "
+            f"Train: {train_loss:.4f} (KL:{kl_loss:.4f} CE:{ce_loss:.4f}){reward_str} | "
             f"Val: {val_loss:.4f} | "
             f"LR: {scheduler.get_last_lr()[0]:.2e} | Time: {elapsed:.1f}s"
         )
 
-        # 打印关键气象指标
         for thr_key in [74, 133]:
             if thr_key in val_metrics:
                 m = val_metrics[thr_key]
@@ -372,11 +448,12 @@ def main():
                     "val_metrics": val_metrics,
                     "cfg": cfg,
                     "temperature": args.temperature,
+                    "reward_weight": args.reward_weight,
                 },
                 ckpt_dir,
                 filename="best.pth",
             )
-            print(f"  [Checkpoint] 保存最佳 OPSD 模型，Val Loss: {best_val_loss:.4f}")
+            print(f"  [Checkpoint] 保存最佳 {mode_tag} 模型，Val Loss: {best_val_loss:.4f}")
 
         if epoch % train_cfg["save_interval"] == 0:
             save_checkpoint(
@@ -393,7 +470,7 @@ def main():
 
         print("-" * 60)
 
-    print(f"\n[Done] OPSD 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
+    print(f"\n[Done] {mode_tag} 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
     print(f"       最佳模型已保存至：{os.path.join(ckpt_dir, 'best.pth')}")
 
 

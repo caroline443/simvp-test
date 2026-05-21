@@ -52,7 +52,13 @@ training:
   opsd_kl_weight: 1.0    # KL 散度损失权重
   opsd_ce_weight: 0.5    # 交叉熵辅助损失权重（防止蒸馏过度）
   opsd_ckpt_dir: "checkpoints/opsd"
+  opsd_rw_ckpt_dir: "checkpoints/opsd_rw"           # Reward-Weighted OPSD 独立存放，方便对比
   opsd_pretrained: "checkpoints/baseline/best.pth"  # 从 Baseline 权重热启动
+
+  # Reward-Weighted OPSD 专用参数
+  # reward_threshold：计算 CSI 奖励所用的 VIL 阈值（对应中等对流，与 eval 阈值保持一致）
+  # 步权重 = 1 - CSI_t，即预测越差的步获得越大的 KL 蒸馏梯度
+  reward_threshold: 74
 
   # 掩码加权损失：有回波区域的权重倍数。
   # VIL 图中 80%+ 是晴空零值，不加权会导致强对流区域梯度被淹没。

@@ -60,25 +60,27 @@ python train_baseline.py --config configs/default.yaml
 
 训练完成后，最佳模型保存在 `checkpoints/baseline/best.pth`。
 
-### 第二步：训练 OPSD
+### 第二步：训练 OPSD（两个变体）
 
 ```bash
+# 标准 OPSD（各步 KL 等权重）→ checkpoints/opsd/
 python train_opsd.py --config configs/default.yaml
+
+# Reward-Weighted OPSD（KL 按每步 CSI 反向加权）→ checkpoints/opsd_rw/
+python train_opsd.py --config configs/default.yaml --reward_weight
 ```
 
-脚本会自动从 `checkpoints/baseline/best.pth` 热启动（在配置文件中指定）。
+两个命令都从 `checkpoints/baseline/best.pth` 热启动，结果存入不同目录，可直接对比。
 
 ### 第三步：评估与对比
 
 ```bash
-# 评估单个模型
+# 三路对比：Baseline vs OPSD vs OPSD+RW
 python evaluate.py --config configs/default.yaml \
-    --ckpt checkpoints/baseline/best.pth --tag baseline
-
-# 对比 Baseline 和 OPSD
-python evaluate.py --config configs/default.yaml \
-    --ckpt checkpoints/baseline/best.pth checkpoints/opsd/best.pth \
-    --tag baseline opsd
+    --ckpt checkpoints/baseline/best.pth \
+           checkpoints/opsd/best.pth \
+           checkpoints/opsd_rw/best.pth \
+    --tag baseline opsd opsd_rw
 ```
 
 评估结果（CSV + 对比曲线图）保存在 `eval_results/` 目录。
