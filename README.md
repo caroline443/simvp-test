@@ -38,17 +38,19 @@ pip install -r requirements.txt
 
 ## 数据准备
 
-将 SEVIR 数据放置到以下目录结构：
+将所有 SEVIR VIL .h5 文件放在同一个目录下（扁平结构）：
 
 ```
-C:/data/sevir/          # 或任意路径，在 configs/default.yaml 中修改 data.data_root
-    SEVIR_CATALOG.csv
-    data/
-        vil/
-            *.h5
+F:/zyx/dataset/sevir_data/        # 或任意路径
+    SEVIR_VIL_RANDOMEVENTS_2017_0501_0831.h5
+    SEVIR_VIL_RANDOMEVENTS_2017_0901_1231.h5
+    SEVIR_VIL_RANDOMEVENTS_2018_0101_0430.h5
+    ...（其他 RANDOM + STORM 年份文件）
 ```
 
-然后修改 `configs/default.yaml` 中的 `data.data_root` 为实际路径。
+h5 文件内部维度顺序为 `[n_events, H, W, T]`（T=49帧，每帧间隔5分钟），代码自动处理，**无需手动转置**。
+
+然后修改 `configs/default.yaml` 中的 `data.data_root` 为实际数据目录路径。
 
 ## 快速开始
 
@@ -94,7 +96,7 @@ python evaluate.py --config configs/default.yaml \
 | `data.out_seq_len` | 10 | 预测未来帧数（10帧 = 50min） |
 | `data.num_bins` | 16 | VIL 离散化 bin 数量 |
 | `model.hidden_channels` | 64 | 网络隐藏层通道数 |
-| `training.baseline_batch_size` | 4 | Baseline 训练 batch size |
+| `training.baseline_batch_size` | 2 | Baseline 训练 batch size（16G 显存安全上限） |
 | `training.opsd_kl_weight` | 1.0 | KL 散度损失权重 |
 | `training.opsd_ce_weight` | 0.5 | 交叉熵辅助损失权重 |
 

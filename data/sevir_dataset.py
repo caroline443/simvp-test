@@ -254,18 +254,23 @@ class SEVIRVILDataset(Dataset):
         )
 
 
-def build_dataloaders(cfg: dict):
+def build_dataloaders(cfg: dict, batch_size: int = None):
     """
     根据配置字典构建 train / val / test DataLoader。
 
     Args:
-        cfg: 完整配置字典（对应 default.yaml）
+        cfg:        完整配置字典（对应 default.yaml）
+        batch_size: 训练/验证集的 batch size，覆盖配置文件中的值。
+                    为 None 时使用 cfg["training"]["baseline_batch_size"]。
 
     Returns:
         train_loader, val_loader, test_loader
     """
     data_cfg = cfg["data"]
     train_cfg = cfg["training"]
+
+    if batch_size is None:
+        batch_size = train_cfg["baseline_batch_size"]
 
     common_kwargs = dict(
         data_root=data_cfg["data_root"],
@@ -285,7 +290,7 @@ def build_dataloaders(cfg: dict):
 
     train_loader = DataLoader(
         train_ds,
-        batch_size=train_cfg["baseline_batch_size"],
+        batch_size=batch_size,
         shuffle=True,
         num_workers=data_cfg["num_workers"],
         pin_memory=True,
@@ -293,7 +298,7 @@ def build_dataloaders(cfg: dict):
     )
     val_loader = DataLoader(
         val_ds,
-        batch_size=train_cfg["baseline_batch_size"],
+        batch_size=batch_size,
         shuffle=False,
         num_workers=data_cfg["num_workers"],
         pin_memory=True,

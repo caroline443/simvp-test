@@ -33,10 +33,11 @@ def inspect(fpath: str):
 
             # 读取第一个事件的前几帧做统计
             if ds.ndim == 4:
-                # 预期形状: [n_events, n_frames, H, W]
-                n_events, n_frames, H, W = ds.shape
-                print(f"    解读:   [n_events={n_events}, n_frames={n_frames}, H={H}, W={W}]")
-                sample = ds[0, :5].astype(np.float32)  # 第0个事件，前5帧
+                # SEVIR VIL 实际维度顺序: [n_events, H, W, T]，T(帧数)在最后
+                n_events, H, W, T = ds.shape
+                print(f"    解读:   [n_events={n_events}, H={H}, W={W}, T(帧数)={T}]")
+                # 第0个事件的前5帧: ds[0, :, :, :5] -> [H, W, 5]
+                sample = ds[0, :, :, :5].astype(np.float32)
                 print(f"    像素值范围（第0事件前5帧）:")
                 print(f"      min={sample.min():.2f}  max={sample.max():.2f}  mean={sample.mean():.2f}")
                 print(f"      零值像素占比: {(sample == 0).mean() * 100:.1f}%")

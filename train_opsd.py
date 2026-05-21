@@ -286,7 +286,9 @@ def main():
     print(f"[OPSD] 蒸馏温度 T = {args.temperature}")
 
     print("[Data] 正在加载 SEVIR VIL 数据集...")
-    train_loader, val_loader, _ = build_dataloaders(cfg)
+    train_loader, val_loader, _ = build_dataloaders(
+        cfg, batch_size=cfg["training"]["opsd_batch_size"]
+    )
 
     print("[Model] 正在构建 SimVP 模型...")
     model = build_model(cfg).to(device)
@@ -315,7 +317,8 @@ def main():
         print(f"[Pretrained] 从 Baseline 权重热启动：{pretrained_path}")
         ckpt = torch.load(pretrained_path, map_location=str(device))
         model.load_state_dict(ckpt["model_state_dict"])
-        print(f"  Baseline 最佳 Val Loss: {ckpt.get('best_val_loss', '?'):.4f}")
+        best = ckpt.get("best_val_loss", float("nan"))
+        print(f"  Baseline 最佳 Val Loss: {best:.4f}")
     elif pretrained_path:
         print(f"[WARNING] 未找到预训练权重：{pretrained_path}，从随机初始化开始训练")
 
