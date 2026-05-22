@@ -318,10 +318,11 @@ def validate(model, loader, device, cfg):
             all_logits = model(input_frames, privileged_future=None)
 
         B, T_out, C_bins, H, W = all_logits.shape
-        logits_flat = all_logits.view(B * T_out, C_bins, H, W)
+        logits_flat = all_logits.float().view(B * T_out, C_bins, H, W)
         targets_flat = target_bins.view(B * T_out, H, W)
         loss = criterion(logits_flat, targets_flat)
-        loss_meter.update(loss.item(), B)
+        if torch.isfinite(loss):
+            loss_meter.update(loss.item(), B)
 
         pred_vil = logits_to_vil(all_logits, num_bins, vil_max)
         bin_width = vil_max / num_bins
@@ -436,7 +437,9 @@ def main():
                     f"FAR={m['FAR']:.4f} | HSS={m['HSS']:.4f}"
                 )
 
-        if val_loss < best_val_loss:
+        if not torch.isfinite(torch.tensor(val_loss)):
+            print(f"  [WARNING] Val Loss 为非有限值（{val_loss}），跳过 best 模型保存")
+        elif val_loss < best_val_loss:
             best_val_loss = val_loss
             save_checkpoint(
                 {
@@ -469,8 +472,12 @@ def main():
 
         print("-" * 60)
 
-    print(f"\n[Done] {mode_tag} 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
-    print(f"       最佳模型已保存至：{os.path.join(ckpt_dir, 'best.pth')}")
+    if best_val_loss < float("inf"):
+        print(f"\n[Done] {mode_tag} 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
+        print(f"       最佳模型已保存至：{os.path.join(ckpt_dir, 'best.pth')}")
+    else:
+        print(f"\n[Done] {mode_tag} 训练完成！Val Loss 全程为非有限值，best.pth 未保存。")
+        print(f"       请检查验证集数据和模型输出是否含 NaN/Inf。")
 
 
 if __name__ == "__main__":
