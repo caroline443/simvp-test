@@ -15,6 +15,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .modules import SpatialEncoder, TemporalTranslator, SpatialDecoder
+from .mamba_translator import MambaTemporalTranslator
 
 
 class SimVP(nn.Module):
@@ -43,6 +44,7 @@ class SimVP(nn.Module):
         out_seq_len: int = 10,
         num_bins: int = 16,
         use_checkpoint: bool = False,
+        translator_type: str = "inception",
     ):
         super().__init__()
         self.in_seq_len = in_seq_len
@@ -59,12 +61,20 @@ class SimVP(nn.Module):
         enc_ch = self.encoder.out_channels
 
         # Temporal Translator（处理 in_seq_len 帧的时序特征）
-        self.translator = TemporalTranslator(
-            hidden_ch=enc_ch,
-            seq_len=in_seq_len,
-            n_layers=translator_layers,
-            use_checkpoint=use_checkpoint,
-        )
+        if translator_type == "mamba":
+            self.translator = MambaTemporalTranslator(
+                hidden_ch=enc_ch,
+                seq_len=in_seq_len,
+                n_layers=translator_layers,
+                use_checkpoint=use_checkpoint,
+            )
+        else:
+            self.translator = TemporalTranslator(
+                hidden_ch=enc_ch,
+                seq_len=in_seq_len,
+                n_layers=translator_layers,
+                use_checkpoint=use_checkpoint,
+            )
 
         # Spatial Decoder（输出 num_bins 个通道的 Logit）
         self.decoder = SpatialDecoder(
@@ -249,4 +259,5 @@ def build_model(cfg: dict) -> SimVP:
         out_seq_len=data_cfg["out_seq_len"],
         num_bins=model_cfg["num_bins"],
         use_checkpoint=model_cfg.get("use_checkpoint", False),
+        translator_type=model_cfg.get("translator_type", "inception"),
     )

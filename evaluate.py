@@ -250,7 +250,17 @@ def main():
     for ckpt_path, tag in zip(args.ckpt, tags):
         print(f"\n[Eval] 正在评估：{tag} ({ckpt_path})")
 
-        model = build_model(cfg).to(device)
+        # 优先使用 checkpoint 内保存的模型配置，确保不同架构（inception/mamba）
+        # 都能用同一条 evaluate 命令对比，不需要分别指定 --config
+        raw = torch.load(ckpt_path, map_location="cpu")
+        ckpt_model_cfg = raw.get("cfg", {}).get("model", {})
+        if ckpt_model_cfg:
+            merged_cfg = {**cfg, "model": {**cfg["model"], **ckpt_model_cfg}}
+            translator_type = ckpt_model_cfg.get("translator_type", "inception")
+            print(f"  [Config] 从 checkpoint 读取模型配置，translator_type={translator_type}")
+        else:
+            merged_cfg = cfg
+        model = build_model(merged_cfg).to(device)
         load_checkpoint(ckpt_path, model, device=str(device))
 
         vis_dir = os.path.join(args.output_dir, "visualizations")
