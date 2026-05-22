@@ -36,7 +36,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.cuda.amp import GradScaler, autocast
+from torch.cuda.amp import GradScaler
 
 from utils import (
     load_config, set_seed, save_checkpoint, load_checkpoint,
@@ -220,7 +220,7 @@ def train_one_epoch_opsd(
 
         optimizer.zero_grad()
 
-        with autocast():
+        with torch.amp.autocast(device_type=device.type):
             student_logits = model(input_frames, privileged_future=None)
             with torch.no_grad():
                 teacher_logits = model(input_frames, privileged_future=future_frames)
@@ -268,7 +268,6 @@ def train_one_epoch_opsd(
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
-            scaler.update()
             continue
 
         scaler.scale(loss).backward()
@@ -314,7 +313,7 @@ def validate(model, loader, device, cfg):
         input_frames = input_frames.to(device, non_blocking=True)
         target_bins = target_bins.to(device, non_blocking=True)
 
-        with autocast():
+        with torch.amp.autocast(device_type=device.type):
             # 验证时走学生模式（无特权信息），模拟真实推理
             all_logits = model(input_frames, privileged_future=None)
 

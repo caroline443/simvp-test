@@ -26,7 +26,6 @@ import os
 import argparse
 import numpy as np
 import torch
-from torch.cuda.amp import autocast
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -83,7 +82,7 @@ def evaluate_model(model, loader, device, cfg, n_vis=4, vis_dir=None, tag="model
         input_frames = input_frames.to(device, non_blocking=True)
         target_bins_np = target_bins.numpy()  # [B, T_out, H, W]
 
-        with autocast():
+        with torch.amp.autocast(device_type=device.type):
             all_logits = model(input_frames, privileged_future=None)
         # all_logits: [B, T_out, num_bins, H, W]
 

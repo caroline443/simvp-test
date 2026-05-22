@@ -21,7 +21,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.cuda.amp import GradScaler, autocast
+from torch.cuda.amp import GradScaler
 
 from utils import (
     load_config, set_seed, save_checkpoint, load_checkpoint,
@@ -62,7 +62,7 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
 
         optimizer.zero_grad()
 
-        with autocast():
+        with torch.amp.autocast(device_type=device.type):
             # 学生模式：自回归展开，不使用特权信息
             # all_logits: [B, out_seq_len, num_bins, H, W]
             all_logits = model(input_frames, privileged_future=None)
@@ -85,7 +85,6 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
-            scaler.update()  # 保持 scaler 状态同步
             continue
 
         scaler.scale(loss).backward()
@@ -124,7 +123,7 @@ def validate(model, loader, device, cfg):
         input_frames = input_frames.to(device, non_blocking=True)
         target_bins = target_bins.to(device, non_blocking=True)
 
-        with autocast():
+        with torch.amp.autocast(device_type=device.type):
             all_logits = model(input_frames, privileged_future=None)
 
         B, T_out, C_bins, H, W = all_logits.shape
