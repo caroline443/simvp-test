@@ -50,7 +50,32 @@ C:/data/sevir/          # 或任意路径，在 configs/default.yaml 中修改 d
 
 然后修改 `configs/default.yaml` 中的 `data.data_root` 为实际路径。
 
-## 快速开始
+## 快速实验模式（推荐先跑这个）
+
+单 epoch 约 **10-15 分钟**（`default.yaml` 约 2 小时），用于快速出对比结果：
+
+```bash
+# Step 1: Baseline（~3-4h 跑完 20 epoch）
+python train_baseline.py --config configs/fast.yaml
+
+# Step 2a: 标准 OPSD
+python train_opsd.py --config configs/fast.yaml
+
+# Step 2b: Reward-Weighted OPSD（与 2a 并行或依次跑）
+python train_opsd.py --config configs/fast.yaml --reward_weight
+
+# Step 3: 三路对比，一条命令出所有图和 CSV
+python evaluate.py --config configs/fast.yaml \
+    --ckpt checkpoints_fast/baseline/best.pth \
+           checkpoints_fast/opsd/best.pth \
+           checkpoints_fast/opsd_rw/best.pth \
+    --tag baseline opsd opsd_rw
+```
+
+加速来源：`crop_size=128`（9× 卷积加速）+ `seq_len=5`（2× 步数减少）+ `batch_size=4`。
+论文中注明实验在 128×128 / 25min lead-time 设置下进行即可。
+
+---
 
 ### 第一步：训练 Baseline
 

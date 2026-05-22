@@ -123,6 +123,8 @@ class SEVIRVILDataset(Dataset):
         test_years: list = None,
         val_ratio: float = 0.1,
         seed: int = 42,
+        crop_size: int = None,
+        full_size: int = 384,
     ):
         super().__init__()
         self.data_root = data_root
@@ -132,6 +134,16 @@ class SEVIRVILDataset(Dataset):
         self.num_bins = num_bins
         self.vil_max = vil_max
         self.split = split
+
+        # 空间裁剪：从原始 full_size×full_size 图像中心裁剪 crop_size×crop_size
+        # 直接在 h5 读取时传入切片范围，减少磁盘 I/O（不读无用像素）
+        if crop_size is not None and crop_size < full_size:
+            self.crop_size = crop_size
+            offset = (full_size - crop_size) // 2
+            self.h0, self.w0 = offset, offset
+        else:
+            self.crop_size = None   # None = 不裁剪，读取完整帧
+            self.h0 = self.w0 = 0
 
         if train_years is None:
             train_years = [2017, 2018]
@@ -226,9 +238,14 @@ class SEVIRVILDataset(Dataset):
         end = start + self.total_seq_len
 
         with h5py.File(fpath, "r") as f:
-            # h5 原始 shape: [N, H, W, T]，按时间轴切片后为 [H, W, total_seq_len]
-            raw = f[VIL_KEY][event_idx, :, :, start:end].astype(np.float32)
-            # raw shape: [H, W, total_seq_len] -> 转置为 [total_seq_len, H, W]
+            # h5 原始 shape: [N, H, W, T]
+            # 直接用空间切片读取，避免把整张 384×384 加载进内存再裁
+            if self.crop_size is not None:
+                h0, w0, cs = self.h0, self.w0, self.crop_size
+                raw = f[VIL_KEY][event_idx, h0:h0+cs, w0:w0+cs, start:end].astype(np.float32)
+            else:
+                raw = f[VIL_KEY][event_idx, :, :, start:end].astype(np.float32)
+            # raw shape: [H, W, total_seq_len] -> [total_seq_len, H, W]
             frames = np.transpose(raw, (2, 0, 1))
 
         # 归一化到 [0, 1]
@@ -282,6 +299,7 @@ def build_dataloaders(cfg: dict, batch_size: int = None):
         test_years=data_cfg.get("test_years", [2019]),
         val_ratio=data_cfg.get("val_ratio", 0.1),
         seed=train_cfg["seed"],
+        crop_size=data_cfg.get("crop_size", None),   # None = 使用完整 384×384
     )
 
     train_ds = SEVIRVILDataset(split="train", **common_kwargs)

@@ -1,0 +1,65 @@
+# fast.yaml — 快速对比实验配置
+# ==========================================
+# 目标：单 epoch ~10-15 min（原 default.yaml ~2h）
+# 原理：三处关键加速
+#   1. crop_size 128  → 空间分辨率 384²→128²，卷积计算量降 9x
+#                       直接在 h5 切片读取，磁盘 I/O 也降 9x
+#   2. seq_len  5+5   → 自回归步数减半（10步→5步）
+#   3. batch_size 4   → 空间变小后显存够用，步数减半，GPU 利用率不变
+#
+# 其他设置与 default.yaml 一致，确保 OPSD vs OPSD+RW 对比结论可迁移。
+# 论文中注明此为 128×128 / 25min lead-time 设置即可。
+# ==========================================
+
+data:
+  data_root: "F:/zyx/dataset/sevir_data"
+  crop_size: 128            # 从 384×384 中心裁剪 128×128（直接在 h5 层面裁，不多读）
+  in_seq_len: 5             # 25 min 历史（原 50 min）
+  out_seq_len: 5            # 预测 25 min（原 50 min）
+  num_bins: 16
+  vil_max: 255.0
+  # Windows 上 h5py + multiprocessing 有文件锁竞争，建议先用 2-4
+  # 如果 worker 初始化很慢或报错，改为 0（单线程，反而更稳）
+  num_workers: 4
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  hidden_channels: 64
+  # 3 层编码器：128 → 64 → 32 → 16（16×16 特征图）
+  # 4 层会得到 8×8，太小；3 层刚好
+  encoder_layers: 3
+  translator_layers: 4
+  decoder_layers: 3
+  num_bins: 16
+  # 128×128 下显存充裕，不需要 gradient checkpoint（省 ~20% 计算）
+  use_checkpoint: false
+
+training:
+  baseline_epochs: 20       # 20 epoch 足够看相对收益（原 50）
+  baseline_lr: 3.0e-4
+  baseline_batch_size: 4    # 128×128 + 5步，16G 显存下安全 batch=4
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_fast/baseline"
+
+  opsd_epochs: 20
+  opsd_lr: 1.0e-4
+  opsd_batch_size: 4
+  opsd_weight_decay: 1.0e-4
+  opsd_kl_weight: 1.0
+  opsd_ce_weight: 0.5
+  opsd_ckpt_dir: "checkpoints_fast/opsd"
+  opsd_rw_ckpt_dir: "checkpoints_fast/opsd_rw"
+  opsd_pretrained: "checkpoints_fast/baseline/best.pth"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 50          # 步数变多时避免刷屏（原 10）
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]
