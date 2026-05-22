@@ -379,6 +379,7 @@ def main():
 
     start_epoch   = 1
     best_val_loss = float("inf")
+    best_val_csi  = 0.0           # 以 CSI@74 为 checkpoint 判据，对 NaN val_loss 免疫
 
     # 热启动：--pretrained > 配置文件中的 opsd_pretrained
     pretrained_path = args.pretrained or train_cfg.get("opsd_pretrained")
@@ -395,6 +396,7 @@ def main():
         ckpt = load_checkpoint(args.resume, model, optimizer, device=str(device))
         start_epoch   = ckpt.get("epoch", 0) + 1
         best_val_loss = ckpt.get("best_val_loss", float("inf"))
+        best_val_csi  = ckpt.get("best_val_csi", 0.0)
 
     # reward_weight 模式存到独立目录，方便直接对比 checkpoint
     ckpt_dir = (
@@ -437,9 +439,12 @@ def main():
                     f"FAR={m['FAR']:.4f} | HSS={m['HSS']:.4f}"
                 )
 
+        # 以 CSI@74 为判据保存最佳模型（比 val_loss 更稳定，不受 AMP NaN 影响）
+        val_csi = val_metrics.get(74, {}).get("CSI", 0.0)
         if not torch.isfinite(torch.tensor(val_loss)):
-            print(f"  [WARNING] Val Loss 为非有限值（{val_loss}），跳过 best 模型保存")
-        elif val_loss < best_val_loss:
+            print(f"  [WARNING] Val Loss 为非有限值（{val_loss}），但仍按 CSI 判据保存")
+        if val_csi > best_val_csi:
+            best_val_csi  = val_csi
             best_val_loss = val_loss
             save_checkpoint(
                 {
@@ -447,6 +452,7 @@ def main():
                     "model_state_dict": model.state_dict(),
                     "optimizer_state_dict": optimizer.state_dict(),
                     "best_val_loss": best_val_loss,
+                    "best_val_csi": best_val_csi,
                     "val_metrics": val_metrics,
                     "cfg": cfg,
                     "temperature": args.temperature,
@@ -455,7 +461,7 @@ def main():
                 ckpt_dir,
                 filename="best.pth",
             )
-            print(f"  [Checkpoint] 保存最佳 {mode_tag} 模型，Val Loss: {best_val_loss:.4f}")
+            print(f"  [Checkpoint] 保存最佳 {mode_tag} 模型，CSI@74: {best_val_csi:.4f}")
 
         if epoch % train_cfg["save_interval"] == 0:
             save_checkpoint(
@@ -472,12 +478,11 @@ def main():
 
         print("-" * 60)
 
-    if best_val_loss < float("inf"):
-        print(f"\n[Done] {mode_tag} 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
+    if best_val_csi > 0.0:
+        print(f"\n[Done] {mode_tag} 训练完成！最佳 CSI@74: {best_val_csi:.4f}")
         print(f"       最佳模型已保存至：{os.path.join(ckpt_dir, 'best.pth')}")
     else:
-        print(f"\n[Done] {mode_tag} 训练完成！Val Loss 全程为非有限值，best.pth 未保存。")
-        print(f"       请检查验证集数据和模型输出是否含 NaN/Inf。")
+        print(f"\n[Done] {mode_tag} 训练完成！CSI 全程为 0，best.pth 未保存，请检查数据。")
 
 
 if __name__ == "__main__":

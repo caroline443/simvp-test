@@ -189,10 +189,12 @@ def main():
     # 恢复训练
     start_epoch = 1
     best_val_loss = float("inf")
+    best_val_csi  = 0.0           # val_loss 易受 AMP 精度影响变 NaN，改用 CSI@74 做 checkpoint 判据
     if args.resume:
         ckpt = load_checkpoint(args.resume, model, optimizer, device=str(device))
-        start_epoch = ckpt.get("epoch", 0) + 1
+        start_epoch   = ckpt.get("epoch", 0) + 1
         best_val_loss = ckpt.get("best_val_loss", float("inf"))
+        best_val_csi  = ckpt.get("best_val_csi", 0.0)
 
     ckpt_dir = train_cfg["baseline_ckpt_dir"]
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -229,10 +231,12 @@ def main():
                 f"FAR={m['FAR']:.4f} | HSS={m['HSS']:.4f}"
             )
 
-        # 保存最佳模型
+        # 以 CSI@74 为判据保存最佳模型（比 val_loss 更稳定，不受 AMP NaN 影响）
+        val_csi = val_metrics.get(74, {}).get("CSI", 0.0)
         if not torch.isfinite(torch.tensor(val_loss)):
-            print(f"  [WARNING] Val Loss 为非有限值（{val_loss}），跳过 best 模型保存")
-        elif val_loss < best_val_loss:
+            print(f"  [WARNING] Val Loss 为非有限值（{val_loss}），但仍按 CSI 判据保存")
+        if val_csi > best_val_csi:
+            best_val_csi  = val_csi
             best_val_loss = val_loss
             save_checkpoint(
                 {
@@ -240,13 +244,14 @@ def main():
                     "model_state_dict": model.state_dict(),
                     "optimizer_state_dict": optimizer.state_dict(),
                     "best_val_loss": best_val_loss,
+                    "best_val_csi": best_val_csi,
                     "val_metrics": val_metrics,
                     "cfg": cfg,
                 },
                 ckpt_dir,
                 filename="best.pth",
             )
-            print(f"  [Checkpoint] 保存最佳模型，Val Loss: {best_val_loss:.4f}")
+            print(f"  [Checkpoint] 保存最佳模型，CSI@74: {best_val_csi:.4f}")
 
         # 定期保存 checkpoint
         if epoch % train_cfg["save_interval"] == 0:
@@ -264,12 +269,11 @@ def main():
 
         print("-" * 60)
 
-    if best_val_loss < float("inf"):
-        print(f"\n[Done] Baseline 训练完成！最佳 Val Loss: {best_val_loss:.4f}")
+    if best_val_csi > 0.0:
+        print(f"\n[Done] Baseline 训练完成！最佳 CSI@74: {best_val_csi:.4f}")
         print(f"       最佳模型已保存至：{os.path.join(ckpt_dir, 'best.pth')}")
     else:
-        print(f"\n[Done] Baseline 训练完成！Val Loss 全程为非有限值，best.pth 未保存。")
-        print(f"       请检查验证集数据和模型输出是否含 NaN/Inf。")
+        print(f"\n[Done] Baseline 训练完成！CSI 全程为 0，best.pth 未保存，请检查数据。")
 
 
 if __name__ == "__main__":
