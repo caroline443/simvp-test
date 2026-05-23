@@ -95,6 +95,11 @@ def kl_divergence_loss(
     Returns:
         scalar loss
     """
+    # 强制 float32：AMP 输出 float16，log_softmax 在 float16 下对尖锐分布极易溢出
+    # 产生 -inf，导致 kl_div 输出 NaN，进而污染整个 batch 的梯度。
+    student_logits = student_logits.float()
+    teacher_logits = teacher_logits.float()
+
     # log Q（学生）和 P（教师），均在 bin 维度做 softmax
     log_p_student = F.log_softmax(student_logits / temperature, dim=1)  # [N, C, H, W]
     p_teacher     = F.softmax(teacher_logits / temperature, dim=1)       # [N, C, H, W]
