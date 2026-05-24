@@ -231,8 +231,9 @@ def train_one_epoch_opsd(
                 teacher_logits = model(input_frames, privileged_future=future_frames)
 
             B, T_out, C_bins, H, W = student_logits.shape
-            student_flat  = student_logits.view(B * T_out, C_bins, H, W)
-            teacher_flat  = teacher_logits.view(B * T_out, C_bins, H, W)
+            # float32：训练后期 logits 数值大，CE / KL 在 float16 下溢出
+            student_flat  = student_logits.float().view(B * T_out, C_bins, H, W)
+            teacher_flat  = teacher_logits.float().view(B * T_out, C_bins, H, W)
             targets_flat  = target_bins.view(B * T_out, H, W)
             pixel_weights = build_pixel_weights(targets_flat, num_bins, foreground_weight)
 
@@ -273,6 +274,7 @@ def train_one_epoch_opsd(
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
+            scaler.update()   # 让 GradScaler 正常推进，防止 scale 无限增长
             continue
 
         scaler.scale(loss).backward()

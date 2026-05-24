@@ -69,7 +69,8 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
 
             B, T_out, C_bins, H, W = all_logits.shape
             # 展平为 [B*T_out, num_bins, H, W] 和 [B*T_out, H, W]
-            logits_flat = all_logits.view(B * T_out, C_bins, H, W)
+            # float32：AMP 输出 float16，训练后期 logits 数值大，log_softmax 在 float16 下溢出 → CE NaN
+            logits_flat = all_logits.float().view(B * T_out, C_bins, H, W)
             targets_flat = target_bins.view(B * T_out, H, W)
 
             # 构建逐像素权重：有回波区域权重 foreground_weight，晴空区域权重 1.0
@@ -85,6 +86,7 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
+            scaler.update()   # 让 GradScaler 正常推进，防止 scale 无限增长
             continue
 
         scaler.scale(loss).backward()
