@@ -173,9 +173,10 @@ class MambaBlock(nn.Module):
         y   = selective_scan(x_, dt, A, B_ssm, C_ssm, self.D.float())
         y   = y * F.silu(z)
 
-        # 输出投影 + 残差（转回原始 dtype 保持 AMP 兼容性）
-        out = self.out_proj(y).to(orig_dtype)
-        return out + residual
+        # 输出投影 + 残差：在 float32 下相加再转回，防止训练后期
+        # out_proj 输出幅值增大超过 float16 上限（65504）→ inf → NaN
+        out = self.out_proj(y)                          # float32
+        return (out + residual.float()).to(orig_dtype)  # float32 加法再转回
 
 
 # ---------------------------------------------------------------------------
