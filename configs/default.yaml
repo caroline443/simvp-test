@@ -8,7 +8,7 @@
 data:
   data_root: "F:/zyx/dataset/sevir_data"
   crop_size: null            # null = 不裁剪，使用原始 384×384 全分辨率
-  in_seq_len: 5              # 历史帧数（25 min），影响 translator 通道数，不建议改大
+  in_seq_len: 10             # 历史帧数（50 min），temporal_ch = 256×10 = 2560
   out_seq_len: 10            # 预测帧数（50 min）
   num_bins: 16               # VIL 离散化区间数
   vil_max: 255.0             # VIL 像素最大值（用于归一化）
@@ -25,7 +25,8 @@ model:
   decoder_layers: 4
   num_bins: 16               # 与 data.num_bins 保持一致
   translator_type: "inception"  # "inception" 或 "mamba"
-  # 384×384 + 10步自回归下必须开启，可节省约 60% 激活值显存
+  # in_seq_len=10 时 temporal_ch=2560，translator 约 130M 参数
+  # 必须同时满足：use_checkpoint=true + batch_size≤2，否则 OOM → NaN
   use_checkpoint: true
 
 training:
