@@ -86,7 +86,6 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
-            scaler.update()   # 让 GradScaler 正常推进，防止 scale 无限增长
             continue
 
         scaler.scale(loss).backward()
