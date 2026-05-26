@@ -46,5 +46,4 @@ run_step "opsd"        python train_opsd.py     --config "$CONFIG"
 run_step "opsd_rw"     python train_opsd.py     --config "$CONFIG" --reward_weight
 
 log "所有训练完成，准备关机..."
-sleep 5
-sudo shutdown -h now
+/usr/bin/shutdown
