@@ -1,4 +1,4 @@
-# ablation_full.yaml — 消融实验配置（384×384 全分辨率，50分钟预测，10步）
+# ablation_full.yaml — 消融实验配置（384×384 全分辨率，60分钟预测，12步）
 # =========================================================================
 # 对应 default.yaml 的空间/时序设置，用于论文最终消融表。
 # 当前配置针对 96GB 显存（H20）优化。
@@ -10,8 +10,8 @@
 data:
   data_root: "/root/autodl-tmp/dataset/sevir"
   crop_size: null
-  in_seq_len: 5
-  out_seq_len: 10
+  in_seq_len: 13
+  out_seq_len: 12
   num_bins: 16
   vil_max: 255.0
   num_workers: 8

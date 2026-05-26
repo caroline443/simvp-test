@@ -1,15 +1,16 @@
-# default.yaml — 全量训练配置（384×384，50 分钟预测）
+# default.yaml — 全量训练配置（384×384，60 分钟预测）
 # ====================================================
 # 适用于正式实验 / 论文结果复现。
 # 当前配置针对 96GB 显存（H20）优化：关闭梯度检查点，大幅提升 batch_size。
-# 快速对比实验请使用 fast.yaml（128×128）或 fast_10step.yaml（128×128，50分钟）。
+# in_seq_len=13 / out_seq_len=12 与 SimCast / EarthFormer 等 SEVIR benchmark 标准一致。
+# 快速对比实验请使用 fast.yaml（128×128）或 fast_10step.yaml（128×128）。
 # ====================================================
 
 data:
   data_root: "/root/autodl-tmp/dataset/sevir"
   crop_size: null            # null = 不裁剪，使用原始 384×384 全分辨率
-  in_seq_len: 5              # 历史帧数（25 min），temporal_ch = 256×5 = 1280
-  out_seq_len: 10            # 预测帧数（50 min）
+  in_seq_len: 13             # 历史帧数（65 min），temporal_ch = 256×13 = 3328，SEVIR benchmark 标准
+  out_seq_len: 12            # 预测帧数（60 min），与 SimCast / EarthFormer 对齐
   num_bins: 16               # VIL 离散化区间数
   vil_max: 255.0             # VIL 像素最大值（用于归一化）
   num_workers: 8
