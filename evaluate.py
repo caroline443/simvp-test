@@ -4,10 +4,11 @@
 对训练好的模型（Baseline 或 OPSD）在测试集上进行全面评估。
 
 输出内容：
-  1. 各预测步骤（t+5min ~ t+50min）在多个阈值下的 CSI / POD / FAR / HSS
-  2. 整体 MSE / MAE
-  3. 可视化对比图（预测 vs 真实）
-  4. 结果保存为 CSV 文件
+  1. 各预测步骤（t+5min ~ t+60min）在多个阈值下的 CSI / POD / FAR / HSS（POOL1/4/16）
+  2. 整体 CSI-M / CSI-181 / CSI-219 / SSIM / HSS（SimCast Table II 格式）
+  3. 整体 MSE / MAE
+  4. 可视化对比图（预测 vs 真实）
+  5. 结果保存为 CSV 文件
 
 用法：
   # 评估 Baseline 模型
@@ -54,24 +55,48 @@ def parse_args():
     return parser.parse_args()
 
 
+def max_pool_numpy(arr, pool_size):
+    """Max pool [N, H, W] numpy array with non-overlapping pool_size×pool_size windows."""
+    if pool_size == 1:
+        return arr
+    N, H, W = arr.shape
+    H2, W2 = H // pool_size, W // pool_size
+    arr = arr[:, :H2 * pool_size, :W2 * pool_size]
+    return arr.reshape(N, H2, pool_size, W2, pool_size).max(axis=(2, 4))
+
+
+def compute_ssim_batch(pred_vil, true_vil, vil_max):
+    """Mean SSIM over [N, H, W] arrays; requires scikit-image."""
+    try:
+        from skimage.metrics import structural_similarity as ssim
+    except ImportError:
+        return float("nan")
+    pred_n = np.clip(pred_vil / vil_max, 0.0, 1.0)
+    true_n = np.clip(true_vil / vil_max, 0.0, 1.0)
+    return float(np.mean([
+        ssim(true_n[i], pred_n[i], data_range=1.0)
+        for i in range(len(pred_vil))
+    ]))
+
+
 @torch.no_grad()
 def evaluate_model(model, loader, device, cfg, n_vis=4, vis_dir=None, tag="model"):
     """
     在测试集上完整评估模型。
 
     Returns:
-        per_step_metrics: dict {step: {threshold: {metric: value}}}
-        overall_mse:      float
-        overall_mae:      float
+        metrics_by_pool: {pool_size: {step: {threshold: {metric: value}}}}
+        overall_mse:     float
+        overall_mae:     float
+        overall_ssim:    float (mean SSIM over all steps)
     """
     model.eval()
     num_bins = cfg["model"]["num_bins"]
     vil_max = cfg["data"]["vil_max"]
     out_seq_len = cfg["data"]["out_seq_len"]
     thresholds = cfg["eval"]["thresholds"]
+    pool_sizes = [1, 4, 16]
 
-    # 按步骤累积预测值和真实值
-    # per_step_preds[t] = list of [B, H, W] arrays
     per_step_preds = [[] for _ in range(out_seq_len)]
     per_step_trues = [[] for _ in range(out_seq_len)]
 
@@ -84,49 +109,56 @@ def evaluate_model(model, loader, device, cfg, n_vis=4, vis_dir=None, tag="model
 
         with torch.amp.autocast(device_type=device.type):
             all_logits = model(input_frames, privileged_future=None)
-        # all_logits: [B, T_out, num_bins, H, W]
 
         pred_vil = logits_to_vil(all_logits, num_bins, vil_max)  # [B, T_out, H, W]
-        true_vil = (target_bins_np.astype(float) + 0.5) * bin_width  # [B, T_out, H, W]
+        true_vil = (target_bins_np.astype(float) + 0.5) * bin_width
 
         for t in range(out_seq_len):
-            per_step_preds[t].append(pred_vil[:, t])  # [B, H, W]
+            per_step_preds[t].append(pred_vil[:, t])
             per_step_trues[t].append(true_vil[:, t])
 
-        # 可视化前 n_vis 个样本
         if vis_dir and vis_count < n_vis:
             for b in range(min(input_frames.shape[0], n_vis - vis_count)):
                 _save_vis_sample(
                     input_frames[b].cpu().numpy(),
                     pred_vil[b],
                     true_vil[b],
-                    vis_dir,
-                    tag,
-                    vis_count,
-                    vil_max,
+                    vis_dir, tag, vis_count, vil_max,
                 )
                 vis_count += 1
 
-    # 合并所有 batch
     per_step_preds = [np.concatenate(p, axis=0) for p in per_step_preds]
     per_step_trues = [np.concatenate(t, axis=0) for t in per_step_trues]
 
-    # 计算逐步指标
-    per_step_metrics = {}
-    for t in range(out_seq_len):
-        per_step_metrics[t] = {}
-        for thr in thresholds:
-            per_step_metrics[t][thr] = compute_metrics_at_threshold(
-                per_step_preds[t], per_step_trues[t], thr
-            )
+    # Compute metrics for each pool size
+    metrics_by_pool = {}
+    for ps in pool_sizes:
+        metrics_by_pool[ps] = {}
+        for t in range(out_seq_len):
+            pred_t = max_pool_numpy(per_step_preds[t], ps)
+            true_t = max_pool_numpy(per_step_trues[t], ps)
+            metrics_by_pool[ps][t] = {}
+            for thr in thresholds:
+                # pool thresholds scale: max pool of pool_size means any pixel
+                # in window exceeds thr, so threshold stays the same value
+                metrics_by_pool[ps][t][thr] = compute_metrics_at_threshold(
+                    pred_t, true_t, thr
+                )
 
-    # 计算整体 MSE / MAE
-    all_pred = np.stack(per_step_preds, axis=1)  # [N, T_out, H, W]
+    # SSIM over all steps (POOL1 only, full resolution)
+    ssim_per_step = [
+        compute_ssim_batch(per_step_preds[t], per_step_trues[t], vil_max)
+        for t in range(out_seq_len)
+    ]
+    ssim_vals = [v for v in ssim_per_step if not np.isnan(v)]
+    overall_ssim = float(np.mean(ssim_vals)) if ssim_vals else float("nan")
+
+    all_pred = np.stack(per_step_preds, axis=1)
     all_true = np.stack(per_step_trues, axis=1)
     overall_mse = compute_mse(all_pred, all_true)
     overall_mae = compute_mae(all_pred, all_true)
 
-    return per_step_metrics, overall_mse, overall_mae
+    return metrics_by_pool, overall_mse, overall_mae, overall_ssim
 
 
 def _save_vis_sample(input_frames, pred_vil, true_vil, vis_dir, tag, idx, vil_max):
@@ -153,47 +185,94 @@ def _save_vis_sample(input_frames, pred_vil, true_vil, vis_dir, tag, idx, vil_ma
     plt.close(fig)
 
 
-def save_metrics_csv(per_step_metrics, out_seq_len, thresholds, output_path, tag):
-    """将逐步指标保存为 CSV 文件。"""
+def save_metrics_csv(metrics_by_pool, out_seq_len, thresholds, output_path, tag):
+    """将逐步指标（含 pool_size）保存为 CSV 文件。"""
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        header = ["tag", "step", "lead_time_min", "threshold", "CSI", "POD", "FAR", "HSS"]
-        writer.writerow(header)
-        for t in range(out_seq_len):
-            lead_min = (t + 1) * 5
-            for thr in thresholds:
-                m = per_step_metrics[t][thr]
-                writer.writerow([
-                    tag, t + 1, lead_min, thr,
-                    f"{m['CSI']:.4f}", f"{m['POD']:.4f}",
-                    f"{m['FAR']:.4f}", f"{m['HSS']:.4f}",
-                ])
+        writer.writerow(["tag", "pool_size", "step", "lead_time_min", "threshold",
+                         "CSI", "POD", "FAR", "HSS"])
+        for ps, per_step_metrics in metrics_by_pool.items():
+            for t in range(out_seq_len):
+                lead_min = (t + 1) * 5
+                for thr in thresholds:
+                    m = per_step_metrics[t][thr]
+                    writer.writerow([
+                        tag, ps, t + 1, lead_min, thr,
+                        f"{m['CSI']:.4f}", f"{m['POD']:.4f}",
+                        f"{m['FAR']:.4f}", f"{m['HSS']:.4f}",
+                    ])
     print(f"  [CSV] 指标已保存：{output_path}")
+
+
+def _mean_csi(per_step_metrics, out_seq_len, thresholds):
+    """Mean CSI across all steps and thresholds."""
+    vals = [
+        per_step_metrics[t][thr]["CSI"]
+        for t in range(out_seq_len)
+        for thr in thresholds
+    ]
+    return float(np.mean(vals))
+
+
+def _mean_csi_thr(per_step_metrics, out_seq_len, thr):
+    """Mean CSI across all steps for a single threshold."""
+    vals = [per_step_metrics[t][thr]["CSI"] for t in range(out_seq_len)]
+    return float(np.mean(vals))
+
+
+def _mean_hss(per_step_metrics, out_seq_len, thresholds):
+    vals = [
+        per_step_metrics[t][thr]["HSS"]
+        for t in range(out_seq_len)
+        for thr in thresholds
+    ]
+    return float(np.mean(vals))
+
+
+def print_simcast_summary(tag, metrics_by_pool, out_seq_len, thresholds, overall_ssim):
+    """打印 SimCast Table II 风格的汇总指标。"""
+    print(f"\n  ── {tag} SimCast-style Summary ──")
+    header = f"  {'Metric':<14}" + "".join(f"  {'POOL'+str(ps):>8}" for ps in [1, 4, 16])
+    print(header)
+    print("  " + "-" * (14 + 3 * 10))
+
+    for label, fn in [
+        ("CSI-M",   lambda m: _mean_csi(m, out_seq_len, thresholds)),
+        ("CSI-181", lambda m: _mean_csi_thr(m, out_seq_len, 181)),
+        ("CSI-219", lambda m: _mean_csi_thr(m, out_seq_len, 219)),
+        ("HSS",     lambda m: _mean_hss(m, out_seq_len, thresholds)),
+    ]:
+        row = f"  {label:<14}"
+        for ps in [1, 4, 16]:
+            v = fn(metrics_by_pool[ps])
+            row += f"  {v:>8.4f}"
+        print(row)
+
+    ssim_str = f"{overall_ssim:.4f}" if not np.isnan(overall_ssim) else "  N/A (install scikit-image)"
+    print(f"  {'SSIM':<14}  {ssim_str:>8}")
 
 
 def plot_csi_curves(all_results, thresholds, out_seq_len, output_dir):
     """
-    绘制多个模型在不同阈值下的 CSI 随预测步骤变化曲线。
+    绘制多个模型在不同阈值下的 CSI 随预测步骤变化曲线（POOL1）。
 
     Args:
-        all_results: list of (tag, per_step_metrics)
-        thresholds:  阈值列表
-        out_seq_len: 预测帧数
-        output_dir:  图片保存目录
+        all_results: list of (tag, metrics_by_pool)
     """
     os.makedirs(output_dir, exist_ok=True)
     lead_times = [(t + 1) * 5 for t in range(out_seq_len)]
 
     for thr in thresholds:
         fig, ax = plt.subplots(figsize=(10, 5))
-        for tag, per_step_metrics in all_results:
-            csi_values = [per_step_metrics[t][thr]["CSI"] for t in range(out_seq_len)]
+        for tag, metrics_by_pool in all_results:
+            per_step = metrics_by_pool[1]  # POOL1
+            csi_values = [per_step[t][thr]["CSI"] for t in range(out_seq_len)]
             ax.plot(lead_times, csi_values, marker="o", label=tag, linewidth=2)
 
         ax.set_xlabel("Lead Time (min)")
         ax.set_ylabel("CSI")
-        ax.set_title(f"CSI vs Lead Time (Threshold = {thr})")
+        ax.set_title(f"CSI vs Lead Time (Threshold = {thr}, POOL1)")
         ax.legend()
         ax.grid(True, alpha=0.3)
         ax.set_ylim(0, 1)
@@ -203,16 +282,16 @@ def plot_csi_curves(all_results, thresholds, out_seq_len, output_dir):
         plt.close(fig)
         print(f"  [Plot] CSI 曲线已保存：{save_path}")
 
-    # 同样绘制 POD 曲线
     for thr in thresholds:
         fig, ax = plt.subplots(figsize=(10, 5))
-        for tag, per_step_metrics in all_results:
-            pod_values = [per_step_metrics[t][thr]["POD"] for t in range(out_seq_len)]
+        for tag, metrics_by_pool in all_results:
+            per_step = metrics_by_pool[1]
+            pod_values = [per_step[t][thr]["POD"] for t in range(out_seq_len)]
             ax.plot(lead_times, pod_values, marker="s", label=tag, linewidth=2)
 
         ax.set_xlabel("Lead Time (min)")
         ax.set_ylabel("POD")
-        ax.set_title(f"POD vs Lead Time (Threshold = {thr})")
+        ax.set_title(f"POD vs Lead Time (Threshold = {thr}, POOL1)")
         ax.legend()
         ax.grid(True, alpha=0.3)
         ax.set_ylim(0, 1)
@@ -233,7 +312,6 @@ def main():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Device] 使用设备：{device}")
 
-    # 标签处理
     tags = args.tag if args.tag else [f"model_{i}" for i in range(len(args.ckpt))]
     if len(tags) != len(args.ckpt):
         raise ValueError("--tag 数量必须与 --ckpt 数量一致")
@@ -250,8 +328,6 @@ def main():
     for ckpt_path, tag in zip(args.ckpt, tags):
         print(f"\n[Eval] 正在评估：{tag} ({ckpt_path})")
 
-        # 优先使用 checkpoint 内保存的模型配置，确保不同架构（inception/mamba）
-        # 都能用同一条 evaluate 命令对比，不需要分别指定 --config
         raw = torch.load(ckpt_path, map_location="cpu")
         ckpt_model_cfg = raw.get("cfg", {}).get("model", {})
         if ckpt_model_cfg:
@@ -264,7 +340,7 @@ def main():
         load_checkpoint(ckpt_path, model, device=str(device))
 
         vis_dir = os.path.join(args.output_dir, "visualizations")
-        per_step_metrics, mse, mae = evaluate_model(
+        metrics_by_pool, mse, mae, overall_ssim = evaluate_model(
             model, test_loader, device, cfg,
             n_vis=args.n_vis,
             vis_dir=vis_dir,
@@ -273,27 +349,14 @@ def main():
 
         print(f"  [Overall] MSE: {mse:.4f} | MAE: {mae:.4f}")
 
-        # 打印关键步骤的指标摘要
-        print(f"\n  {'Step':>6} {'Lead':>8} {'Thr':>6} {'CSI':>8} {'POD':>8} {'FAR':>8} {'HSS':>8}")
-        print("  " + "-" * 56)
-        for t in [0, out_seq_len // 2 - 1, out_seq_len - 1]:
-            lead_min = (t + 1) * 5
-            for thr in [74, 133]:
-                if thr in per_step_metrics[t]:
-                    m = per_step_metrics[t][thr]
-                    print(
-                        f"  {t+1:>6} {lead_min:>6}min {thr:>6} "
-                        f"{m['CSI']:>8.4f} {m['POD']:>8.4f} "
-                        f"{m['FAR']:>8.4f} {m['HSS']:>8.4f}"
-                    )
+        print_simcast_summary(tag, metrics_by_pool, out_seq_len, thresholds, overall_ssim)
 
         # 保存 CSV
         csv_path = os.path.join(args.output_dir, f"{tag}_metrics.csv")
-        save_metrics_csv(per_step_metrics, out_seq_len, thresholds, csv_path, tag)
+        save_metrics_csv(metrics_by_pool, out_seq_len, thresholds, csv_path, tag)
 
-        all_results.append((tag, per_step_metrics))
+        all_results.append((tag, metrics_by_pool))
 
-    # 绘制对比曲线
     print("\n[Plot] 正在绘制 CSI / POD 对比曲线...")
     plot_csi_curves(all_results, thresholds, out_seq_len, args.output_dir)
 
