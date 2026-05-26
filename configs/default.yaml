@@ -1,18 +1,18 @@
 # default.yaml — 全量训练配置（384×384，50 分钟预测）
 # ====================================================
 # 适用于正式实验 / 论文结果复现。
-# 单 epoch 约 90-120 分钟（A100），16G 显卡可运行（use_checkpoint: true）。
+# 当前配置针对 96GB 显存（H20）优化：关闭梯度检查点，大幅提升 batch_size。
 # 快速对比实验请使用 fast.yaml（128×128）或 fast_10step.yaml（128×128，50分钟）。
 # ====================================================
 
 data:
-  data_root: "F:/zyx/dataset/sevir_data"
+  data_root: "/root/autodl-tmp/dataset/sevir"
   crop_size: null            # null = 不裁剪，使用原始 384×384 全分辨率
   in_seq_len: 5              # 历史帧数（25 min），temporal_ch = 256×5 = 1280
   out_seq_len: 10            # 预测帧数（50 min）
   num_bins: 16               # VIL 离散化区间数
   vil_max: 255.0             # VIL 像素最大值（用于归一化）
-  num_workers: 4             # Windows h5py + multiprocessing 不稳定时可改为 0
+  num_workers: 8
   train_years: [2017, 2018]  # 按年份划分，避免时间泄露
   test_years: [2019]
   val_ratio: 0.1
@@ -25,19 +25,18 @@ model:
   decoder_layers: 4
   num_bins: 16               # 与 data.num_bins 保持一致
   translator_type: "inception"  # "inception" 或 "mamba"
-  # 384×384 + 10步自回归下强烈建议开启，可节省约 60% 激活值显存
-  use_checkpoint: true
+  use_checkpoint: false      # 96GB 显存充裕，关闭以节省约 25% 计算量
 
 training:
   baseline_epochs: 50
-  baseline_lr: 3.0e-4
-  baseline_batch_size: 2     # 384×384 + use_checkpoint 下 16G 显卡安全上限
+  baseline_lr: 5.0e-4        # batch 从 2→8（4x），LR 适度上调
+  baseline_batch_size: 8
   baseline_weight_decay: 1.0e-4
   baseline_ckpt_dir: "checkpoints/baseline"
 
   opsd_epochs: 50
-  opsd_lr: 1.0e-4
-  opsd_batch_size: 2         # OPSD 教师+学生双次前向，显存更紧，保守设为 2
+  opsd_lr: 2.0e-4            # batch 从 2→4（2x），LR 适度上调
+  opsd_batch_size: 4         # OPSD 教师+学生双次前向，保守为 baseline 的一半
   opsd_weight_decay: 1.0e-4
   opsd_kl_weight: 1.0
   opsd_ce_weight: 0.5
@@ -48,7 +47,7 @@ training:
   foreground_weight: 5.0     # 有回波像素的损失权重倍数（晴空像素 = 1.0）
   reward_threshold: 74       # Reward-Weighted OPSD 的 CSI 计算阈值
 
-  log_interval: 100          # 384×384 每 epoch ~3000 步，每 100 步打一次
+  log_interval: 50           # batch=8 时每 epoch 步数约为原来 1/4，适当减小间隔
   save_interval: 5
   seed: 42
 

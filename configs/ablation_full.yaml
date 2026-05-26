@@ -1,20 +1,20 @@
 # ablation_full.yaml — 消融实验配置（384×384 全分辨率，50分钟预测，10步）
 # =========================================================================
 # 对应 default.yaml 的空间/时序设置，用于论文最终消融表。
-# 单 epoch 约 90-120 min（A100），强烈建议开启 use_checkpoint。
+# 当前配置针对 96GB 显存（H20）优化。
 # 用法：
 #   python train_ablation.py --config configs/ablation_full.yaml --ablation standard
 #   ...（共 5 个消融变体）
 # =========================================================================
 
 data:
-  data_root: "F:/zyx/dataset/sevir_data"
-  crop_size: null            # 不裁剪，使用原始 384×384
+  data_root: "/root/autodl-tmp/dataset/sevir"
+  crop_size: null
   in_seq_len: 5
   out_seq_len: 10
   num_bins: 16
   vil_max: 255.0
-  num_workers: 4
+  num_workers: 8
   train_years: [2017, 2018]
   test_years: [2019]
   val_ratio: 0.1
@@ -27,19 +27,18 @@ model:
   decoder_layers: 4
   num_bins: 16
   translator_type: "inception"
-  use_checkpoint: true       # 384×384 + 10步自回归，强烈建议开启
+  use_checkpoint: false
 
 training:
-  # 以下字段供 train_baseline.py / train_opsd.py 使用（保持与 default.yaml 一致）
   baseline_epochs: 50
-  baseline_lr: 3.0e-4
-  baseline_batch_size: 2
+  baseline_lr: 5.0e-4
+  baseline_batch_size: 8
   baseline_weight_decay: 1.0e-4
   baseline_ckpt_dir: "checkpoints/baseline"
 
   opsd_epochs: 50
-  opsd_lr: 1.0e-4
-  opsd_batch_size: 2
+  opsd_lr: 2.0e-4
+  opsd_batch_size: 4
   opsd_weight_decay: 1.0e-4
   opsd_kl_weight: 1.0
   opsd_ce_weight: 0.5
@@ -50,7 +49,7 @@ training:
   foreground_weight: 5.0
   reward_threshold: 74
 
-  log_interval: 100
+  log_interval: 50
   save_interval: 5
   seed: 42
 
@@ -58,10 +57,10 @@ training:
   # 消融实验专用字段（train_ablation.py 读取）
   # -------------------------------------------------------
   ablation_ckpt_base: "checkpoints/ablation"
-  ablation_batch_size: 2
-  ablation_lr: 1.0e-4
+  ablation_batch_size: 4
+  ablation_lr: 2.0e-4
   ablation_weight_decay: 1.0e-4
-  ablation_epochs: 30                               # 30 epoch，约为正式 OPSD 的 60%
+  ablation_epochs: 30
   ablation_pretrained: "checkpoints/baseline/best.pth"
 
 eval:
