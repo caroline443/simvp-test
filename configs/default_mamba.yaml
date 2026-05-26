@@ -1,0 +1,68 @@
+# default_mamba.yaml — 全量 Mamba 训练配置（384×384，60 分钟预测）
+# ====================================================
+# 与 default.yaml 完全对齐（数据/训练超参相同），
+# 唯一区别：translator_type = "mamba"
+#
+# Mamba 相比 Inception 的优势（尤其在 in_seq_len=13 时）：
+#   Inception: temporal_ch = 256×13 = 3328，参数量随序列长度平方增长
+#   Mamba:     d_model = 256（不随 in_seq_len 变化），序列长度线性增长
+#
+# 对比实验（共用同一评估脚本）：
+#   baseline  : configs/default.yaml        → checkpoints/baseline/best.pth
+#   opsd      : configs/default.yaml        → checkpoints/opsd/best.pth
+#   mamba     : configs/default_mamba.yaml  → checkpoints_mamba/baseline/best.pth
+#   mamba+opsd: configs/default_mamba.yaml  → checkpoints_mamba/opsd/best.pth
+#
+# 运行：
+#   python train_baseline.py --config configs/default_mamba.yaml
+#   python train_opsd.py     --config configs/default_mamba.yaml
+# ====================================================
+
+data:
+  data_root: "/root/autodl-tmp/dataset/sevir"
+  crop_size: null
+  in_seq_len: 13
+  out_seq_len: 12
+  num_bins: 16
+  vil_max: 255.0
+  num_workers: 8
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  hidden_channels: 64
+  encoder_layers: 4
+  translator_layers: 4
+  decoder_layers: 4
+  num_bins: 16
+  translator_type: "mamba"   # ← 唯一与 default.yaml 不同的地方
+  use_checkpoint: false      # 96GB 显存充裕，关闭以节省约 25% 计算量
+
+training:
+  baseline_epochs: 50
+  baseline_lr: 5.0e-4
+  baseline_batch_size: 8     # Mamba d_model=256（不随 seq_len 膨胀），显存比 Inception 宽松
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_mamba/baseline"
+
+  opsd_epochs: 50
+  opsd_lr: 2.0e-4
+  opsd_batch_size: 4
+  opsd_weight_decay: 1.0e-4
+  opsd_kl_weight: 1.0
+  opsd_ce_weight: 0.5
+  opsd_ckpt_dir: "checkpoints_mamba/opsd"
+  opsd_rw_ckpt_dir: "checkpoints_mamba/opsd_rw"
+  opsd_pretrained: "checkpoints_mamba/baseline/best.pth"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 50
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]
