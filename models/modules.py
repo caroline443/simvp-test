@@ -190,6 +190,10 @@ class TemporalTranslator(nn.Module):
 
     def forward(self, x):
         # x: [B*T, C, h, w]
+        # 强制 float32：temporal_ch = 256×seq_len 时 FP16 卷积累加易溢出
+        orig_dtype = x.dtype
+        x = x.float()
+
         B_T, C, h, w = x.shape
         T = self.seq_len
         B = B_T // T
@@ -205,7 +209,7 @@ class TemporalTranslator(nn.Module):
         x = self.out_proj(x)
         # [B*T, C, h, w]
         x = x.view(B * T, C, h, w)
-        return x
+        return x.to(orig_dtype)
 
 
 # ---------------------------------------------------------------------------
