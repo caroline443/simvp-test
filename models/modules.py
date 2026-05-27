@@ -56,6 +56,52 @@ class ConvBnAct(nn.Module):
 
 
 # ---------------------------------------------------------------------------
+# CBAM — Convolutional Block Attention Module
+# ---------------------------------------------------------------------------
+
+class CBAM(nn.Module):
+    """
+    空间+通道双注意力模块（Woo et al., ECCV 2018）。
+    输入输出形状相同：[B, C, H, W]
+
+    通道注意力：avg-pool 和 max-pool 分别经过共享 MLP 后相加，sigmoid 得到通道权重。
+    空间注意力：沿通道维度取 avg 和 max，拼接后经 7×7 conv → sigmoid 得到空间权重。
+
+    AMP 安全：全程在输入的 dtype 下运行，不涉及易溢出的操作。
+    """
+
+    def __init__(self, ch: int, reduction: int = 16, spatial_kernel: int = 7):
+        super().__init__()
+        mid = max(1, ch // reduction)
+        self.ch_mlp = nn.Sequential(
+            nn.Linear(ch, mid, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(mid, ch, bias=False),
+        )
+        self.sp_conv = nn.Conv2d(
+            2, 1, spatial_kernel,
+            padding=spatial_kernel // 2, bias=False,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # --- 通道注意力 ---
+        avg_c = x.mean(dim=(2, 3))                      # [B, C]
+        max_c = x.flatten(2).max(dim=2)[0]              # [B, C]
+        ch_w  = torch.sigmoid(
+            self.ch_mlp(avg_c) + self.ch_mlp(max_c)
+        ).unsqueeze(-1).unsqueeze(-1)                    # [B, C, 1, 1]
+        x = x * ch_w
+
+        # --- 空间注意力 ---
+        avg_s = x.mean(dim=1, keepdim=True)             # [B, 1, H, W]
+        max_s = x.max(dim=1, keepdim=True)[0]           # [B, 1, H, W]
+        sp_w  = torch.sigmoid(
+            self.sp_conv(torch.cat([avg_s, max_s], dim=1))
+        )                                                # [B, 1, H, W]
+        return x * sp_w
+
+
+# ---------------------------------------------------------------------------
 # Spatial Encoder
 # ---------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@ SimVP 主网络
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .modules import SpatialEncoder, TemporalTranslator, SpatialDecoder
+from .modules import SpatialEncoder, TemporalTranslator, SpatialDecoder, CBAM
 from .mamba_translator import MambaTemporalTranslator
 
 
@@ -45,6 +45,7 @@ class SimVP(nn.Module):
         num_bins: int = 16,
         use_checkpoint: bool = False,
         translator_type: str = "inception",
+        use_cbam: bool = False,
     ):
         super().__init__()
         self.in_seq_len = in_seq_len
@@ -59,6 +60,9 @@ class SimVP(nn.Module):
             use_checkpoint=use_checkpoint,
         )
         enc_ch = self.encoder.out_channels
+
+        # CBAM：Encoder 输出后的空间+通道双注意力（可选）
+        self.cbam = CBAM(enc_ch) if use_cbam else None
 
         # Temporal Translator（处理 in_seq_len 帧的时序特征）
         if translator_type == "mamba":
@@ -98,6 +102,8 @@ class SimVP(nn.Module):
         # 合并 Batch 和 Time 维度，逐帧编码
         frames_flat = frames.view(B * T, C, H, W)
         features = self.encoder(frames_flat)  # [B*T, enc_ch, h, w]
+        if self.cbam is not None:
+            features = self.cbam(features)
         return features
 
     def translate_and_decode(self, features: torch.Tensor, B: int) -> torch.Tensor:
@@ -260,4 +266,5 @@ def build_model(cfg: dict) -> SimVP:
         num_bins=model_cfg["num_bins"],
         use_checkpoint=model_cfg.get("use_checkpoint", False),
         translator_type=model_cfg.get("translator_type", "inception"),
+        use_cbam=model_cfg.get("use_cbam", False),
     )

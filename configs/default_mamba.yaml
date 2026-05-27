@@ -25,6 +25,7 @@ model:
   num_bins: 16
   translator_type: "mamba"
   use_checkpoint: false
+  use_cbam: true
 
 training:
   baseline_epochs: 50

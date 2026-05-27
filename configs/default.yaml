@@ -26,6 +26,7 @@ model:
   num_bins: 16
   translator_type: "inception"
   use_checkpoint: false
+  use_cbam: true
 
 training:
   baseline_epochs: 50
