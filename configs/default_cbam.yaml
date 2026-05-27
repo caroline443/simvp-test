@@ -1,7 +1,7 @@
-# default_mamba.yaml — 全量 Mamba 训练配置（128×128，60 分钟预测）
+# default_cbam.yaml — Inception + CBAM 训练配置
 # ====================================================
-# 与 default.yaml 完全对齐（数据/训练超参相同），
-# 唯一区别：translator_type = "mamba"
+# 与 default.yaml 完全对齐，唯一区别：use_cbam = true
+# checkpoint 存入 checkpoints_cbam/ 以与 baseline 隔离
 # ====================================================
 
 data:
@@ -23,15 +23,16 @@ model:
   translator_layers: 4
   decoder_layers: 4
   num_bins: 16
-  translator_type: "mamba"
+  translator_type: "inception"
   use_checkpoint: false
+  use_cbam: true
 
 training:
   baseline_epochs: 50
   baseline_lr: 5.0e-4
   baseline_batch_size: 96
   baseline_weight_decay: 1.0e-4
-  baseline_ckpt_dir: "checkpoints_mamba/baseline"
+  baseline_ckpt_dir: "checkpoints_cbam/baseline"
 
   opsd_epochs: 50
   opsd_lr: 2.0e-4
@@ -39,9 +40,9 @@ training:
   opsd_weight_decay: 1.0e-4
   opsd_kl_weight: 1.0
   opsd_ce_weight: 0.5
-  opsd_ckpt_dir: "checkpoints_mamba/opsd"
-  opsd_rw_ckpt_dir: "checkpoints_mamba/opsd_rw"
-  opsd_pretrained: "checkpoints_mamba/baseline/best.pth"
+  opsd_ckpt_dir: "checkpoints_cbam/opsd"
+  opsd_rw_ckpt_dir: "checkpoints_cbam/opsd_rw"
+  opsd_pretrained: "checkpoints_cbam/baseline/best.pth"
 
   foreground_weight: 5.0
   reward_threshold: 74
