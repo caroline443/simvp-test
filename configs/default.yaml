@@ -7,7 +7,7 @@
 # ====================================================
 
 data:
-  data_root: "/root/autodl-tmp/dataset/sevir"
+  data_root: "/root/autodl-tmp/dataset/sevir_data"
   crop_size: null            # null = 不裁剪，使用原始 384×384 全分辨率
   in_seq_len: 13             # 历史帧数（65 min），temporal_ch = 256×13 = 3328，SEVIR benchmark 标准
   out_seq_len: 12            # 预测帧数（60 min），与 SimCast / EarthFormer 对齐

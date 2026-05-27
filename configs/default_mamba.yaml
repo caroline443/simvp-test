@@ -19,7 +19,7 @@
 # ====================================================
 
 data:
-  data_root: "/root/autodl-tmp/dataset/sevir"
+  data_root: "/root/autodl-tmp/dataset/sevir_data"
   crop_size: null
   in_seq_len: 13
   out_seq_len: 12
