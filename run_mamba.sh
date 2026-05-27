@@ -32,9 +32,9 @@ run_step() {
 
 log "Mamba 训练开始，config=$CONFIG"
 
-run_step "mamba_baseline"  python train_baseline.py --config "$CONFIG"
-run_step "mamba_opsd"      python train_opsd.py     --config "$CONFIG"
-run_step "mamba_opsd_rw"   python train_opsd.py     --config "$CONFIG" --reward_weight
+run_step "mamba_baseline"  python -u train_baseline.py --config "$CONFIG"
+run_step "mamba_opsd"      python -u train_opsd.py     --config "$CONFIG"
+run_step "mamba_opsd_rw"   python -u train_opsd.py     --config "$CONFIG" --reward_weight
 
 log "Mamba 训练完成，准备关机..."
 /usr/bin/shutdown

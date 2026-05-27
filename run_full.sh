@@ -41,9 +41,9 @@ run_step() {
 log "训练开始，config=$CONFIG"
 log "主日志：$MAIN_LOG"
 
-run_step "baseline"    python train_baseline.py --config "$CONFIG"
-run_step "opsd"        python train_opsd.py     --config "$CONFIG"
-run_step "opsd_rw"     python train_opsd.py     --config "$CONFIG" --reward_weight
+run_step "baseline"    python -u train_baseline.py --config "$CONFIG"
+run_step "opsd"        python -u train_opsd.py     --config "$CONFIG"
+run_step "opsd_rw"     python -u train_opsd.py     --config "$CONFIG" --reward_weight
 
 log "所有训练完成，准备关机..."
 /usr/bin/shutdown
