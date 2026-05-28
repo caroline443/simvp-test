@@ -1,0 +1,16 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+Traceback (most recent call last):
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 281, in <module>
+    main()
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 168, in main
+    train_loader, val_loader, _ = build_dataloaders(cfg)
+                                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/data/sevir_dataset.py", line 305, in build_dataloaders
+    train_ds = SEVIRVILDataset(split="train", **common_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/data/sevir_dataset.py", line 156, in __init__
+    raise FileNotFoundError(
+FileNotFoundError: 在 /root/autodl-tmp/dataset/sevir 下未找到任何 .h5 文件，请确认 data_root 指向包含 SEVIR VIL .h5 文件的目录。

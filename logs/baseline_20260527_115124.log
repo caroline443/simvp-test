@@ -1,0 +1,129 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.34M
+/root/autodl-tmp/simvp-test/train_baseline.py:188: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = GradScaler()
+
+[Train] 开始 Baseline 训练，共 50 个 Epoch
+============================================================
+  [Epoch 1] Step 20/114 | Loss: 2.2562 (avg: 2.4388)
+  [Epoch 1] Step 40/114 | Loss: 2.2214 (avg: 2.3660)
+  [Epoch 1] Step 60/114 | Loss: 2.2419 (avg: 2.3289)
+  [Epoch 1] Step 80/114 | Loss: 2.1241 (avg: 2.3000)
+  [Epoch 1] Step 100/114 | Loss: 2.1397 (avg: 2.2730)
+[Epoch 001/50] Train Loss: 2.2562 | Val Loss: 1.7565 | LR: 9.99e-04 | Time: 199.1s
+  [Metrics @74] CSI=0.3539 | POD=0.6724 | FAR=0.5723 | HSS=0.3679
+  [Checkpoint] 保存最佳模型，CSI@74: 0.3539
+------------------------------------------------------------
+  [Epoch 2] Step 20/114 | Loss: 2.1053 (avg: 2.1367)
+  [Epoch 2] Step 40/114 | Loss: 2.1398 (avg: 2.1153)
+  [Epoch 2] Step 60/114 | Loss: 2.0626 (avg: 2.0990)
+  [Epoch 2] Step 80/114 | Loss: 2.0291 (avg: 2.0940)
+  [Epoch 2] Step 100/114 | Loss: 2.0693 (avg: 2.0892)
+[Epoch 002/50] Train Loss: 2.0842 | Val Loss: 1.4448 | LR: 9.96e-04 | Time: 187.9s
+  [Metrics @74] CSI=0.3997 | POD=0.5947 | FAR=0.4505 | HSS=0.4583
+  [Checkpoint] 保存最佳模型，CSI@74: 0.3997
+------------------------------------------------------------
+  [Epoch 3] Step 20/114 | Loss: 1.9941 (avg: 2.0327)
+  [Epoch 3] Step 40/114 | Loss: 2.1772 (avg: 2.0290)
+  [Epoch 3] Step 60/114 | Loss: 2.0684 (avg: 2.0306)
+  [Epoch 3] Step 80/114 | Loss: 1.9803 (avg: 2.0301)
+  [Epoch 3] Step 100/114 | Loss: 1.9781 (avg: 2.0258)
+[Epoch 003/50] Train Loss: 2.0234 | Val Loss: 1.5559 | LR: 9.91e-04 | Time: 187.2s
+  [Metrics @74] CSI=0.4441 | POD=0.6574 | FAR=0.4222 | HSS=0.5106
+  [Checkpoint] 保存最佳模型，CSI@74: 0.4441
+------------------------------------------------------------
+  [Epoch 4] Step 20/114 | Loss: 1.9875 (avg: 1.9805)
+  [Epoch 4] Step 40/114 | Loss: 1.8603 (avg: 1.9897)
+  [Epoch 4] Step 60/114 | Loss: 1.9850 (avg: 1.9773)
+  [Epoch 4] Step 80/114 | Loss: 1.9945 (avg: 1.9844)
+  [Epoch 4] Step 100/114 | Loss: 1.9014 (avg: 1.9866)
+[Epoch 004/50] Train Loss: 1.9813 | Val Loss: 1.3466 | LR: 9.84e-04 | Time: 190.4s
+  [Metrics @74] CSI=0.4356 | POD=0.5437 | FAR=0.3134 | HSS=0.5222
+------------------------------------------------------------
+  [WARNING] Step 15: loss=nan，跳过该 batch
+Traceback (most recent call last):
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 281, in <module>
+    main()
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 210, in main
+    train_loss = train_one_epoch(model, train_loader, optimizer, scaler, device, cfg, epoch)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 68, in train_one_epoch
+    all_logits = model(input_frames, privileged_future=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/simvp.py", line 237, in forward
+    return self.autoregressive_rollout(input_frames, privileged_future)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/simvp.py", line 178, in autoregressive_rollout
+    logits = self.forward_single_step(context)  # [B, num_bins, H, W]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/simvp.py", line 140, in forward_single_step
+    logits = self.translate_and_decode(features, B)  # [B, num_bins, H, W]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/simvp.py", line 115, in translate_and_decode
+    translated = self.translator(features)  # [B*T, enc_ch, h, w]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/modules.py", line 204, in forward
+    x = block(x)
+        ^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/modules.py", line 150, in forward
+    out = self.proj(out)
+          ^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/models/modules.py", line 30, in forward
+    return super().forward(x.float()).to(orig_dtype)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/modules/normalization.py", line 327, in forward
+    return F.group_norm(input, self.num_groups, self.weight, self.bias, self.eps)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/nn/functional.py", line 2990, in group_norm
+    return torch.group_norm(
+           ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 72.00 MiB. GPU 0 has a total capacity of 95.07 GiB of which 27.62 MiB is free. Including non-PyTorch memory, this process has 95.02 GiB memory in use. Of the allocated memory 93.85 GiB is allocated by PyTorch, and 805.64 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

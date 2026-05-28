@@ -1,0 +1,37 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.34M
+/root/autodl-tmp/simvp-test/train_baseline.py:188: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = GradScaler()
+
+[Train] 开始 Baseline 训练，共 50 个 Epoch
+============================================================
+  [Epoch 1] Step 20/342 | Loss: 2.2771 (avg: 2.4889)
+  [Epoch 1] Step 40/342 | Loss: 2.1958 (avg: 2.3803)
+  [Epoch 1] Step 60/342 | Loss: 2.2274 (avg: 2.3462)
+  [Epoch 1] Step 80/342 | Loss: 2.2212 (avg: 2.3259)
+  [Epoch 1] Step 100/342 | Loss: 2.2545 (avg: 2.3151)
+  [Epoch 1] Step 120/342 | Loss: 2.1787 (avg: 2.2927)
+  [Epoch 1] Step 140/342 | Loss: 2.1128 (avg: 2.2746)
+  [Epoch 1] Step 160/342 | Loss: 2.2256 (avg: 2.2644)
+  [Epoch 1] Step 180/342 | Loss: 2.1021 (avg: 2.2486)
+  [Epoch 1] Step 200/342 | Loss: 2.0438 (avg: 2.2364)
+  [Epoch 1] Step 220/342 | Loss: 2.2156 (avg: 2.2266)
+  [Epoch 1] Step 240/342 | Loss: 2.0304 (avg: 2.2128)
+  [Epoch 1] Step 260/342 | Loss: 2.0772 (avg: 2.2029)
+  [Epoch 1] Step 280/342 | Loss: 2.0805 (avg: 2.1962)

@@ -1,0 +1,32 @@
+nohup: ignoring input
+[2026-05-27 12:41:14] 训练开始，config=configs/default.yaml
+[2026-05-27 12:41:14] 主日志：logs/run_20260527_124114.log
+[2026-05-27 12:41:14] ========== START: baseline ==========
+[2026-05-27 12:41:14] log -> logs/baseline_20260527_124114.log
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.34M
+/root/autodl-tmp/simvp-test/train_baseline.py:188: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = GradScaler()
+
+[Train] 开始 Baseline 训练，共 50 个 Epoch
+============================================================
+  [Epoch 1] Step 20/171 | Loss: 2.2498 (avg: 2.4377)
+  [Epoch 1] Step 40/171 | Loss: 2.2807 (avg: 2.3570)
+  [Epoch 1] Step 60/171 | Loss: 2.1933 (avg: 2.3299)
+  [Epoch 1] Step 80/171 | Loss: 2.2068 (avg: 2.3027)
