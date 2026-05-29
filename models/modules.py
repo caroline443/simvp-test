@@ -255,7 +255,8 @@ class TemporalTranslator(nn.Module):
         x = self.out_proj(x)
         # [B*T, C, h, w]
         x = x.view(B * T, C, h, w)
-        return x.to(orig_dtype)
+        # clamp 防止 float32 大值转回 FP16 时溢出成 inf → 下游 NaN
+        return x.clamp(-1e4, 1e4).to(orig_dtype)
 
 
 # ---------------------------------------------------------------------------
