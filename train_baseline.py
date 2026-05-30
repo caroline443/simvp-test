@@ -21,7 +21,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.cuda.amp import GradScaler
+from torch.cuda.amp import GradScaler  # noqa: F401 (AMP disabled)
 
 from utils import (
     load_config, set_seed, save_checkpoint, load_checkpoint,
@@ -62,38 +62,26 @@ def train_one_epoch(model, loader, optimizer, scaler, device, cfg, epoch):
 
         optimizer.zero_grad()
 
-        with torch.amp.autocast(device_type=device.type):
-            # 学生模式：自回归展开，不使用特权信息
-            # all_logits: [B, out_seq_len, num_bins, H, W]
-            all_logits = model(input_frames, privileged_future=None)
+        all_logits = model(input_frames, privileged_future=None)
 
-            B, T_out, C_bins, H, W = all_logits.shape
-            # 展平为 [B*T_out, num_bins, H, W] 和 [B*T_out, H, W]
-            # float32：AMP 输出 float16，训练后期 logits 数值大，log_softmax 在 float16 下溢出 → CE NaN
-            logits_flat = all_logits.float().view(B * T_out, C_bins, H, W)
-            targets_flat = target_bins.view(B * T_out, H, W)
+        B, T_out, C_bins, H, W = all_logits.shape
+        logits_flat = all_logits.view(B * T_out, C_bins, H, W)
+        targets_flat = target_bins.view(B * T_out, H, W)
 
-            # 构建逐像素权重：有回波区域权重 foreground_weight，晴空区域权重 1.0
-            # 防止大面积晴空零值区域的 CE 损失淹没强对流区域的梯度
-            has_echo = (targets_flat > 0).float()
-            pixel_weights = 1.0 + has_echo * (foreground_weight - 1.0)  # [B*T_out, H, W]
+        has_echo = (targets_flat > 0).float()
+        pixel_weights = 1.0 + has_echo * (foreground_weight - 1.0)
 
-            # 加权交叉熵：ce_per_pixel [B*T_out, H, W]
-            ce_per_pixel = criterion_none(logits_flat, targets_flat)
-            loss = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
+        ce_per_pixel = criterion_none(logits_flat, targets_flat)
+        loss = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
 
-        # NaN 检测：loss 为 NaN 时跳过该 batch，防止污染模型参数
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
             continue
 
-        scaler.scale(loss).backward()
-        # 梯度裁剪，防止梯度爆炸
-        scaler.unscale_(optimizer)
+        loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
-        scaler.step(optimizer)
-        scaler.update()
+        optimizer.step()
 
         loss_meter.update(loss.item(), B)
 
@@ -124,11 +112,10 @@ def validate(model, loader, device, cfg):
         input_frames = input_frames.to(device, non_blocking=True)
         target_bins = target_bins.to(device, non_blocking=True)
 
-        with torch.amp.autocast(device_type=device.type):
-            all_logits = model(input_frames, privileged_future=None)
+        all_logits = model(input_frames, privileged_future=None)
 
         B, T_out, C_bins, H, W = all_logits.shape
-        logits_flat = all_logits.float().view(B * T_out, C_bins, H, W)
+        logits_flat = all_logits.view(B * T_out, C_bins, H, W)
         targets_flat = target_bins.view(B * T_out, H, W)
         loss = criterion(logits_flat, targets_flat)
         if torch.isfinite(loss):
@@ -185,7 +172,7 @@ def main():
         T_max=train_cfg["baseline_epochs"],
         eta_min=train_cfg["baseline_lr"] * 0.01,
     )
-    scaler = GradScaler()
+    scaler = None  # AMP disabled: Inception FP16 overflow on large temporal_ch
 
     # 恢复训练
     start_epoch = 1

@@ -36,7 +36,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.cuda.amp import GradScaler
+from torch.cuda.amp import GradScaler  # noqa: F401 (AMP disabled)
 
 from utils import (
     load_config, set_seed, save_checkpoint, load_checkpoint,
@@ -225,62 +225,52 @@ def train_one_epoch_opsd(
 
         optimizer.zero_grad()
 
-        with torch.amp.autocast(device_type=device.type):
-            student_logits = model(input_frames, privileged_future=None)
-            with torch.no_grad():
-                teacher_logits = model(input_frames, privileged_future=future_frames)
+        student_logits = model(input_frames, privileged_future=None)
+        with torch.no_grad():
+            teacher_logits = model(input_frames, privileged_future=future_frames)
 
-            B, T_out, C_bins, H, W = student_logits.shape
-            # float32：训练后期 logits 数值大，CE / KL 在 float16 下溢出
-            student_flat  = student_logits.float().view(B * T_out, C_bins, H, W)
-            teacher_flat  = teacher_logits.float().view(B * T_out, C_bins, H, W)
-            targets_flat  = target_bins.view(B * T_out, H, W)
-            pixel_weights = build_pixel_weights(targets_flat, num_bins, foreground_weight)
+        B, T_out, C_bins, H, W = student_logits.shape
+        student_flat  = student_logits.view(B * T_out, C_bins, H, W)
+        teacher_flat  = teacher_logits.view(B * T_out, C_bins, H, W)
+        targets_flat  = target_bins.view(B * T_out, H, W)
+        pixel_weights = build_pixel_weights(targets_flat, num_bins, foreground_weight)
 
-            if use_reward_weight:
-                # ---- Reward-Weighted KL ----
-                # 逐步计算 KL，以 (1 - CSI_t) 作为步权重：
-                # 预测越差（CSI 低）→ 权重越大 → 该步蒸馏梯度越强。
-                # compute_step_csi 带 @torch.no_grad，CSI 值仅作常数权重，不参与梯度。
-                kl_accum  = torch.zeros((), device=device)
-                step_csis = []
-                for t in range(T_out):
-                    s_t   = student_logits[:, t]   # [B, num_bins, H, W]，梯度正常流
-                    tea_t = teacher_logits[:, t]
-                    tgt_t = target_bins[:, t]
-                    pw_t  = build_pixel_weights(tgt_t, num_bins, foreground_weight)
+        if use_reward_weight:
+            kl_accum  = torch.zeros((), device=device)
+            step_csis = []
+            for t in range(T_out):
+                s_t   = student_logits[:, t]
+                tea_t = teacher_logits[:, t]
+                tgt_t = target_bins[:, t]
+                pw_t  = build_pixel_weights(tgt_t, num_bins, foreground_weight)
 
-                    csi_t  = compute_step_csi(s_t, tgt_t, num_bins, vil_max, reward_threshold)
-                    step_w = 1.0 - csi_t           # Python float：难帧权重大，易帧权重小
-                    kl_accum = kl_accum + step_w * kl_divergence_loss(
-                        s_t, tea_t, temperature, pw_t
-                    )
-                    step_csis.append(csi_t)
-
-                loss_kl = kl_accum / T_out
-                reward_meter.update(sum(step_csis) / len(step_csis), B)
-            else:
-                # ---- 标准 OPSD：各步 KL 等权重 ----
-                loss_kl = kl_divergence_loss(
-                    student_flat, teacher_flat, temperature, pixel_weights
+                csi_t  = compute_step_csi(s_t, tgt_t, num_bins, vil_max, reward_threshold)
+                step_w = 1.0 - csi_t
+                kl_accum = kl_accum + step_w * kl_divergence_loss(
+                    s_t, tea_t, temperature, pw_t
                 )
+                step_csis.append(csi_t)
 
-            # CE 辅助损失（两种模式共用）
-            ce_per_pixel = criterion_ce_none(student_flat, targets_flat)
-            loss_ce = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
+            loss_kl = kl_accum / T_out
+            reward_meter.update(sum(step_csis) / len(step_csis), B)
+        else:
+            loss_kl = kl_divergence_loss(
+                student_flat, teacher_flat, temperature, pixel_weights
+            )
 
-            loss = kl_weight * loss_kl + ce_weight * loss_ce
+        ce_per_pixel = criterion_ce_none(student_flat, targets_flat)
+        loss_ce = (ce_per_pixel * pixel_weights).sum() / (pixel_weights.sum() + 1e-8)
+
+        loss = kl_weight * loss_kl + ce_weight * loss_ce
 
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.4f}，跳过该 batch")
             optimizer.zero_grad()
             continue
 
-        scaler.scale(loss).backward()
-        scaler.unscale_(optimizer)
+        loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
-        scaler.step(optimizer)
-        scaler.update()
+        optimizer.step()
 
         loss_meter.update(loss.item(), B)
         kl_meter.update(loss_kl.item(), B)
@@ -319,12 +309,10 @@ def validate(model, loader, device, cfg):
         input_frames = input_frames.to(device, non_blocking=True)
         target_bins = target_bins.to(device, non_blocking=True)
 
-        with torch.amp.autocast(device_type=device.type):
-            # 验证时走学生模式（无特权信息），模拟真实推理
-            all_logits = model(input_frames, privileged_future=None)
+        all_logits = model(input_frames, privileged_future=None)
 
         B, T_out, C_bins, H, W = all_logits.shape
-        logits_flat = all_logits.float().view(B * T_out, C_bins, H, W)
+        logits_flat = all_logits.view(B * T_out, C_bins, H, W)
         targets_flat = target_bins.view(B * T_out, H, W)
         loss = criterion(logits_flat, targets_flat)
         if torch.isfinite(loss):
@@ -381,7 +369,7 @@ def main():
         T_max=train_cfg["opsd_epochs"],
         eta_min=train_cfg["opsd_lr"] * 0.01,
     )
-    scaler = GradScaler()
+    scaler = None  # AMP disabled
 
     start_epoch   = 1
     best_val_loss = float("inf")
