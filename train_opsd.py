@@ -269,7 +269,11 @@ def train_one_epoch_opsd(
             continue
 
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+        grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        if not torch.isfinite(grad_norm):
+            print(f"  [WARNING] Step {step+1}: grad_norm={grad_norm:.4f}，跳过该 batch")
+            optimizer.zero_grad()
+            continue
         optimizer.step()
 
         loss_meter.update(loss.item(), B)
