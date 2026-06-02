@@ -1,0 +1,3 @@
+[2026-06-02 10:10:41] Inception+CBAM 训练开始，config=configs/default_cbam.yaml
+[2026-06-02 10:10:41] ========== START: cbam_baseline ==========
+[2026-06-02 11:46:15] ========== FAILED: cbam_baseline (exit 1) ==========

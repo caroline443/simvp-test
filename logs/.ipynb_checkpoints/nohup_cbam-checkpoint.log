@@ -1,0 +1,38 @@
+nohup: ignoring input
+[2026-06-02 10:10:41] Inception+CBAM 训练开始，config=configs/default_cbam.yaml
+[2026-06-02 10:10:41] ========== START: cbam_baseline ==========
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+
+[Train] 开始 Baseline 训练，共 30 个 Epoch
+============================================================
+  [Epoch 1] Step 20/152 | Loss: 2.3068 (avg: 2.5335)
+  [Epoch 1] Step 40/152 | Loss: 2.2596 (avg: 2.4231)
+  [Epoch 1] Step 60/152 | Loss: 2.2067 (avg: 2.3703)
+  [Epoch 1] Step 80/152 | Loss: 2.1556 (avg: 2.3466)
+  [Epoch 1] Step 100/152 | Loss: 2.1721 (avg: 2.3230)
+  [Epoch 1] Step 120/152 | Loss: 2.1946 (avg: 2.2952)
+  [Epoch 1] Step 140/152 | Loss: 1.9922 (avg: 2.2695)
+[Epoch 001/30] Train Loss: 2.2578 | Val Loss: 1.6621 | LR: 4.99e-04 | Time: 284.2s
+  [Metrics @74] CSI=0.3445 | POD=0.5307 | FAR=0.5046 | HSS=0.3848
+  [Checkpoint] 保存最佳模型，CSI@74: 0.3445
+------------------------------------------------------------
+  [Epoch 2] Step 20/152 | Loss: 2.1532 (avg: 2.1117)
+  [Epoch 2] Step 40/152 | Loss: 2.0593 (avg: 2.0835)
+  [Epoch 2] Step 60/152 | Loss: 2.0166 (avg: 2.0788)

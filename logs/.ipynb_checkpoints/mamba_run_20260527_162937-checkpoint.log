@@ -1,0 +1,5 @@
+[2026-05-27 16:29:37] Mamba 训练开始，config=configs/default_mamba.yaml
+[2026-05-27 16:29:37] ========== START: mamba_baseline ==========
+[2026-05-27 19:57:21] ========== DONE: mamba_baseline ==========
+[2026-05-27 19:57:21] ========== START: mamba_opsd ==========
+[2026-05-27 20:01:43] ========== FAILED: mamba_opsd (exit 143) ==========

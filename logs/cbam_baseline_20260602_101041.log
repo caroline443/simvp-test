@@ -1,0 +1,255 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+
+[Train] 开始 Baseline 训练，共 30 个 Epoch
+============================================================
+  [Epoch 1] Step 20/152 | Loss: 2.3068 (avg: 2.5335)
+  [Epoch 1] Step 40/152 | Loss: 2.2596 (avg: 2.4231)
+  [Epoch 1] Step 60/152 | Loss: 2.2067 (avg: 2.3703)
+  [Epoch 1] Step 80/152 | Loss: 2.1556 (avg: 2.3466)
+  [Epoch 1] Step 100/152 | Loss: 2.1721 (avg: 2.3230)
+  [Epoch 1] Step 120/152 | Loss: 2.1946 (avg: 2.2952)
+  [Epoch 1] Step 140/152 | Loss: 1.9922 (avg: 2.2695)
+[Epoch 001/30] Train Loss: 2.2578 | Val Loss: 1.6621 | LR: 4.99e-04 | Time: 284.2s
+  [Metrics @74] CSI=0.3445 | POD=0.5307 | FAR=0.5046 | HSS=0.3848
+  [Checkpoint] 保存最佳模型，CSI@74: 0.3445
+------------------------------------------------------------
+  [Epoch 2] Step 20/152 | Loss: 2.1532 (avg: 2.1117)
+  [Epoch 2] Step 40/152 | Loss: 2.0593 (avg: 2.0835)
+  [Epoch 2] Step 60/152 | Loss: 2.0166 (avg: 2.0788)
+  [Epoch 2] Step 80/152 | Loss: 1.9709 (avg: 2.0666)
+  [Epoch 2] Step 100/152 | Loss: 2.0926 (avg: 2.0618)
+  [Epoch 2] Step 120/152 | Loss: 2.0159 (avg: 2.0602)
+  [Epoch 2] Step 140/152 | Loss: 1.8973 (avg: 2.0571)
+[Epoch 002/30] Train Loss: 2.0537 | Val Loss: 1.4247 | LR: 4.95e-04 | Time: 278.7s
+  [Metrics @74] CSI=0.4590 | POD=0.6684 | FAR=0.4056 | HSS=0.5293
+  [Checkpoint] 保存最佳模型，CSI@74: 0.4590
+------------------------------------------------------------
+  [Epoch 3] Step 20/152 | Loss: 2.0255 (avg: 1.9721)
+  [Epoch 3] Step 40/152 | Loss: 1.9862 (avg: 1.9798)
+  [Epoch 3] Step 60/152 | Loss: 1.9140 (avg: 1.9705)
+  [Epoch 3] Step 80/152 | Loss: 1.9519 (avg: 1.9784)
+  [Epoch 3] Step 100/152 | Loss: 1.8704 (avg: 1.9757)
+  [Epoch 3] Step 120/152 | Loss: 2.0507 (avg: 1.9699)
+  [Epoch 3] Step 140/152 | Loss: 1.9667 (avg: 1.9674)
+[Epoch 003/30] Train Loss: 1.9681 | Val Loss: 1.3549 | LR: 4.88e-04 | Time: 277.8s
+  [Metrics @74] CSI=0.4310 | POD=0.5257 | FAR=0.2947 | HSS=0.5203
+------------------------------------------------------------
+  [Epoch 4] Step 20/152 | Loss: 1.8721 (avg: 1.9204)
+  [Epoch 4] Step 40/152 | Loss: 1.8852 (avg: 1.9182)
+  [Epoch 4] Step 60/152 | Loss: 1.9175 (avg: 1.9171)
+  [Epoch 4] Step 80/152 | Loss: 1.9722 (avg: 1.9181)
+  [Epoch 4] Step 100/152 | Loss: 1.9147 (avg: 1.9201)
+  [Epoch 4] Step 120/152 | Loss: 1.9133 (avg: 1.9177)
+  [Epoch 4] Step 140/152 | Loss: 1.8952 (avg: 1.9194)
+[Epoch 004/30] Train Loss: 1.9181 | Val Loss: 1.3423 | LR: 4.79e-04 | Time: 279.6s
+  [Metrics @74] CSI=0.4754 | POD=0.5895 | FAR=0.2894 | HSS=0.5654
+  [Checkpoint] 保存最佳模型，CSI@74: 0.4754
+------------------------------------------------------------
+  [Epoch 5] Step 20/152 | Loss: 1.8739 (avg: 1.8606)
+  [Epoch 5] Step 40/152 | Loss: 1.8998 (avg: 1.8654)
+  [Epoch 5] Step 60/152 | Loss: 1.8436 (avg: 1.8608)
+  [Epoch 5] Step 80/152 | Loss: 1.9233 (avg: 1.8669)
+  [Epoch 5] Step 100/152 | Loss: 1.8452 (avg: 1.8660)
+  [Epoch 5] Step 120/152 | Loss: 1.8799 (avg: 1.8699)
+  [Epoch 5] Step 140/152 | Loss: 1.7893 (avg: 1.8661)
+[Epoch 005/30] Train Loss: 1.8646 | Val Loss: 1.3209 | LR: 4.67e-04 | Time: 278.8s
+  [Metrics @74] CSI=0.5406 | POD=0.7579 | FAR=0.3466 | HSS=0.6200
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5406
+------------------------------------------------------------
+  [Epoch 6] Step 20/152 | Loss: 1.8901 (avg: 1.8864)
+  [Epoch 6] Step 40/152 | Loss: 1.8115 (avg: 1.8645)
+  [Epoch 6] Step 60/152 | Loss: 1.9091 (avg: 1.8618)
+  [Epoch 6] Step 80/152 | Loss: 1.8107 (avg: 1.8496)
+  [Epoch 6] Step 100/152 | Loss: 1.8506 (avg: 1.8509)
+  [Epoch 6] Step 120/152 | Loss: 1.9248 (avg: 1.8452)
+  [Epoch 6] Step 140/152 | Loss: 1.8216 (avg: 1.8386)
+[Epoch 006/30] Train Loss: 1.8399 | Val Loss: 1.2826 | LR: 4.53e-04 | Time: 278.5s
+  [Metrics @74] CSI=0.5501 | POD=0.7099 | FAR=0.2904 | HSS=0.6370
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5501
+------------------------------------------------------------
+  [Epoch 7] Step 20/152 | Loss: 1.8156 (avg: 1.7898)
+  [Epoch 7] Step 40/152 | Loss: 1.8121 (avg: 1.7986)
+  [Epoch 7] Step 60/152 | Loss: 1.8897 (avg: 1.8042)
+  [Epoch 7] Step 80/152 | Loss: 1.8138 (avg: 1.8039)
+  [Epoch 7] Step 100/152 | Loss: 1.8060 (avg: 1.8008)
+  [Epoch 7] Step 120/152 | Loss: 1.7960 (avg: 1.8083)
+  [Epoch 7] Step 140/152 | Loss: 1.6739 (avg: 1.8088)
+[Epoch 007/30] Train Loss: 1.8093 | Val Loss: 1.1980 | LR: 4.36e-04 | Time: 278.5s
+  [Metrics @74] CSI=0.4523 | POD=0.5002 | FAR=0.1746 | HSS=0.5557
+------------------------------------------------------------
+  [Epoch 8] Step 20/152 | Loss: 1.7175 (avg: 1.8134)
+  [Epoch 8] Step 40/152 | Loss: 1.6936 (avg: 1.7984)
+  [Epoch 8] Step 60/152 | Loss: 1.7025 (avg: 1.7901)
+  [Epoch 8] Step 80/152 | Loss: 1.7392 (avg: 1.7897)
+  [Epoch 8] Step 100/152 | Loss: 1.8247 (avg: 1.7921)
+  [Epoch 8] Step 120/152 | Loss: 1.7638 (avg: 1.7927)
+  [Epoch 8] Step 140/152 | Loss: 1.8309 (avg: 1.7930)
+[Epoch 008/30] Train Loss: 1.7897 | Val Loss: 1.3181 | LR: 4.18e-04 | Time: 279.0s
+  [Metrics @74] CSI=0.5675 | POD=0.7576 | FAR=0.3066 | HSS=0.6511
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5675
+------------------------------------------------------------
+  [Epoch 9] Step 20/152 | Loss: 1.7134 (avg: 1.8001)
+  [Epoch 9] Step 40/152 | Loss: 1.7527 (avg: 1.7881)
+  [Epoch 9] Step 60/152 | Loss: 1.7427 (avg: 1.7823)
+  [Epoch 9] Step 80/152 | Loss: 1.9736 (avg: 1.7745)
+  [Epoch 9] Step 100/152 | Loss: 1.6828 (avg: 1.7730)
+  [Epoch 9] Step 120/152 | Loss: 1.9822 (avg: 1.7753)
+  [Epoch 9] Step 140/152 | Loss: 1.7555 (avg: 1.7739)
+[Epoch 009/30] Train Loss: 1.7720 | Val Loss: 1.1476 | LR: 3.98e-04 | Time: 279.3s
+  [Metrics @74] CSI=0.5709 | POD=0.7199 | FAR=0.2660 | HSS=0.6592
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5709
+------------------------------------------------------------
+  [Epoch 10] Step 20/152 | Loss: 1.8330 (avg: 1.7947)
+  [Epoch 10] Step 40/152 | Loss: 1.7855 (avg: 1.7822)
+  [Epoch 10] Step 60/152 | Loss: 1.8066 (avg: 1.7697)
+  [Epoch 10] Step 80/152 | Loss: 1.8003 (avg: 1.7718)
+  [Epoch 10] Step 100/152 | Loss: 1.7591 (avg: 1.7735)
+  [Epoch 10] Step 120/152 | Loss: 1.7757 (avg: 1.7691)
+  [Epoch 10] Step 140/152 | Loss: 1.7344 (avg: 1.7652)
+[Epoch 010/30] Train Loss: 1.7625 | Val Loss: 1.2440 | LR: 3.76e-04 | Time: 278.3s
+  [Metrics @74] CSI=0.5885 | POD=0.7903 | FAR=0.3026 | HSS=0.6708
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5885
+------------------------------------------------------------
+  [Epoch 11] Step 20/152 | Loss: 1.7887 (avg: 1.8094)
+  [Epoch 11] Step 40/152 | Loss: 1.7968 (avg: 1.7867)
+  [Epoch 11] Step 60/152 | Loss: 1.6407 (avg: 1.7749)
+  [Epoch 11] Step 80/152 | Loss: 1.7272 (avg: 1.7681)
+  [Epoch 11] Step 100/152 | Loss: 1.6748 (avg: 1.7632)
+  [Epoch 11] Step 120/152 | Loss: 1.6910 (avg: 1.7584)
+  [Epoch 11] Step 140/152 | Loss: 1.7577 (avg: 1.7527)
+[Epoch 011/30] Train Loss: 1.7502 | Val Loss: 1.1607 | LR: 3.53e-04 | Time: 278.0s
+  [Metrics @74] CSI=0.5567 | POD=0.6470 | FAR=0.2005 | HSS=0.6530
+------------------------------------------------------------
+  [Epoch 12] Step 20/152 | Loss: 1.7618 (avg: 1.7452)
+  [Epoch 12] Step 40/152 | Loss: 1.7560 (avg: 1.7313)
+  [Epoch 12] Step 60/152 | Loss: 1.7171 (avg: 1.7326)
+  [Epoch 12] Step 80/152 | Loss: 1.8019 (avg: 1.7361)
+  [Epoch 12] Step 100/152 | Loss: 1.6875 (avg: 1.7353)
+  [Epoch 12] Step 120/152 | Loss: 1.6756 (avg: 1.7335)
+  [Epoch 12] Step 140/152 | Loss: 1.7306 (avg: 1.7318)
+[Epoch 012/30] Train Loss: 1.7351 | Val Loss: 1.1923 | LR: 3.29e-04 | Time: 278.9s
+  [Metrics @74] CSI=0.5910 | POD=0.7378 | FAR=0.2519 | HSS=0.6790
+  [Checkpoint] 保存最佳模型，CSI@74: 0.5910
+------------------------------------------------------------
+  [Epoch 13] Step 20/152 | Loss: 1.7049 (avg: 1.7159)
+  [Epoch 13] Step 40/152 | Loss: 1.8130 (avg: 1.7115)
+  [Epoch 13] Step 60/152 | Loss: 1.8257 (avg: 1.7226)
+  [Epoch 13] Step 80/152 | Loss: 1.7865 (avg: 1.7384)
+  [Epoch 13] Step 100/152 | Loss: 1.6432 (avg: 1.7266)
+  [Epoch 13] Step 120/152 | Loss: 1.6541 (avg: 1.7249)
+  [Epoch 13] Step 140/152 | Loss: 1.7700 (avg: 1.7272)
+[Epoch 013/30] Train Loss: 1.7289 | Val Loss: 1.1567 | LR: 3.04e-04 | Time: 279.2s
+  [Metrics @74] CSI=0.6012 | POD=0.7427 | FAR=0.2406 | HSS=0.6893
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6012
+------------------------------------------------------------
+  [Epoch 14] Step 20/152 | Loss: 1.6806 (avg: 1.6946)
+  [Epoch 14] Step 40/152 | Loss: 1.7340 (avg: 1.7004)
+  [Epoch 14] Step 60/152 | Loss: 1.7829 (avg: 1.7159)
+  [Epoch 14] Step 80/152 | Loss: 1.6798 (avg: 1.7136)
+  [Epoch 14] Step 100/152 | Loss: 1.6620 (avg: 1.7259)
+  [Epoch 14] Step 120/152 | Loss: 1.7312 (avg: 1.7214)
+  [Epoch 14] Step 140/152 | Loss: 1.6297 (avg: 1.7210)
+[Epoch 014/30] Train Loss: 1.7176 | Val Loss: 1.1417 | LR: 2.78e-04 | Time: 279.1s
+  [Metrics @74] CSI=0.5951 | POD=0.7238 | FAR=0.2300 | HSS=0.6850
+------------------------------------------------------------
+  [Epoch 15] Step 20/152 | Loss: 1.6905 (avg: 1.6976)
+  [Epoch 15] Step 40/152 | Loss: 1.7032 (avg: 1.7083)
+  [Epoch 15] Step 60/152 | Loss: 1.6810 (avg: 1.7066)
+  [Epoch 15] Step 80/152 | Loss: 1.7171 (avg: 1.7055)
+  [Epoch 15] Step 100/152 | Loss: 1.6786 (avg: 1.7024)
+  [Epoch 15] Step 120/152 | Loss: 1.7932 (avg: 1.7019)
+  [Epoch 15] Step 140/152 | Loss: 1.7388 (avg: 1.6982)
+[Epoch 015/30] Train Loss: 1.6989 | Val Loss: 1.1250 | LR: 2.53e-04 | Time: 278.0s
+  [Metrics @74] CSI=0.5209 | POD=0.5762 | FAR=0.1555 | HSS=0.6238
+------------------------------------------------------------
+  [Epoch 16] Step 20/152 | Loss: 1.8638 (avg: 1.7092)
+  [Epoch 16] Step 40/152 | Loss: 1.7943 (avg: 1.7085)
+  [Epoch 16] Step 60/152 | Loss: 1.5927 (avg: 1.7006)
+  [Epoch 16] Step 80/152 | Loss: 1.6907 (avg: 1.7007)
+  [Epoch 16] Step 100/152 | Loss: 1.7175 (avg: 1.6959)
+  [Epoch 16] Step 120/152 | Loss: 1.6294 (avg: 1.6960)
+  [Epoch 16] Step 140/152 | Loss: 1.8203 (avg: 1.6970)
+[Epoch 016/30] Train Loss: 1.6950 | Val Loss: 1.2135 | LR: 2.27e-04 | Time: 277.7s
+  [Metrics @74] CSI=0.6037 | POD=0.7551 | FAR=0.2493 | HSS=0.6907
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6037
+------------------------------------------------------------
+  [Epoch 17] Step 20/152 | Loss: 1.7479 (avg: 1.6696)
+  [Epoch 17] Step 40/152 | Loss: 1.6707 (avg: 1.6680)
+  [Epoch 17] Step 60/152 | Loss: 1.6653 (avg: 1.6758)
+  [Epoch 17] Step 80/152 | Loss: 1.7146 (avg: 1.6810)
+  [Epoch 17] Step 100/152 | Loss: 1.6438 (avg: 1.6781)
+  [Epoch 17] Step 120/152 | Loss: 1.8425 (avg: 1.6779)
+  [Epoch 17] Step 140/152 | Loss: 1.6605 (avg: 1.6791)
+[Epoch 017/30] Train Loss: 1.6790 | Val Loss: 1.2200 | LR: 2.01e-04 | Time: 277.4s
+  [Metrics @74] CSI=0.6108 | POD=0.8148 | FAR=0.2908 | HSS=0.6924
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6108
+------------------------------------------------------------
+  [Epoch 18] Step 20/152 | Loss: 1.7581 (avg: 1.6980)
+  [Epoch 18] Step 40/152 | Loss: 1.7630 (avg: 1.6968)
+  [Epoch 18] Step 60/152 | Loss: 1.6722 (avg: 1.6787)
+  [Epoch 18] Step 80/152 | Loss: 1.6382 (avg: 1.6759)
+  [Epoch 18] Step 100/152 | Loss: 1.6866 (avg: 1.6779)
+  [Epoch 18] Step 120/152 | Loss: 1.6913 (avg: 1.6787)
+  [Epoch 18] Step 140/152 | Loss: 1.6996 (avg: 1.6785)
+[Epoch 018/30] Train Loss: 1.6766 | Val Loss: 1.1427 | LR: 1.76e-04 | Time: 277.3s
+  [Metrics @74] CSI=0.6099 | POD=0.7443 | FAR=0.2285 | HSS=0.6983
+------------------------------------------------------------
+  [Epoch 19] Step 20/152 | Loss: 1.6316 (avg: 1.6656)
+  [Epoch 19] Step 40/152 | Loss: 1.6466 (avg: 1.6617)
+  [Epoch 19] Step 60/152 | Loss: 1.6858 (avg: 1.6659)
+  [Epoch 19] Step 80/152 | Loss: 1.6655 (avg: 1.6608)
+  [Epoch 19] Step 100/152 | Loss: 1.7516 (avg: 1.6588)
+  [Epoch 19] Step 120/152 | Loss: 1.5255 (avg: 1.6541)
+  [Epoch 19] Step 140/152 | Loss: 1.6341 (avg: 1.6561)
+[Epoch 019/30] Train Loss: 1.6565 | Val Loss: 1.1489 | LR: 1.52e-04 | Time: 277.6s
+  [Metrics @74] CSI=0.6038 | POD=0.7106 | FAR=0.1992 | HSS=0.6956
+------------------------------------------------------------
+  [Epoch 20] Step 20/152 | Loss: 1.7295 (avg: 1.6506)
+  [Epoch 20] Step 40/152 | Loss: 1.5710 (avg: 1.6551)
+  [Epoch 20] Step 60/152 | Loss: 1.7127 (avg: 1.6495)
+  [Epoch 20] Step 80/152 | Loss: 1.7187 (avg: 1.6524)
+  [Epoch 20] Step 100/152 | Loss: 1.5474 (avg: 1.6600)
+  [Epoch 20] Step 120/152 | Loss: 1.5228 (avg: 1.6587)
+  [Epoch 20] Step 140/152 | Loss: 1.5178 (avg: 1.6579)
+[Epoch 020/30] Train Loss: 1.6563 | Val Loss: 1.1286 | LR: 1.29e-04 | Time: 278.4s
+  [Metrics @74] CSI=0.6112 | POD=0.7587 | FAR=0.2413 | HSS=0.6982
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6112
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/serialization.py", line 1004, in save
+    _save(
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/serialization.py", line 1313, in _save
+    zip_file.write_record(name, storage, num_bytes)
+RuntimeError: basic_ios::clear: iostream error
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 272, in <module>
+    main()
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 250, in main
+    save_checkpoint(
+  File "/root/autodl-tmp/simvp-test/utils.py", line 242, in save_checkpoint
+    torch.save(state, path)
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/serialization.py", line 1003, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/serialization.py", line 835, in __exit__
+    self.file_like.write_end_of_file()
+RuntimeError: [enforce fail at inline_container.cc:672] . unexpected pos 1128623168 vs 1128623056

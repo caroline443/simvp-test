@@ -1,0 +1,37 @@
+
+libgomp: Invalid value for environment variable OMP_NUM_THREADS
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+
+[Train] 开始 Baseline 训练，共 30 个 Epoch
+============================================================
+Traceback (most recent call last):
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 272, in <module>
+    main()
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 201, in main
+    train_loss = train_one_epoch(model, train_loader, optimizer, scaler, device, cfg, epoch)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/simvp-test/train_baseline.py", line 82, in train_one_epoch
+    loss.backward()
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/_tensor.py", line 631, in backward
+    torch.autograd.backward(
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/autograd/__init__.py", line 381, in backward
+    _engine_run_backward(
+  File "/root/miniconda3/envs/zyx/lib/python3.12/site-packages/torch/autograd/graph.py", line 869, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.12 GiB. GPU 0 has a total capacity of 95.07 GiB of which 133.62 MiB is free. Including non-PyTorch memory, this process has 94.92 GiB memory in use. Of the allocated memory 92.62 GiB is allocated by PyTorch, and 1.79 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
