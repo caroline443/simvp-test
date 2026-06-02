@@ -30,13 +30,13 @@ model:
 training:
   baseline_epochs: 50
   baseline_lr: 5.0e-4
-  baseline_batch_size: 96
+  baseline_batch_size: 72
   baseline_weight_decay: 1.0e-4
   baseline_ckpt_dir: "checkpoints_cbam/baseline"
 
   opsd_epochs: 50
   opsd_lr: 2.0e-4
-  opsd_batch_size: 48
+  opsd_batch_size: 36
   opsd_weight_decay: 1.0e-4
   opsd_kl_weight: 1.0
   opsd_ce_weight: 0.5
