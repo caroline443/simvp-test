@@ -1,0 +1,911 @@
+nohup: ignoring input
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+[Checkpoint] 已加载：checkpoints_cbam/baseline/checkpoint_epoch015.pth，epoch=15
+
+[Train] 开始 Baseline 训练，共 30 个 Epoch
+============================================================
+  [Epoch 16] Step 20/152 | Loss: 1.6857 (avg: 1.6881)
+  [Epoch 16] Step 40/152 | Loss: 1.6346 (avg: 1.6948)
+  [Epoch 16] Step 60/152 | Loss: 1.6909 (avg: 1.6821)
+  [Epoch 16] Step 80/152 | Loss: 1.6447 (avg: 1.6882)
+  [Epoch 16] Step 100/152 | Loss: 1.6615 (avg: 1.6879)
+  [Epoch 16] Step 120/152 | Loss: 1.6811 (avg: 1.6861)
+  [Epoch 16] Step 140/152 | Loss: 1.5887 (avg: 1.6834)
+[Epoch 016/30] Train Loss: 1.6832 | Val Loss: 1.1410 | LR: 2.52e-04 | Time: 297.6s
+  [Metrics @74] CSI=0.6067 | POD=0.7540 | FAR=0.2436 | HSS=0.6940
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6067
+------------------------------------------------------------
+  [Epoch 17] Step 20/152 | Loss: 1.8335 (avg: 1.6812)
+  [Epoch 17] Step 40/152 | Loss: 1.6384 (avg: 1.6676)
+  [Epoch 17] Step 60/152 | Loss: 1.7011 (avg: 1.6763)
+  [Epoch 17] Step 80/152 | Loss: 1.7527 (avg: 1.6783)
+  [Epoch 17] Step 100/152 | Loss: 1.7996 (avg: 1.6786)
+  [Epoch 17] Step 120/152 | Loss: 1.6815 (avg: 1.6823)
+  [Epoch 17] Step 140/152 | Loss: 1.5972 (avg: 1.6851)
+[Epoch 017/30] Train Loss: 1.6873 | Val Loss: 1.1745 | LR: 2.50e-04 | Time: 281.4s
+  [Metrics @74] CSI=0.6069 | POD=0.8084 | FAR=0.2911 | HSS=0.6889
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6069
+------------------------------------------------------------
+  [Epoch 18] Step 20/152 | Loss: 1.7502 (avg: 1.6802)
+  [Epoch 18] Step 40/152 | Loss: 1.7028 (avg: 1.6821)
+  [Epoch 18] Step 60/152 | Loss: 1.6323 (avg: 1.6662)
+  [Epoch 18] Step 80/152 | Loss: 1.6610 (avg: 1.6742)
+  [Epoch 18] Step 100/152 | Loss: 1.6049 (avg: 1.6762)
+  [Epoch 18] Step 120/152 | Loss: 1.7473 (avg: 1.6776)
+  [Epoch 18] Step 140/152 | Loss: 1.6825 (avg: 1.6767)
+[Epoch 018/30] Train Loss: 1.6816 | Val Loss: 1.1656 | LR: 2.46e-04 | Time: 289.1s
+  [Metrics @74] CSI=0.6114 | POD=0.7706 | FAR=0.2525 | HSS=0.6972
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6114
+------------------------------------------------------------
+  [Epoch 19] Step 20/152 | Loss: 1.5964 (avg: 1.6479)
+  [Epoch 19] Step 40/152 | Loss: 1.6462 (avg: 1.6570)
+  [Epoch 19] Step 60/152 | Loss: 1.7356 (avg: 1.6571)
+  [Epoch 19] Step 80/152 | Loss: 1.6672 (avg: 1.6647)
+  [Epoch 19] Step 100/152 | Loss: 1.6903 (avg: 1.6688)
+  [Epoch 19] Step 120/152 | Loss: 1.6685 (avg: 1.6698)
+  [Epoch 19] Step 140/152 | Loss: 1.6453 (avg: 1.6731)
+[Epoch 019/30] Train Loss: 1.6727 | Val Loss: 1.1350 | LR: 2.42e-04 | Time: 282.8s
+  [Metrics @74] CSI=0.5642 | POD=0.6422 | FAR=0.1771 | HSS=0.6620
+------------------------------------------------------------
+  [Epoch 20] Step 20/152 | Loss: 1.6454 (avg: 1.6308)
+  [Epoch 20] Step 40/152 | Loss: 1.6862 (avg: 1.6423)
+  [Epoch 20] Step 60/152 | Loss: 1.7436 (avg: 1.6477)
+  [Epoch 20] Step 80/152 | Loss: 1.7027 (avg: 1.6546)
+  [Epoch 20] Step 100/152 | Loss: 1.5920 (avg: 1.6584)
+  [Epoch 20] Step 120/152 | Loss: 1.6606 (avg: 1.6642)
+  [Epoch 20] Step 140/152 | Loss: 1.6675 (avg: 1.6623)
+[Epoch 020/30] Train Loss: 1.6642 | Val Loss: 1.1421 | LR: 2.36e-04 | Time: 279.2s
+  [Metrics @74] CSI=0.6135 | POD=0.7733 | FAR=0.2519 | HSS=0.6992
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6135
+------------------------------------------------------------
+  [Epoch 21] Step 20/152 | Loss: 1.7236 (avg: 1.7072)
+  [Epoch 21] Step 40/152 | Loss: 1.6473 (avg: 1.6929)
+  [Epoch 21] Step 60/152 | Loss: 1.7399 (avg: 1.6923)
+  [Epoch 21] Step 80/152 | Loss: 1.6885 (avg: 1.6868)
+  [Epoch 21] Step 100/152 | Loss: 1.6493 (avg: 1.6848)
+  [Epoch 21] Step 120/152 | Loss: 1.8057 (avg: 1.6802)
+  [Epoch 21] Step 140/152 | Loss: 1.6998 (avg: 1.6740)
+[Epoch 021/30] Train Loss: 1.6737 | Val Loss: 1.1276 | LR: 2.29e-04 | Time: 286.8s
+  [Metrics @74] CSI=0.6010 | POD=0.7123 | FAR=0.2064 | HSS=0.6924
+------------------------------------------------------------
+  [Epoch 22] Step 20/152 | Loss: 1.6922 (avg: 1.6405)
+  [Epoch 22] Step 40/152 | Loss: 1.6872 (avg: 1.6522)
+  [Epoch 22] Step 60/152 | Loss: 1.7188 (avg: 1.6575)
+  [Epoch 22] Step 80/152 | Loss: 1.6500 (avg: 1.6562)
+  [Epoch 22] Step 100/152 | Loss: 1.6129 (avg: 1.6544)
+  [Epoch 22] Step 120/152 | Loss: 1.6082 (avg: 1.6571)
+  [Epoch 22] Step 140/152 | Loss: 1.5520 (avg: 1.6561)
+[Epoch 022/30] Train Loss: 1.6575 | Val Loss: 1.0896 | LR: 2.21e-04 | Time: 289.9s
+  [Metrics @74] CSI=0.5870 | POD=0.6985 | FAR=0.2137 | HSS=0.6793
+------------------------------------------------------------
+  [Epoch 23] Step 20/152 | Loss: 1.5763 (avg: 1.6674)
+  [Epoch 23] Step 40/152 | Loss: 1.5847 (avg: 1.6673)
+  [Epoch 23] Step 60/152 | Loss: 1.5745 (avg: 1.6560)
+  [Epoch 23] Step 80/152 | Loss: 1.6505 (avg: 1.6567)
+  [Epoch 23] Step 100/152 | Loss: 1.6580 (avg: 1.6569)
+  [Epoch 23] Step 120/152 | Loss: 1.6228 (avg: 1.6550)
+  [Epoch 23] Step 140/152 | Loss: 1.6495 (avg: 1.6556)
+[Epoch 023/30] Train Loss: 1.6539 | Val Loss: 1.1214 | LR: 2.12e-04 | Time: 282.1s
+  [Metrics @74] CSI=0.6140 | POD=0.7476 | FAR=0.2254 | HSS=0.7022
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6140
+------------------------------------------------------------
+  [Epoch 24] Step 20/152 | Loss: 1.5501 (avg: 1.6547)
+  [Epoch 24] Step 40/152 | Loss: 1.6271 (avg: 1.6498)
+  [Epoch 24] Step 60/152 | Loss: 1.6051 (avg: 1.6409)
+  [Epoch 24] Step 80/152 | Loss: 1.8059 (avg: 1.6419)
+  [Epoch 24] Step 100/152 | Loss: 1.5942 (avg: 1.6385)
+  [Epoch 24] Step 120/152 | Loss: 1.7200 (avg: 1.6428)
+  [Epoch 24] Step 140/152 | Loss: 1.6364 (avg: 1.6432)
+[Epoch 024/30] Train Loss: 1.6437 | Val Loss: 1.1945 | LR: 2.01e-04 | Time: 279.1s
+  [Metrics @74] CSI=0.6115 | POD=0.7487 | FAR=0.2305 | HSS=0.6995
+------------------------------------------------------------
+  [Epoch 25] Step 20/152 | Loss: 1.7502 (avg: 1.6803)
+  [Epoch 25] Step 40/152 | Loss: 1.6479 (avg: 1.6669)
+  [Epoch 25] Step 60/152 | Loss: 1.7095 (avg: 1.6585)
+  [Epoch 25] Step 80/152 | Loss: 1.6886 (avg: 1.6586)
+  [Epoch 25] Step 100/152 | Loss: 1.6165 (avg: 1.6557)
+  [Epoch 25] Step 120/152 | Loss: 1.7398 (avg: 1.6547)
+  [Epoch 25] Step 140/152 | Loss: 1.6179 (avg: 1.6499)
+[Epoch 025/30] Train Loss: 1.6484 | Val Loss: 1.1400 | LR: 1.91e-04 | Time: 287.8s
+  [Metrics @74] CSI=0.6216 | POD=0.7816 | FAR=0.2477 | HSS=0.7068
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6216
+------------------------------------------------------------
+  [Epoch 26] Step 20/152 | Loss: 1.6363 (avg: 1.6530)
+  [Epoch 26] Step 40/152 | Loss: 1.7210 (avg: 1.6455)
+  [Epoch 26] Step 60/152 | Loss: 1.5784 (avg: 1.6486)
+  [Epoch 26] Step 80/152 | Loss: 1.5766 (avg: 1.6460)
+  [Epoch 26] Step 100/152 | Loss: 1.6153 (avg: 1.6417)
+  [Epoch 26] Step 120/152 | Loss: 1.6008 (avg: 1.6465)
+  [Epoch 26] Step 140/152 | Loss: 1.6686 (avg: 1.6436)
+[Epoch 026/30] Train Loss: 1.6414 | Val Loss: 1.0778 | LR: 1.79e-04 | Time: 278.4s
+  [Metrics @74] CSI=0.6006 | POD=0.7037 | FAR=0.1961 | HSS=0.6930
+------------------------------------------------------------
+  [Epoch 27] Step 20/152 | Loss: 1.6483 (avg: 1.6385)
+  [Epoch 27] Step 40/152 | Loss: 1.6903 (avg: 1.6316)
+  [Epoch 27] Step 60/152 | Loss: 1.6193 (avg: 1.6230)
+  [Epoch 27] Step 80/152 | Loss: 1.7349 (avg: 1.6311)
+  [Epoch 27] Step 100/152 | Loss: 1.5956 (avg: 1.6329)
+  [Epoch 27] Step 120/152 | Loss: 1.6009 (avg: 1.6283)
+  [Epoch 27] Step 140/152 | Loss: 1.7051 (avg: 1.6324)
+[Epoch 027/30] Train Loss: 1.6375 | Val Loss: 1.1231 | LR: 1.67e-04 | Time: 277.9s
+  [Metrics @74] CSI=0.6195 | POD=0.7639 | FAR=0.2339 | HSS=0.7062
+------------------------------------------------------------
+  [Epoch 28] Step 20/152 | Loss: 1.5853 (avg: 1.6203)
+  [Epoch 28] Step 40/152 | Loss: 1.7406 (avg: 1.6193)
+  [Epoch 28] Step 60/152 | Loss: 1.6267 (avg: 1.6264)
+  [Epoch 28] Step 80/152 | Loss: 1.6170 (avg: 1.6305)
+  [Epoch 28] Step 100/152 | Loss: 1.5024 (avg: 1.6212)
+  [Epoch 28] Step 120/152 | Loss: 1.5861 (avg: 1.6224)
+  [Epoch 28] Step 140/152 | Loss: 1.6417 (avg: 1.6220)
+[Epoch 028/30] Train Loss: 1.6239 | Val Loss: 1.0637 | LR: 1.54e-04 | Time: 278.1s
+  [Metrics @74] CSI=0.5713 | POD=0.6371 | FAR=0.1531 | HSS=0.6704
+------------------------------------------------------------
+  [Epoch 29] Step 20/152 | Loss: 1.6023 (avg: 1.6010)
+  [Epoch 29] Step 40/152 | Loss: 1.6343 (avg: 1.6128)
+  [Epoch 29] Step 60/152 | Loss: 1.6517 (avg: 1.6206)
+  [Epoch 29] Step 80/152 | Loss: 1.6031 (avg: 1.6204)
+  [Epoch 29] Step 100/152 | Loss: 1.6062 (avg: 1.6242)
+  [Epoch 29] Step 120/152 | Loss: 1.6700 (avg: 1.6200)
+  [Epoch 29] Step 140/152 | Loss: 1.5688 (avg: 1.6199)
+[Epoch 029/30] Train Loss: 1.6205 | Val Loss: 1.1349 | LR: 1.42e-04 | Time: 277.6s
+  [Metrics @74] CSI=0.6091 | POD=0.7427 | FAR=0.2280 | HSS=0.6977
+------------------------------------------------------------
+  [Epoch 30] Step 20/152 | Loss: 1.6205 (avg: 1.6185)
+  [Epoch 30] Step 40/152 | Loss: 1.5913 (avg: 1.6267)
+  [Epoch 30] Step 60/152 | Loss: 1.6228 (avg: 1.6264)
+  [Epoch 30] Step 80/152 | Loss: 1.6382 (avg: 1.6291)
+  [Epoch 30] Step 100/152 | Loss: 1.5691 (avg: 1.6252)
+  [Epoch 30] Step 120/152 | Loss: 1.6926 (avg: 1.6236)
+  [Epoch 30] Step 140/152 | Loss: 1.6072 (avg: 1.6217)
+[Epoch 030/30] Train Loss: 1.6209 | Val Loss: 1.1116 | LR: 1.29e-04 | Time: 277.8s
+  [Metrics @74] CSI=0.5801 | POD=0.6511 | FAR=0.1583 | HSS=0.6779
+------------------------------------------------------------
+
+[Done] Baseline 训练完成！最佳 CSI@74: 0.6216
+       最佳模型已保存至：checkpoints_cbam/baseline/best.pth
+[Device] cuda  |  [Mode] OPSD  |  [T] 2.0
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+[Pretrained] 从 Baseline 权重热启动：checkpoints_cbam/baseline/best.pth
+  Baseline 最佳 Val Loss: 1.1400
+
+[Train] OPSD 训练，共 30 Epoch  →  checkpoints_cbam/opsd
+        KL 权重: 1.0 | CE 权重: 0.5
+============================================================
+  [Epoch 1] Step 20/152 | Total: 1.3503 | KL: 0.2733 | CE: 2.1540
+  [Epoch 1] Step 40/152 | Total: 1.1867 | KL: 0.3486 | CE: 1.6762
+  [Epoch 1] Step 60/152 | Total: 1.2799 | KL: 0.4238 | CE: 1.7122
+  [Epoch 1] Step 80/152 | Total: 1.3445 | KL: 0.4520 | CE: 1.7851
+  [Epoch 1] Step 100/152 | Total: 1.2025 | KL: 0.3503 | CE: 1.7045
+  [Epoch 1] Step 120/152 | Total: 1.4398 | KL: 0.4503 | CE: 1.9791
+  [Epoch 1] Step 140/152 | Total: 1.1923 | KL: 0.3758 | CE: 1.6329
+[Epoch 001/30] Train: 1.3058 (KL:0.3952 CE:1.8213) | Val: 1.2791 | LR: 1.99e-04 | Time: 371.3s
+  [Metrics @74] CSI=0.1172 | POD=0.1182 | FAR=0.0681 | HSS=0.1724
+  [Metrics @133] CSI=0.0157 | POD=0.0158 | FAR=0.2190 | HSS=0.0281
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.1172
+------------------------------------------------------------
+  [Epoch 2] Step 20/152 | Total: 1.2141 | KL: 0.3394 | CE: 1.7495
+  [Epoch 2] Step 40/152 | Total: 1.2109 | KL: 0.3853 | CE: 1.6513
+  [Epoch 2] Step 60/152 | Total: 1.2162 | KL: 0.3756 | CE: 1.6811
+  [Epoch 2] Step 80/152 | Total: 1.2842 | KL: 0.4135 | CE: 1.7414
+  [Epoch 2] Step 100/152 | Total: 1.3081 | KL: 0.4032 | CE: 1.8098
+  [Epoch 2] Step 120/152 | Total: 1.2429 | KL: 0.3924 | CE: 1.7010
+  [Epoch 2] Step 140/152 | Total: 1.1955 | KL: 0.3833 | CE: 1.6244
+[Epoch 002/30] Train: 1.2638 (KL:0.3987 CE:1.7302) | Val: 1.1206 | LR: 1.98e-04 | Time: 367.4s
+  [Metrics @74] CSI=0.5019 | POD=0.5441 | FAR=0.1338 | HSS=0.6077
+  [Metrics @133] CSI=0.0701 | POD=0.0709 | FAR=0.1361 | HSS=0.1213
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.5019
+------------------------------------------------------------
+  [Epoch 3] Step 20/152 | Total: 1.3619 | KL: 0.4449 | CE: 1.8341
+  [Epoch 3] Step 40/152 | Total: 1.2324 | KL: 0.3315 | CE: 1.8019
+  [Epoch 3] Step 60/152 | Total: 1.1804 | KL: 0.3620 | CE: 1.6369
+  [Epoch 3] Step 80/152 | Total: 1.3125 | KL: 0.4097 | CE: 1.8056
+  [Epoch 3] Step 100/152 | Total: 1.1590 | KL: 0.3138 | CE: 1.6904
+  [Epoch 3] Step 120/152 | Total: 1.2823 | KL: 0.3987 | CE: 1.7672
+  [Epoch 3] Step 140/152 | Total: 1.1876 | KL: 0.3266 | CE: 1.7221
+[Epoch 003/30] Train: 1.2290 (KL:0.3553 CE:1.7474) | Val: 1.1011 | LR: 1.95e-04 | Time: 368.1s
+  [Metrics @74] CSI=0.5872 | POD=0.6750 | FAR=0.1813 | HSS=0.6824
+  [Metrics @133] CSI=0.2226 | POD=0.2416 | FAR=0.2608 | HSS=0.3406
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.5872
+------------------------------------------------------------
+  [Epoch 4] Step 20/152 | Total: 1.2102 | KL: 0.3675 | CE: 1.6853
+  [Epoch 4] Step 40/152 | Total: 1.2451 | KL: 0.4113 | CE: 1.6676
+  [Epoch 4] Step 60/152 | Total: 1.2152 | KL: 0.3328 | CE: 1.7648
+  [Epoch 4] Step 80/152 | Total: 1.2783 | KL: 0.2939 | CE: 1.9687
+  [Epoch 4] Step 100/152 | Total: 1.1980 | KL: 0.3478 | CE: 1.7004
+  [Epoch 4] Step 120/152 | Total: 1.1951 | KL: 0.3571 | CE: 1.6758
+  [Epoch 4] Step 140/152 | Total: 1.2158 | KL: 0.3875 | CE: 1.6566
+[Epoch 004/30] Train: 1.2246 (KL:0.3690 CE:1.7111) | Val: 1.1347 | LR: 1.91e-04 | Time: 368.8s
+  [Metrics @74] CSI=0.5455 | POD=0.6065 | FAR=0.1557 | HSS=0.6467
+  [Metrics @133] CSI=0.1020 | POD=0.1045 | FAR=0.1866 | HSS=0.1714
+------------------------------------------------------------
+  [Epoch 5] Step 20/152 | Total: 1.2152 | KL: 0.3511 | CE: 1.7283
+  [Epoch 5] Step 40/152 | Total: 1.2788 | KL: 0.4463 | CE: 1.6650
+  [Epoch 5] Step 60/152 | Total: 1.1881 | KL: 0.3600 | CE: 1.6562
+  [Epoch 5] Step 80/152 | Total: 1.2736 | KL: 0.3583 | CE: 1.8306
+  [Epoch 5] Step 100/152 | Total: 1.1751 | KL: 0.3408 | CE: 1.6687
+  [Epoch 5] Step 120/152 | Total: 1.1811 | KL: 0.3364 | CE: 1.6894
+  [Epoch 5] Step 140/152 | Total: 1.1590 | KL: 0.3578 | CE: 1.6025
+[Epoch 005/30] Train: 1.2207 (KL:0.3770 CE:1.6874) | Val: 1.1179 | LR: 1.87e-04 | Time: 367.9s
+  [Metrics @74] CSI=0.5427 | POD=0.6027 | FAR=0.1549 | HSS=0.6442
+  [Metrics @133] CSI=0.2162 | POD=0.2341 | FAR=0.2606 | HSS=0.3322
+------------------------------------------------------------
+  [Epoch 6] Step 20/152 | Total: 1.2531 | KL: 0.3980 | CE: 1.7100
+  [Epoch 6] Step 40/152 | Total: 1.3001 | KL: 0.4201 | CE: 1.7600
+  [Epoch 6] Step 60/152 | Total: 1.2520 | KL: 0.3364 | CE: 1.8311
+  [Epoch 6] Step 80/152 | Total: 1.2143 | KL: 0.3700 | CE: 1.6887
+  [Epoch 6] Step 100/152 | Total: 1.1978 | KL: 0.3640 | CE: 1.6675
+  [Epoch 6] Step 120/152 | Total: 1.3131 | KL: 0.4217 | CE: 1.7827
+  [Epoch 6] Step 140/152 | Total: 1.2555 | KL: 0.4008 | CE: 1.7095
+[Epoch 006/30] Train: 1.2224 (KL:0.3769 CE:1.6910) | Val: 1.1106 | LR: 1.81e-04 | Time: 367.9s
+  [Metrics @74] CSI=0.6218 | POD=0.8001 | FAR=0.2638 | HSS=0.7053
+  [Metrics @133] CSI=0.3413 | POD=0.4498 | FAR=0.4141 | HSS=0.4758
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.6218
+------------------------------------------------------------
+  [Epoch 7] Step 20/152 | Total: 1.2439 | KL: 0.3882 | CE: 1.7114
+  [Epoch 7] Step 40/152 | Total: 1.3152 | KL: 0.4062 | CE: 1.8179
+  [Epoch 7] Step 60/152 | Total: 1.2226 | KL: 0.3580 | CE: 1.7294
+  [Epoch 7] Step 80/152 | Total: 1.2667 | KL: 0.4007 | CE: 1.7321
+  [Epoch 7] Step 100/152 | Total: 1.2018 | KL: 0.3806 | CE: 1.6423
+  [Epoch 7] Step 120/152 | Total: 1.1451 | KL: 0.3460 | CE: 1.5980
+  [Epoch 7] Step 140/152 | Total: 1.1865 | KL: 0.4031 | CE: 1.5668
+[Epoch 007/30] Train: 1.2178 (KL:0.3735 CE:1.6887) | Val: 1.1665 | LR: 1.75e-04 | Time: 368.4s
+  [Metrics @74] CSI=0.5996 | POD=0.6985 | FAR=0.1911 | HSS=0.6925
+  [Metrics @133] CSI=0.2610 | POD=0.2926 | FAR=0.2927 | HSS=0.3879
+------------------------------------------------------------
+  [Epoch 8] Step 20/152 | Total: 1.1456 | KL: 0.3399 | CE: 1.6114
+  [Epoch 8] Step 40/152 | Total: 1.1396 | KL: 0.3098 | CE: 1.6596
+  [Epoch 8] Step 60/152 | Total: 1.1234 | KL: 0.3333 | CE: 1.5802
+  [Epoch 8] Step 80/152 | Total: 1.2477 | KL: 0.4237 | CE: 1.6480
+  [Epoch 8] Step 100/152 | Total: 1.2324 | KL: 0.3947 | CE: 1.6755
+  [Epoch 8] Step 120/152 | Total: 1.2548 | KL: 0.4426 | CE: 1.6243
+  [Epoch 8] Step 140/152 | Total: 1.2127 | KL: 0.3821 | CE: 1.6612
+[Epoch 008/30] Train: 1.2123 (KL:0.3740 CE:1.6766) | Val: 1.1268 | LR: 1.67e-04 | Time: 367.8s
+  [Metrics @74] CSI=0.5737 | POD=0.6407 | FAR=0.1542 | HSS=0.6725
+  [Metrics @133] CSI=0.2269 | POD=0.2448 | FAR=0.2441 | HSS=0.3466
+------------------------------------------------------------
+  [Epoch 9] Step 20/152 | Total: 1.1357 | KL: 0.3226 | CE: 1.6261
+  [Epoch 9] Step 40/152 | Total: 1.1824 | KL: 0.3360 | CE: 1.6928
+  [Epoch 9] Step 60/152 | Total: 1.1930 | KL: 0.3863 | CE: 1.6135
+  [Epoch 9] Step 80/152 | Total: 1.2607 | KL: 0.3531 | CE: 1.8153
+  [Epoch 9] Step 100/152 | Total: 1.2127 | KL: 0.4136 | CE: 1.5983
+  [Epoch 9] Step 120/152 | Total: 1.3680 | KL: 0.4712 | CE: 1.7936
+  [Epoch 9] Step 140/152 | Total: 1.1485 | KL: 0.3249 | CE: 1.6473
+[Epoch 009/30] Train: 1.2155 (KL:0.3826 CE:1.6658) | Val: 1.1265 | LR: 1.59e-04 | Time: 367.9s
+  [Metrics @74] CSI=0.5871 | POD=0.6657 | FAR=0.1674 | HSS=0.6834
+  [Metrics @133] CSI=0.2741 | POD=0.3080 | FAR=0.2865 | HSS=0.4041
+------------------------------------------------------------
+  [Epoch 10] Step 20/152 | Total: 1.2272 | KL: 0.3769 | CE: 1.7006
+  [Epoch 10] Step 40/152 | Total: 1.2214 | KL: 0.3916 | CE: 1.6596
+  [Epoch 10] Step 60/152 | Total: 1.3138 | KL: 0.3788 | CE: 1.8699
+  [Epoch 10] Step 80/152 | Total: 1.2043 | KL: 0.3227 | CE: 1.7631
+  [Epoch 10] Step 100/152 | Total: 1.1556 | KL: 0.3394 | CE: 1.6323
+  [Epoch 10] Step 120/152 | Total: 1.2587 | KL: 0.4037 | CE: 1.7100
+  [Epoch 10] Step 140/152 | Total: 1.1908 | KL: 0.3880 | CE: 1.6056
+[Epoch 010/30] Train: 1.2190 (KL:0.3807 CE:1.6766) | Val: 1.1430 | LR: 1.50e-04 | Time: 368.1s
+  [Metrics @74] CSI=0.6238 | POD=0.7446 | FAR=0.2063 | HSS=0.7126
+  [Metrics @133] CSI=0.3059 | POD=0.3551 | FAR=0.3115 | HSS=0.4409
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.6238
+------------------------------------------------------------
+  [Epoch 11] Step 20/152 | Total: 1.2570 | KL: 0.4219 | CE: 1.6702
+  [Epoch 11] Step 40/152 | Total: 1.3070 | KL: 0.4384 | CE: 1.7372
+  [Epoch 11] Step 60/152 | Total: 1.2432 | KL: 0.4540 | CE: 1.5786
+  [Epoch 11] Step 80/152 | Total: 1.2111 | KL: 0.4123 | CE: 1.5975
+  [Epoch 11] Step 100/152 | Total: 1.2100 | KL: 0.4047 | CE: 1.6105
+  [Epoch 11] Step 120/152 | Total: 1.2133 | KL: 0.4075 | CE: 1.6117
+  [Epoch 11] Step 140/152 | Total: 1.2584 | KL: 0.4234 | CE: 1.6701
+[Epoch 011/30] Train: 1.2136 (KL:0.3838 CE:1.6597) | Val: 1.1136 | LR: 1.41e-04 | Time: 367.8s
+  [Metrics @74] CSI=0.6141 | POD=0.7173 | FAR=0.1898 | HSS=0.7054
+  [Metrics @133] CSI=0.3373 | POD=0.4081 | FAR=0.3399 | HSS=0.4752
+------------------------------------------------------------
+  [Epoch 12] Step 20/152 | Total: 1.1770 | KL: 0.3572 | CE: 1.6396
+  [Epoch 12] Step 40/152 | Total: 1.2412 | KL: 0.3934 | CE: 1.6957
+  [Epoch 12] Step 60/152 | Total: 1.2062 | KL: 0.3938 | CE: 1.6248
+  [Epoch 12] Step 80/152 | Total: 1.2494 | KL: 0.3908 | CE: 1.7171
+  [Epoch 12] Step 100/152 | Total: 1.2188 | KL: 0.4131 | CE: 1.6114
+  [Epoch 12] Step 120/152 | Total: 1.2426 | KL: 0.4382 | CE: 1.6087
+  [Epoch 12] Step 140/152 | Total: 1.2637 | KL: 0.4179 | CE: 1.6915
+[Epoch 012/30] Train: 1.2162 (KL:0.3885 CE:1.6554) | Val: 1.2354 | LR: 1.32e-04 | Time: 368.1s
+  [Metrics @74] CSI=0.5429 | POD=0.5947 | FAR=0.1384 | HSS=0.6457
+  [Metrics @133] CSI=0.1270 | POD=0.1301 | FAR=0.1574 | HSS=0.2100
+------------------------------------------------------------
+  [Epoch 13] Step 20/152 | Total: 1.1875 | KL: 0.3099 | CE: 1.7553
+  [Epoch 13] Step 40/152 | Total: 1.2483 | KL: 0.3665 | CE: 1.7637
+  [Epoch 13] Step 60/152 | Total: 1.1915 | KL: 0.3765 | CE: 1.6302
+  [Epoch 13] Step 80/152 | Total: 1.2107 | KL: 0.3963 | CE: 1.6288
+  [Epoch 13] Step 100/152 | Total: 1.1714 | KL: 0.3997 | CE: 1.5435
+  [Epoch 13] Step 120/152 | Total: 1.2197 | KL: 0.3889 | CE: 1.6617
+  [Epoch 13] Step 140/152 | Total: 1.2209 | KL: 0.3815 | CE: 1.6789
+[Epoch 013/30] Train: 1.2189 (KL:0.3789 CE:1.6801) | Val: 1.0562 | LR: 1.22e-04 | Time: 367.0s
+  [Metrics @74] CSI=0.6156 | POD=0.7329 | FAR=0.2062 | HSS=0.7054
+  [Metrics @133] CSI=0.2842 | POD=0.3229 | FAR=0.2964 | HSS=0.4159
+------------------------------------------------------------
+  [Epoch 14] Step 20/152 | Total: 1.2315 | KL: 0.3786 | CE: 1.7059
+  [Epoch 14] Step 40/152 | Total: 1.1908 | KL: 0.3232 | CE: 1.7351
+  [Epoch 14] Step 60/152 | Total: 1.2157 | KL: 0.3703 | CE: 1.6907
+  [Epoch 14] Step 80/152 | Total: 1.2074 | KL: 0.3902 | CE: 1.6346
+  [Epoch 14] Step 100/152 | Total: 1.2479 | KL: 0.4363 | CE: 1.6231
+  [Epoch 14] Step 120/152 | Total: 1.2507 | KL: 0.4422 | CE: 1.6170
+  [Epoch 14] Step 140/152 | Total: 1.1684 | KL: 0.3367 | CE: 1.6634
+[Epoch 014/30] Train: 1.2150 (KL:0.3721 CE:1.6858) | Val: 1.0752 | LR: 1.11e-04 | Time: 368.0s
+  [Metrics @74] CSI=0.6220 | POD=0.7436 | FAR=0.2081 | HSS=0.7108
+  [Metrics @133] CSI=0.3017 | POD=0.3482 | FAR=0.3070 | HSS=0.4361
+------------------------------------------------------------
+  [Epoch 15] Step 20/152 | Total: 1.2157 | KL: 0.4000 | CE: 1.6314
+  [Epoch 15] Step 40/152 | Total: 1.1919 | KL: 0.3919 | CE: 1.6000
+  [Epoch 15] Step 60/152 | Total: 1.2601 | KL: 0.4163 | CE: 1.6876
+  [Epoch 15] Step 80/152 | Total: 1.1893 | KL: 0.3592 | CE: 1.6603
+  [Epoch 15] Step 100/152 | Total: 1.2071 | KL: 0.3573 | CE: 1.6997
+  [Epoch 15] Step 120/152 | Total: 1.2443 | KL: 0.3677 | CE: 1.7533
+  [Epoch 15] Step 140/152 | Total: 1.2320 | KL: 0.4168 | CE: 1.6303
+[Epoch 015/30] Train: 1.2159 (KL:0.3920 CE:1.6477) | Val: 1.1481 | LR: 1.01e-04 | Time: 368.3s
+  [Metrics @74] CSI=0.6187 | POD=0.7254 | FAR=0.1921 | HSS=0.7093
+  [Metrics @133] CSI=0.2457 | POD=0.2675 | FAR=0.2495 | HSS=0.3704
+------------------------------------------------------------
+  [Epoch 16] Step 20/152 | Total: 1.2540 | KL: 0.3851 | CE: 1.7378
+  [Epoch 16] Step 40/152 | Total: 1.2681 | KL: 0.4066 | CE: 1.7230
+  [Epoch 16] Step 60/152 | Total: 1.2035 | KL: 0.4253 | CE: 1.5564
+  [Epoch 16] Step 80/152 | Total: 1.2865 | KL: 0.4608 | CE: 1.6515
+  [Epoch 16] Step 100/152 | Total: 1.2005 | KL: 0.3957 | CE: 1.6097
+  [Epoch 16] Step 120/152 | Total: 1.1902 | KL: 0.3819 | CE: 1.6166
+  [Epoch 16] Step 140/152 | Total: 1.3173 | KL: 0.4386 | CE: 1.7573
+[Epoch 016/30] Train: 1.2082 (KL:0.3923 CE:1.6317) | Val: 1.1004 | LR: 9.07e-05 | Time: 368.1s
+  [Metrics @74] CSI=0.6324 | POD=0.7762 | FAR=0.2265 | HSS=0.7182
+  [Metrics @133] CSI=0.3860 | POD=0.5303 | FAR=0.4134 | HSS=0.5242
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.6324
+------------------------------------------------------------
+  [Epoch 17] Step 20/152 | Total: 1.2577 | KL: 0.4098 | CE: 1.6958
+  [Epoch 17] Step 40/152 | Total: 1.1015 | KL: 0.3199 | CE: 1.5632
+  [Epoch 17] Step 60/152 | Total: 1.2516 | KL: 0.4083 | CE: 1.6865
+  [Epoch 17] Step 80/152 | Total: 1.2971 | KL: 0.4555 | CE: 1.6832
+  [Epoch 17] Step 100/152 | Total: 1.2007 | KL: 0.3933 | CE: 1.6147
+  [Epoch 17] Step 120/152 | Total: 1.2742 | KL: 0.3849 | CE: 1.7788
+  [Epoch 17] Step 140/152 | Total: 1.2103 | KL: 0.4017 | CE: 1.6171
+[Epoch 017/30] Train: 1.2229 (KL:0.4003 CE:1.6453) | Val: 1.0773 | LR: 8.04e-05 | Time: 367.7s
+  [Metrics @74] CSI=0.6289 | POD=0.7647 | FAR=0.2203 | HSS=0.7157
+  [Metrics @133] CSI=0.3468 | POD=0.4379 | FAR=0.3750 | HSS=0.4841
+------------------------------------------------------------
+  [Epoch 18] Step 20/152 | Total: 1.2548 | KL: 0.4010 | CE: 1.7076
+  [Epoch 18] Step 40/152 | Total: 1.2824 | KL: 0.4338 | CE: 1.6972
+  [Epoch 18] Step 60/152 | Total: 1.2153 | KL: 0.4077 | CE: 1.6153
+  [Epoch 18] Step 80/152 | Total: 1.3060 | KL: 0.4945 | CE: 1.6231
+  [Epoch 18] Step 100/152 | Total: 1.2301 | KL: 0.3799 | CE: 1.7004
+  [Epoch 18] Step 120/152 | Total: 1.2023 | KL: 0.3776 | CE: 1.6495
+  [Epoch 18] Step 140/152 | Total: 1.2419 | KL: 0.4197 | CE: 1.6443
+[Epoch 018/30] Train: 1.2199 (KL:0.4028 CE:1.6342) | Val: 1.1359 | LR: 7.04e-05 | Time: 367.7s
+  [Metrics @74] CSI=0.6208 | POD=0.7293 | FAR=0.1934 | HSS=0.7110
+  [Metrics @133] CSI=0.3391 | POD=0.4104 | FAR=0.3387 | HSS=0.4774
+------------------------------------------------------------
+  [Epoch 19] Step 20/152 | Total: 1.2194 | KL: 0.4078 | CE: 1.6231
+  [Epoch 19] Step 40/152 | Total: 1.1415 | KL: 0.3595 | CE: 1.5641
+  [Epoch 19] Step 60/152 | Total: 1.2513 | KL: 0.4195 | CE: 1.6638
+  [Epoch 19] Step 80/152 | Total: 1.2127 | KL: 0.4028 | CE: 1.6199
+  [Epoch 19] Step 100/152 | Total: 1.3250 | KL: 0.4730 | CE: 1.7040
+  [Epoch 19] Step 120/152 | Total: 1.1315 | KL: 0.3814 | CE: 1.5001
+  [Epoch 19] Step 140/152 | Total: 1.2275 | KL: 0.4283 | CE: 1.5984
+[Epoch 019/30] Train: 1.2154 (KL:0.4067 CE:1.6175) | Val: 1.0225 | LR: 6.07e-05 | Time: 368.0s
+  [Metrics @74] CSI=0.6102 | POD=0.6989 | FAR=0.1721 | HSS=0.7035
+  [Metrics @133] CSI=0.2936 | POD=0.3316 | FAR=0.2804 | HSS=0.4277
+------------------------------------------------------------
+  [Epoch 20] Step 20/152 | Total: 1.2720 | KL: 0.4256 | CE: 1.6927
+  [Epoch 20] Step 40/152 | Total: 1.1434 | KL: 0.3653 | CE: 1.5563
+  [Epoch 20] Step 60/152 | Total: 1.2304 | KL: 0.3928 | CE: 1.6751
+  [Epoch 20] Step 80/152 | Total: 1.2954 | KL: 0.4575 | CE: 1.6759
+  [Epoch 20] Step 100/152 | Total: 1.0892 | KL: 0.3448 | CE: 1.4887
+  [Epoch 20] Step 120/152 | Total: 1.1406 | KL: 0.3875 | CE: 1.5062
+  [Epoch 20] Step 140/152 | Total: 1.0842 | KL: 0.3447 | CE: 1.4790
+[Epoch 020/30] Train: 1.2163 (KL:0.4046 CE:1.6234) | Val: 1.1213 | LR: 5.15e-05 | Time: 368.7s
+  [Metrics @74] CSI=0.6377 | POD=0.8152 | FAR=0.2546 | HSS=0.7201
+  [Metrics @133] CSI=0.3950 | POD=0.5511 | FAR=0.4177 | HSS=0.5333
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.6377
+------------------------------------------------------------
+  [Epoch 21] Step 20/152 | Total: 1.2793 | KL: 0.4357 | CE: 1.6872
+  [Epoch 21] Step 40/152 | Total: 1.2559 | KL: 0.4408 | CE: 1.6303
+  [Epoch 21] Step 60/152 | Total: 1.2250 | KL: 0.4126 | CE: 1.6248
+  [Epoch 21] Step 80/152 | Total: 1.2228 | KL: 0.4019 | CE: 1.6418
+  [Epoch 21] Step 100/152 | Total: 1.2500 | KL: 0.4336 | CE: 1.6329
+  [Epoch 21] Step 120/152 | Total: 1.1404 | KL: 0.3830 | CE: 1.5147
+  [Epoch 21] Step 140/152 | Total: 1.3113 | KL: 0.4638 | CE: 1.6950
+[Epoch 021/30] Train: 1.2184 (KL:0.4119 CE:1.6131) | Val: 1.0460 | LR: 4.28e-05 | Time: 368.6s
+  [Metrics @74] CSI=0.5855 | POD=0.6494 | FAR=0.1439 | HSS=0.6839
+  [Metrics @133] CSI=0.3080 | POD=0.3511 | FAR=0.2852 | HSS=0.4443
+------------------------------------------------------------
+  [Epoch 22] Step 20/152 | Total: 1.3009 | KL: 0.4773 | CE: 1.6471
+  [Epoch 22] Step 40/152 | Total: 1.2031 | KL: 0.4084 | CE: 1.5894
+  [Epoch 22] Step 60/152 | Total: 1.2016 | KL: 0.3929 | CE: 1.6174
+  [Epoch 22] Step 80/152 | Total: 1.2709 | KL: 0.4628 | CE: 1.6161
+  [Epoch 22] Step 100/152 | Total: 1.2962 | KL: 0.4456 | CE: 1.7010
+  [Epoch 22] Step 120/152 | Total: 1.2648 | KL: 0.4395 | CE: 1.6506
+  [Epoch 22] Step 140/152 | Total: 1.2791 | KL: 0.4574 | CE: 1.6433
+[Epoch 022/30] Train: 1.2215 (KL:0.4184 CE:1.6063) | Val: 1.0655 | LR: 3.48e-05 | Time: 367.9s
+  [Metrics @74] CSI=0.6148 | POD=0.7081 | FAR=0.1765 | HSS=0.7072
+  [Metrics @133] CSI=0.3188 | POD=0.3693 | FAR=0.3001 | HSS=0.4561
+------------------------------------------------------------
+  [Epoch 23] Step 20/152 | Total: 1.2401 | KL: 0.4474 | CE: 1.5854
+  [Epoch 23] Step 40/152 | Total: 1.3099 | KL: 0.4446 | CE: 1.7307
+  [Epoch 23] Step 60/152 | Total: 1.2989 | KL: 0.4475 | CE: 1.7029
+  [Epoch 23] Step 80/152 | Total: 1.3186 | KL: 0.4448 | CE: 1.7475
+  [Epoch 23] Step 100/152 | Total: 1.2275 | KL: 0.4322 | CE: 1.5904
+  [Epoch 23] Step 120/152 | Total: 1.2551 | KL: 0.4586 | CE: 1.5930
+  [Epoch 23] Step 140/152 | Total: 1.1568 | KL: 0.3916 | CE: 1.5304
+[Epoch 023/30] Train: 1.2215 (KL:0.4226 CE:1.5978) | Val: 1.0696 | LR: 2.74e-05 | Time: 368.2s
+  [Metrics @74] CSI=0.6095 | POD=0.6946 | FAR=0.1673 | HSS=0.7033
+  [Metrics @133] CSI=0.2951 | POD=0.3319 | FAR=0.2729 | HSS=0.4298
+------------------------------------------------------------
+  [Epoch 24] Step 20/152 | Total: 1.4060 | KL: 0.5202 | CE: 1.7716
+  [Epoch 24] Step 40/152 | Total: 1.1924 | KL: 0.4048 | CE: 1.5753
+  [Epoch 24] Step 60/152 | Total: 1.3115 | KL: 0.4656 | CE: 1.6918
+  [Epoch 24] Step 80/152 | Total: 1.3211 | KL: 0.4654 | CE: 1.7114
+  [Epoch 24] Step 100/152 | Total: 1.2287 | KL: 0.4288 | CE: 1.5997
+  [Epoch 24] Step 120/152 | Total: 1.2113 | KL: 0.4095 | CE: 1.6037
+  [Epoch 24] Step 140/152 | Total: 1.1990 | KL: 0.4248 | CE: 1.5484
+[Epoch 024/30] Train: 1.2155 (KL:0.4193 CE:1.5923) | Val: 1.0670 | LR: 2.09e-05 | Time: 367.8s
+  [Metrics @74] CSI=0.6218 | POD=0.7171 | FAR=0.1761 | HSS=0.7133
+  [Metrics @133] CSI=0.3226 | POD=0.3708 | FAR=0.2871 | HSS=0.4610
+------------------------------------------------------------
+  [Epoch 25] Step 20/152 | Total: 1.1276 | KL: 0.4165 | CE: 1.4223
+  [Epoch 25] Step 40/152 | Total: 1.1761 | KL: 0.4061 | CE: 1.5400
+  [Epoch 25] Step 60/152 | Total: 1.2425 | KL: 0.4227 | CE: 1.6395
+  [Epoch 25] Step 80/152 | Total: 1.1780 | KL: 0.4006 | CE: 1.5547
+  [Epoch 25] Step 100/152 | Total: 1.1839 | KL: 0.4122 | CE: 1.5434
+  [Epoch 25] Step 120/152 | Total: 1.2608 | KL: 0.4395 | CE: 1.6428
+  [Epoch 25] Step 140/152 | Total: 1.2671 | KL: 0.4318 | CE: 1.6706
+[Epoch 025/30] Train: 1.2210 (KL:0.4259 CE:1.5901) | Val: 1.0635 | LR: 1.53e-05 | Time: 367.9s
+  [Metrics @74] CSI=0.6361 | POD=0.7590 | FAR=0.2028 | HSS=0.7236
+  [Metrics @133] CSI=0.3802 | POD=0.4840 | FAR=0.3606 | HSS=0.5209
+------------------------------------------------------------
+  [Epoch 26] Step 20/152 | Total: 1.2162 | KL: 0.4233 | CE: 1.5859
+  [Epoch 26] Step 40/152 | Total: 1.2422 | KL: 0.4209 | CE: 1.6427
+  [Epoch 26] Step 60/152 | Total: 1.2379 | KL: 0.4415 | CE: 1.5928
+  [Epoch 26] Step 80/152 | Total: 1.2456 | KL: 0.4443 | CE: 1.6025
+  [Epoch 26] Step 100/152 | Total: 1.2171 | KL: 0.4274 | CE: 1.5793
+  [Epoch 26] Step 120/152 | Total: 1.2125 | KL: 0.4178 | CE: 1.5895
+  [Epoch 26] Step 140/152 | Total: 1.2798 | KL: 0.4758 | CE: 1.6081
+[Epoch 026/30] Train: 1.2182 (KL:0.4234 CE:1.5896) | Val: 1.0575 | LR: 1.06e-05 | Time: 367.7s
+  [Metrics @74] CSI=0.6328 | POD=0.7465 | FAR=0.1940 | HSS=0.7214
+  [Metrics @133] CSI=0.3614 | POD=0.4401 | FAR=0.3309 | HSS=0.5022
+------------------------------------------------------------
+  [Epoch 27] Step 20/152 | Total: 1.2184 | KL: 0.4233 | CE: 1.5903
+  [Epoch 27] Step 40/152 | Total: 1.2360 | KL: 0.4325 | CE: 1.6070
+  [Epoch 27] Step 60/152 | Total: 1.2045 | KL: 0.4210 | CE: 1.5668
+  [Epoch 27] Step 80/152 | Total: 1.1860 | KL: 0.3980 | CE: 1.5760
+  [Epoch 27] Step 100/152 | Total: 1.1995 | KL: 0.4162 | CE: 1.5665
+  [Epoch 27] Step 120/152 | Total: 1.3049 | KL: 0.4700 | CE: 1.6699
+  [Epoch 27] Step 140/152 | Total: 1.1456 | KL: 0.4010 | CE: 1.4893
+[Epoch 027/30] Train: 1.2168 (KL:0.4250 CE:1.5835) | Val: 1.0575 | LR: 6.85e-06 | Time: 368.7s
+  [Metrics @74] CSI=0.6274 | POD=0.7306 | FAR=0.1838 | HSS=0.7175
+  [Metrics @133] CSI=0.3383 | POD=0.3970 | FAR=0.3040 | HSS=0.4780
+------------------------------------------------------------
+  [Epoch 28] Step 20/152 | Total: 1.2032 | KL: 0.4173 | CE: 1.5718
+  [Epoch 28] Step 40/152 | Total: 1.1812 | KL: 0.4217 | CE: 1.5190
+  [Epoch 28] Step 60/152 | Total: 1.2287 | KL: 0.4403 | CE: 1.5767
+  [Epoch 28] Step 80/152 | Total: 1.2071 | KL: 0.4213 | CE: 1.5717
+  [Epoch 28] Step 100/152 | Total: 1.2404 | KL: 0.4539 | CE: 1.5731
+  [Epoch 28] Step 120/152 | Total: 1.2314 | KL: 0.4196 | CE: 1.6236
+  [Epoch 28] Step 140/152 | Total: 1.2584 | KL: 0.4498 | CE: 1.6172
+[Epoch 028/30] Train: 1.2172 (KL:0.4258 CE:1.5828) | Val: 1.0729 | LR: 4.16e-06 | Time: 368.3s
+  [Metrics @74] CSI=0.6388 | POD=0.7648 | FAR=0.2050 | HSS=0.7257
+  [Metrics @133] CSI=0.3635 | POD=0.4441 | FAR=0.3329 | HSS=0.5044
+  [Checkpoint] 保存最佳 OPSD 模型，CSI@74: 0.6388
+------------------------------------------------------------
+  [Epoch 29] Step 20/152 | Total: 1.3193 | KL: 0.4717 | CE: 1.6952
+  [Epoch 29] Step 40/152 | Total: 1.2311 | KL: 0.4397 | CE: 1.5829
+  [Epoch 29] Step 60/152 | Total: 1.2060 | KL: 0.4238 | CE: 1.5644
+  [Epoch 29] Step 80/152 | Total: 1.1915 | KL: 0.4046 | CE: 1.5737
+  [Epoch 29] Step 100/152 | Total: 1.2873 | KL: 0.4687 | CE: 1.6373
+  [Epoch 29] Step 120/152 | Total: 1.1538 | KL: 0.3980 | CE: 1.5115
+  [Epoch 29] Step 140/152 | Total: 1.1740 | KL: 0.3992 | CE: 1.5495
+[Epoch 029/30] Train: 1.2143 (KL:0.4234 CE:1.5816) | Val: 1.0648 | LR: 2.54e-06 | Time: 368.5s
+  [Metrics @74] CSI=0.6343 | POD=0.7486 | FAR=0.1940 | HSS=0.7227
+  [Metrics @133] CSI=0.3600 | POD=0.4366 | FAR=0.3279 | HSS=0.5008
+------------------------------------------------------------
+  [Epoch 30] Step 20/152 | Total: 1.1971 | KL: 0.4142 | CE: 1.5659
+  [Epoch 30] Step 40/152 | Total: 1.2413 | KL: 0.4354 | CE: 1.6119
+  [Epoch 30] Step 60/152 | Total: 1.2154 | KL: 0.4363 | CE: 1.5583
+  [Epoch 30] Step 80/152 | Total: 1.2341 | KL: 0.4326 | CE: 1.6031
+  [Epoch 30] Step 100/152 | Total: 1.2392 | KL: 0.4234 | CE: 1.6317
+  [Epoch 30] Step 120/152 | Total: 1.2901 | KL: 0.4499 | CE: 1.6804
+  [Epoch 30] Step 140/152 | Total: 1.1943 | KL: 0.3872 | CE: 1.6142
+[Epoch 030/30] Train: 1.2147 (KL:0.4242 CE:1.5810) | Val: 1.0678 | LR: 2.00e-06 | Time: 368.0s
+  [Metrics @74] CSI=0.6366 | POD=0.7564 | FAR=0.1993 | HSS=0.7242
+  [Metrics @133] CSI=0.3654 | POD=0.4475 | FAR=0.3342 | HSS=0.5064
+------------------------------------------------------------
+
+[Done] OPSD 训练完成！最佳 CSI@74: 0.6388
+       最佳模型已保存至：checkpoints_cbam/opsd/best.pth
+[Device] cuda  |  [Mode] OPSD+RW  |  [T] 2.0
+[RW] CSI 奖励阈值: 74
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+[WARNING] 未找到预训练权重：checkpoints_cbam/baseline/best.pth，从随机初始化开始
+
+[Train] OPSD+RW 训练，共 30 Epoch  →  checkpoints_cbam/opsd_rw
+        KL 权重: 1.0 | CE 权重: 0.5
+============================================================
+  [Epoch 1] Step 20/152 | Total: 1.2345 | KL: 0.0003 | CE: 2.4684 | CSI@74: 0.0926
+  [Epoch 1] Step 40/152 | Total: 1.1681 | KL: 0.0027 | CE: 2.3308 | CSI@74: 0.0493
+  [Epoch 1] Step 60/152 | Total: 1.1384 | KL: 0.0126 | CE: 2.2516 | CSI@74: 0.0339
+  [Epoch 1] Step 80/152 | Total: 1.1189 | KL: 0.0069 | CE: 2.2240 | CSI@74: 0.0328
+  [Epoch 1] Step 100/152 | Total: 1.0963 | KL: 0.0037 | CE: 2.1853 | CSI@74: 0.0462
+  [Epoch 1] Step 120/152 | Total: 1.1314 | KL: 0.0098 | CE: 2.2433 | CSI@74: 0.0587
+  [Epoch 1] Step 140/152 | Total: 1.0270 | KL: 0.0134 | CE: 2.0274 | CSI@74: 0.0700
+[Epoch 001/30] Train: 1.1620 (KL:0.0063 CE:2.3116) | Reward: 0.0769 | Val: 1.6371 | LR: 1.99e-04 | Time: 378.2s
+  [Metrics @74] CSI=0.3559 | POD=0.5173 | FAR=0.4672 | HSS=0.4080
+  [Metrics @133] CSI=0.0004 | POD=0.0004 | FAR=0.6808 | HSS=0.0006
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.3559
+------------------------------------------------------------
+  [Epoch 2] Step 20/152 | Total: 1.0972 | KL: 0.0113 | CE: 2.1717 | CSI@74: 0.1480
+  [Epoch 2] Step 40/152 | Total: 1.0609 | KL: 0.0236 | CE: 2.0747 | CSI@74: 0.1357
+  [Epoch 2] Step 60/152 | Total: 1.0317 | KL: 0.0210 | CE: 2.0214 | CSI@74: 0.1411
+  [Epoch 2] Step 80/152 | Total: 1.0381 | KL: 0.0218 | CE: 2.0324 | CSI@74: 0.1470
+  [Epoch 2] Step 100/152 | Total: 1.0626 | KL: 0.0213 | CE: 2.0825 | CSI@74: 0.1514
+  [Epoch 2] Step 120/152 | Total: 1.0390 | KL: 0.0313 | CE: 2.0153 | CSI@74: 0.1569
+  [Epoch 2] Step 140/152 | Total: 1.0053 | KL: 0.0317 | CE: 1.9472 | CSI@74: 0.1643
+[Epoch 002/30] Train: 1.0597 (KL:0.0279 CE:2.0636) | Reward: 0.1666 | Val: 1.4203 | LR: 1.98e-04 | Time: 376.8s
+  [Metrics @74] CSI=0.4456 | POD=0.6088 | FAR=0.3756 | HSS=0.5218
+  [Metrics @133] CSI=0.0425 | POD=0.0449 | FAR=0.5575 | HSS=0.0691
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.4456
+------------------------------------------------------------
+  [Epoch 3] Step 20/152 | Total: 1.0620 | KL: 0.0438 | CE: 2.0364 | CSI@74: 0.1933
+  [Epoch 3] Step 40/152 | Total: 1.0459 | KL: 0.0481 | CE: 1.9957 | CSI@74: 0.2017
+  [Epoch 3] Step 60/152 | Total: 0.9899 | KL: 0.0470 | CE: 1.8858 | CSI@74: 0.2024
+  [Epoch 3] Step 80/152 | Total: 1.0053 | KL: 0.0513 | CE: 1.9081 | CSI@74: 0.2086
+  [Epoch 3] Step 100/152 | Total: 0.9672 | KL: 0.0447 | CE: 1.8451 | CSI@74: 0.2093
+  [Epoch 3] Step 120/152 | Total: 1.0666 | KL: 0.0533 | CE: 2.0265 | CSI@74: 0.2084
+  [Epoch 3] Step 140/152 | Total: 1.0253 | KL: 0.0387 | CE: 1.9732 | CSI@74: 0.2111
+[Epoch 003/30] Train: 1.0336 (KL:0.0503 CE:1.9666) | Reward: 0.2148 | Val: 1.3015 | LR: 1.95e-04 | Time: 376.1s
+  [Metrics @74] CSI=0.4958 | POD=0.6408 | FAR=0.3133 | HSS=0.5820
+  [Metrics @133] CSI=0.0767 | POD=0.0824 | FAR=0.4776 | HSS=0.1251
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.4958
+------------------------------------------------------------
+  [Epoch 4] Step 20/152 | Total: 1.0028 | KL: 0.0577 | CE: 1.8903 | CSI@74: 0.2038
+  [Epoch 4] Step 40/152 | Total: 0.9975 | KL: 0.0566 | CE: 1.8819 | CSI@74: 0.2110
+  [Epoch 4] Step 60/152 | Total: 1.0243 | KL: 0.0498 | CE: 1.9489 | CSI@74: 0.2087
+  [Epoch 4] Step 80/152 | Total: 1.0052 | KL: 0.0612 | CE: 1.8881 | CSI@74: 0.2186
+  [Epoch 4] Step 100/152 | Total: 1.0217 | KL: 0.0680 | CE: 1.9074 | CSI@74: 0.2238
+  [Epoch 4] Step 120/152 | Total: 1.0018 | KL: 0.0671 | CE: 1.8694 | CSI@74: 0.2288
+  [Epoch 4] Step 140/152 | Total: 0.9965 | KL: 0.0618 | CE: 1.8693 | CSI@74: 0.2332
+[Epoch 004/30] Train: 1.0173 (KL:0.0651 CE:1.9044) | Reward: 0.2357 | Val: 1.2425 | LR: 1.91e-04 | Time: 376.4s
+  [Metrics @74] CSI=0.4652 | POD=0.5378 | FAR=0.2249 | HSS=0.5633
+  [Metrics @133] CSI=0.0854 | POD=0.0895 | FAR=0.3489 | HSS=0.1423
+------------------------------------------------------------
+  [Epoch 5] Step 20/152 | Total: 1.0082 | KL: 0.0782 | CE: 1.8600 | CSI@74: 0.2450
+  [Epoch 5] Step 40/152 | Total: 1.0075 | KL: 0.0743 | CE: 1.8664 | CSI@74: 0.2461
+  [Epoch 5] Step 60/152 | Total: 1.2187 | KL: 0.0898 | CE: 2.2578 | CSI@74: 0.2528
+  [Epoch 5] Step 80/152 | Total: 1.0947 | KL: 0.0884 | CE: 2.0127 | CSI@74: 0.2506
+  [Epoch 5] Step 100/152 | Total: 1.0115 | KL: 0.0908 | CE: 1.8414 | CSI@74: 0.2518
+  [Epoch 5] Step 120/152 | Total: 1.0266 | KL: 0.0700 | CE: 1.9131 | CSI@74: 0.2525
+  [Epoch 5] Step 140/152 | Total: 0.9769 | KL: 0.0815 | CE: 1.7907 | CSI@74: 0.2517
+[Epoch 005/30] Train: 1.0110 (KL:0.0785 CE:1.8651) | Reward: 0.2519 | Val: 1.2719 | LR: 1.87e-04 | Time: 376.5s
+  [Metrics @74] CSI=0.5592 | POD=0.7931 | FAR=0.3454 | HSS=0.6377
+  [Metrics @133] CSI=0.2994 | POD=0.4990 | FAR=0.5720 | HSS=0.4150
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.5592
+------------------------------------------------------------
+  [Epoch 6] Step 20/152 | Total: 1.0194 | KL: 0.0966 | CE: 1.8456 | CSI@74: 0.2426
+  [Epoch 6] Step 40/152 | Total: 1.0061 | KL: 0.0897 | CE: 1.8329 | CSI@74: 0.2524
+  [Epoch 6] Step 60/152 | Total: 1.0221 | KL: 0.0708 | CE: 1.9027 | CSI@74: 0.2523
+  [Epoch 6] Step 80/152 | Total: 0.9893 | KL: 0.0844 | CE: 1.8099 | CSI@74: 0.2541
+  [Epoch 6] Step 100/152 | Total: 1.0200 | KL: 0.1126 | CE: 1.8148 | CSI@74: 0.2603
+  [Epoch 6] Step 120/152 | Total: 1.0543 | KL: 0.0934 | CE: 1.9218 | CSI@74: 0.2610
+  [Epoch 6] Step 140/152 | Total: 1.0341 | KL: 0.1156 | CE: 1.8370 | CSI@74: 0.2616
+[Epoch 006/30] Train: 1.0081 (KL:0.0876 CE:1.8411) | Reward: 0.2617 | Val: 1.1646 | LR: 1.81e-04 | Time: 375.4s
+  [Metrics @74] CSI=0.5128 | POD=0.6054 | FAR=0.2298 | HSS=0.6089
+  [Metrics @133] CSI=0.1204 | POD=0.1301 | FAR=0.3828 | HSS=0.1946
+------------------------------------------------------------
+  [Epoch 7] Step 20/152 | Total: 1.0203 | KL: 0.1010 | CE: 1.8385 | CSI@74: 0.2589
+  [Epoch 7] Step 40/152 | Total: 1.0132 | KL: 0.0872 | CE: 1.8520 | CSI@74: 0.2488
+  [Epoch 7] Step 60/152 | Total: 1.0244 | KL: 0.0738 | CE: 1.9010 | CSI@74: 0.2565
+  [Epoch 7] Step 80/152 | Total: 1.0081 | KL: 0.1156 | CE: 1.7850 | CSI@74: 0.2561
+  [Epoch 7] Step 100/152 | Total: 0.9666 | KL: 0.0903 | CE: 1.7525 | CSI@74: 0.2514
+  [Epoch 7] Step 120/152 | Total: 0.9885 | KL: 0.0837 | CE: 1.8097 | CSI@74: 0.2554
+  [Epoch 7] Step 140/152 | Total: 0.9337 | KL: 0.1030 | CE: 1.6615 | CSI@74: 0.2570
+[Epoch 007/30] Train: 1.0125 (KL:0.0989 CE:1.8273) | Reward: 0.2569 | Val: 1.1720 | LR: 1.75e-04 | Time: 375.1s
+  [Metrics @74] CSI=0.4975 | POD=0.5666 | FAR=0.1968 | HSS=0.5978
+  [Metrics @133] CSI=0.2121 | POD=0.2481 | FAR=0.4063 | HSS=0.3209
+------------------------------------------------------------
+  [Epoch 8] Step 20/152 | Total: 0.9721 | KL: 0.1112 | CE: 1.7218 | CSI@74: 0.2289
+  [Epoch 8] Step 40/152 | Total: 0.9729 | KL: 0.1080 | CE: 1.7298 | CSI@74: 0.2394
+  [Epoch 8] Step 60/152 | Total: 0.9730 | KL: 0.1083 | CE: 1.7294 | CSI@74: 0.2497
+  [Epoch 8] Step 80/152 | Total: 1.0526 | KL: 0.1414 | CE: 1.8224 | CSI@74: 0.2503
+  [Epoch 8] Step 100/152 | Total: 1.0266 | KL: 0.1230 | CE: 1.8071 | CSI@74: 0.2477
+  [Epoch 8] Step 120/152 | Total: 1.0165 | KL: 0.1280 | CE: 1.7769 | CSI@74: 0.2474
+  [Epoch 8] Step 140/152 | Total: 1.0164 | KL: 0.1250 | CE: 1.7828 | CSI@74: 0.2513
+[Epoch 008/30] Train: 1.0227 (KL:0.1143 CE:1.8169) | Reward: 0.2505 | Val: 1.2093 | LR: 1.67e-04 | Time: 375.9s
+  [Metrics @74] CSI=0.3569 | POD=0.3802 | FAR=0.1465 | HSS=0.4592
+  [Metrics @133] CSI=0.0485 | POD=0.0494 | FAR=0.2664 | HSS=0.0841
+------------------------------------------------------------
+  [Epoch 9] Step 20/152 | Total: 1.0127 | KL: 0.1222 | CE: 1.7810 | CSI@74: 0.2563
+  [Epoch 9] Step 40/152 | Total: 1.0083 | KL: 0.1189 | CE: 1.7787 | CSI@74: 0.2601
+  [Epoch 9] Step 60/152 | Total: 0.9959 | KL: 0.1054 | CE: 1.7810 | CSI@74: 0.2491
+  [Epoch 9] Step 80/152 | Total: 1.1172 | KL: 0.1171 | CE: 2.0002 | CSI@74: 0.2551
+  [Epoch 9] Step 100/152 | Total: 0.9917 | KL: 0.1286 | CE: 1.7262 | CSI@74: 0.2580
+  [Epoch 9] Step 120/152 | Total: 1.0128 | KL: 0.1026 | CE: 1.8204 | CSI@74: 0.2559
+  [Epoch 9] Step 140/152 | Total: 0.9663 | KL: 0.0996 | CE: 1.7335 | CSI@74: 0.2600
+[Epoch 009/30] Train: 1.0263 (KL:0.1231 CE:1.8063) | Reward: 0.2620 | Val: 1.1296 | LR: 1.59e-04 | Time: 376.6s
+  [Metrics @74] CSI=0.4586 | POD=0.4943 | FAR=0.1361 | HSS=0.5654
+  [Metrics @133] CSI=0.1822 | POD=0.1992 | FAR=0.3188 | HSS=0.2847
+------------------------------------------------------------
+  [Epoch 10] Step 20/152 | Total: 1.0548 | KL: 0.1336 | CE: 1.8424 | CSI@74: 0.2748
+  [Epoch 10] Step 40/152 | Total: 1.0142 | KL: 0.1402 | CE: 1.7481 | CSI@74: 0.2722
+  [Epoch 10] Step 60/152 | Total: 1.0292 | KL: 0.1210 | CE: 1.8164 | CSI@74: 0.2668
+  [Epoch 10] Step 80/152 | Total: 1.0079 | KL: 0.1139 | CE: 1.7880 | CSI@74: 0.2711
+  [Epoch 10] Step 100/152 | Total: 1.0055 | KL: 0.1356 | CE: 1.7398 | CSI@74: 0.2707
+  [Epoch 10] Step 120/152 | Total: 1.0472 | KL: 0.1469 | CE: 1.8006 | CSI@74: 0.2716
+  [Epoch 10] Step 140/152 | Total: 1.0569 | KL: 0.1682 | CE: 1.7775 | CSI@74: 0.2694
+[Epoch 010/30] Train: 1.0366 (KL:0.1393 CE:1.7947) | Reward: 0.2618 | Val: 1.2330 | LR: 1.50e-04 | Time: 376.2s
+  [Metrics @74] CSI=0.5667 | POD=0.7061 | FAR=0.2583 | HSS=0.6562
+  [Metrics @133] CSI=0.1025 | POD=0.1066 | FAR=0.2732 | HSS=0.1705
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.5667
+------------------------------------------------------------
+  [Epoch 11] Step 20/152 | Total: 1.0030 | KL: 0.1313 | CE: 1.7433 | CSI@74: 0.2930
+  [Epoch 11] Step 40/152 | Total: 1.0917 | KL: 0.1722 | CE: 1.8391 | CSI@74: 0.2862
+  [Epoch 11] Step 60/152 | Total: 1.0428 | KL: 0.1760 | CE: 1.7337 | CSI@74: 0.2861
+  [Epoch 11] Step 80/152 | Total: 0.9836 | KL: 0.1451 | CE: 1.6770 | CSI@74: 0.2845
+  [Epoch 11] Step 100/152 | Total: 0.9964 | KL: 0.1205 | CE: 1.7518 | CSI@74: 0.2748
+  [Epoch 11] Step 120/152 | Total: 0.9920 | KL: 0.1383 | CE: 1.7073 | CSI@74: 0.2757
+  [Epoch 11] Step 140/152 | Total: 1.0930 | KL: 0.1799 | CE: 1.8263 | CSI@74: 0.2759
+[Epoch 011/30] Train: 1.0293 (KL:0.1437 CE:1.7712) | Reward: 0.2734 | Val: 1.2295 | LR: 1.41e-04 | Time: 374.7s
+  [Metrics @74] CSI=0.5904 | POD=0.7522 | FAR=0.2670 | HSS=0.6769
+  [Metrics @133] CSI=0.2815 | POD=0.3481 | FAR=0.4047 | HSS=0.4075
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.5904
+------------------------------------------------------------
+  [Epoch 12] Step 20/152 | Total: 0.9987 | KL: 0.1329 | CE: 1.7318 | CSI@74: 0.2891
+  [Epoch 12] Step 40/152 | Total: 1.0968 | KL: 0.1435 | CE: 1.9064 | CSI@74: 0.2675
+  [Epoch 12] Step 60/152 | Total: 1.0430 | KL: 0.1205 | CE: 1.8450 | CSI@74: 0.2521
+  [Epoch 12] Step 80/152 | Total: 1.0729 | KL: 0.1480 | CE: 1.8500 | CSI@74: 0.2628
+  [Epoch 12] Step 100/152 | Total: 1.0108 | KL: 0.1539 | CE: 1.7139 | CSI@74: 0.2675
+  [Epoch 12] Step 120/152 | Total: 1.0177 | KL: 0.1802 | CE: 1.6751 | CSI@74: 0.2692
+  [Epoch 12] Step 140/152 | Total: 1.1040 | KL: 0.1476 | CE: 1.9128 | CSI@74: 0.2663
+[Epoch 012/30] Train: 1.0435 (KL:0.1541 CE:1.7789) | Reward: 0.2677 | Val: 1.2023 | LR: 1.32e-04 | Time: 375.3s
+  [Metrics @74] CSI=0.5985 | POD=0.8247 | FAR=0.3142 | HSS=0.6784
+  [Metrics @133] CSI=0.3074 | POD=0.3972 | FAR=0.4236 | HSS=0.4369
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.5985
+------------------------------------------------------------
+  [Epoch 13] Step 20/152 | Total: 1.0441 | KL: 0.1599 | CE: 1.7684 | CSI@74: 0.2782
+  [Epoch 13] Step 40/152 | Total: 1.0836 | KL: 0.1740 | CE: 1.8194 | CSI@74: 0.2746
+  [Epoch 13] Step 60/152 | Total: 1.0411 | KL: 0.1382 | CE: 1.8058 | CSI@74: 0.2776
+  [Epoch 13] Step 80/152 | Total: 1.2139 | KL: 0.2545 | CE: 1.9187 | CSI@74: 0.2729
+  [Epoch 13] Step 100/152 | Total: 1.0353 | KL: 0.1997 | CE: 1.6710 | CSI@74: 0.2734
+  [Epoch 13] Step 120/152 | Total: 0.9918 | KL: 0.1555 | CE: 1.6727 | CSI@74: 0.2756
+  [Epoch 13] Step 140/152 | Total: 1.0245 | KL: 0.1587 | CE: 1.7317 | CSI@74: 0.2776
+[Epoch 013/30] Train: 1.0428 (KL:0.1674 CE:1.7508) | Reward: 0.2774 | Val: 1.1539 | LR: 1.22e-04 | Time: 375.5s
+  [Metrics @74] CSI=0.6052 | POD=0.7695 | FAR=0.2608 | HSS=0.6908
+  [Metrics @133] CSI=0.3055 | POD=0.3832 | FAR=0.3991 | HSS=0.4360
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6052
+------------------------------------------------------------
+  [Epoch 14] Step 20/152 | Total: 1.0133 | KL: 0.1769 | CE: 1.6729 | CSI@74: 0.2670
+  [Epoch 14] Step 40/152 | Total: 1.0401 | KL: 0.1852 | CE: 1.7099 | CSI@74: 0.2801
+  [Epoch 14] Step 60/152 | Total: 1.0178 | KL: 0.1447 | CE: 1.7462 | CSI@74: 0.2844
+  [Epoch 14] Step 80/152 | Total: 1.0374 | KL: 0.1731 | CE: 1.7285 | CSI@74: 0.2853
+  [Epoch 14] Step 100/152 | Total: 1.0286 | KL: 0.2014 | CE: 1.6545 | CSI@74: 0.2885
+  [Epoch 14] Step 120/152 | Total: 1.0677 | KL: 0.2061 | CE: 1.7232 | CSI@74: 0.2893
+  [Epoch 14] Step 140/152 | Total: 1.0204 | KL: 0.1998 | CE: 1.6412 | CSI@74: 0.2901
+[Epoch 014/30] Train: 1.0394 (KL:0.1821 CE:1.7147) | Reward: 0.2903 | Val: 1.2123 | LR: 1.11e-04 | Time: 375.8s
+  [Metrics @74] CSI=0.6071 | POD=0.7580 | FAR=0.2470 | HSS=0.6940
+  [Metrics @133] CSI=0.2372 | POD=0.2673 | FAR=0.3220 | HSS=0.3570
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6071
+------------------------------------------------------------
+  [Epoch 15] Step 20/152 | Total: 1.0759 | KL: 0.2274 | CE: 1.6970 | CSI@74: 0.2813
+  [Epoch 15] Step 40/152 | Total: 1.1200 | KL: 0.2423 | CE: 1.7553 | CSI@74: 0.2727
+  [Epoch 15] Step 60/152 | Total: 1.0560 | KL: 0.1706 | CE: 1.7708 | CSI@74: 0.2680
+  [Epoch 15] Step 80/152 | Total: 1.0122 | KL: 0.1408 | CE: 1.7427 | CSI@74: 0.2746
+  [Epoch 15] Step 100/152 | Total: 1.0905 | KL: 0.2386 | CE: 1.7037 | CSI@74: 0.2777
+  [Epoch 15] Step 120/152 | Total: 1.0689 | KL: 0.1855 | CE: 1.7668 | CSI@74: 0.2773
+  [Epoch 15] Step 140/152 | Total: 1.0691 | KL: 0.2081 | CE: 1.7219 | CSI@74: 0.2765
+[Epoch 015/30] Train: 1.0553 (KL:0.1878 CE:1.7350) | Reward: 0.2773 | Val: 1.1695 | LR: 1.01e-04 | Time: 375.9s
+  [Metrics @74] CSI=0.3336 | POD=0.3448 | FAR=0.0888 | HSS=0.4385
+  [Metrics @133] CSI=0.0557 | POD=0.0563 | FAR=0.1512 | HSS=0.0974
+------------------------------------------------------------
+  [Epoch 16] Step 20/152 | Total: 1.1283 | KL: 0.2008 | CE: 1.8551 | CSI@74: 0.2472
+  [Epoch 16] Step 40/152 | Total: 1.1455 | KL: 0.2216 | CE: 1.8478 | CSI@74: 0.2709
+  [Epoch 16] Step 60/152 | Total: 1.0365 | KL: 0.2107 | CE: 1.6516 | CSI@74: 0.2706
+  [Epoch 16] Step 80/152 | Total: 1.0716 | KL: 0.2103 | CE: 1.7227 | CSI@74: 0.2721
+  [Epoch 16] Step 100/152 | Total: 1.0129 | KL: 0.1511 | CE: 1.7235 | CSI@74: 0.2713
+  [Epoch 16] Step 120/152 | Total: 1.0379 | KL: 0.2166 | CE: 1.6426 | CSI@74: 0.2780
+  [Epoch 16] Step 140/152 | Total: 1.1894 | KL: 0.2134 | CE: 1.9521 | CSI@74: 0.2794
+[Epoch 016/30] Train: 1.0566 (KL:0.1930 CE:1.7273) | Reward: 0.2767 | Val: 1.0898 | LR: 9.07e-05 | Time: 375.7s
+  [Metrics @74] CSI=0.5710 | POD=0.6474 | FAR=0.1712 | HSS=0.6687
+  [Metrics @133] CSI=0.2042 | POD=0.2208 | FAR=0.2698 | HSS=0.3160
+------------------------------------------------------------
+  [Epoch 17] Step 20/152 | Total: 1.0936 | KL: 0.2142 | CE: 1.7588 | CSI@74: 0.2868
+  [Epoch 17] Step 40/152 | Total: 1.0425 | KL: 0.1461 | CE: 1.7927 | CSI@74: 0.2894
+  [Epoch 17] Step 60/152 | Total: 1.0457 | KL: 0.1842 | CE: 1.7230 | CSI@74: 0.2893
+  [Epoch 17] Step 80/152 | Total: 1.0578 | KL: 0.1995 | CE: 1.7164 | CSI@74: 0.2892
+  [Epoch 17] Step 100/152 | Total: 1.0416 | KL: 0.2063 | CE: 1.6706 | CSI@74: 0.2875
+  [Epoch 17] Step 120/152 | Total: 1.1174 | KL: 0.1903 | CE: 1.8542 | CSI@74: 0.2906
+  [Epoch 17] Step 140/152 | Total: 1.0350 | KL: 0.1988 | CE: 1.6723 | CSI@74: 0.2919
+[Epoch 017/30] Train: 1.0547 (KL:0.1975 CE:1.7145) | Reward: 0.2895 | Val: 1.0776 | LR: 8.04e-05 | Time: 376.4s
+  [Metrics @74] CSI=0.6005 | POD=0.7220 | FAR=0.2189 | HSS=0.6909
+  [Metrics @133] CSI=0.3374 | POD=0.4704 | FAR=0.4560 | HSS=0.4687
+------------------------------------------------------------
+  [Epoch 18] Step 20/152 | Total: 1.1024 | KL: 0.2164 | CE: 1.7721 | CSI@74: 0.3201
+  [Epoch 18] Step 40/152 | Total: 1.0790 | KL: 0.2004 | CE: 1.7570 | CSI@74: 0.3117
+  [Epoch 18] Step 60/152 | Total: 1.1227 | KL: 0.2320 | CE: 1.7815 | CSI@74: 0.2970
+  [Epoch 18] Step 80/152 | Total: 1.0296 | KL: 0.2072 | CE: 1.6448 | CSI@74: 0.2984
+  [Epoch 18] Step 100/152 | Total: 1.0586 | KL: 0.2182 | CE: 1.6809 | CSI@74: 0.2978
+  [Epoch 18] Step 120/152 | Total: 1.1158 | KL: 0.2032 | CE: 1.8251 | CSI@74: 0.2938
+  [Epoch 18] Step 140/152 | Total: 1.0671 | KL: 0.2167 | CE: 1.7007 | CSI@74: 0.2949
+[Epoch 018/30] Train: 1.0549 (KL:0.2066 CE:1.6967) | Reward: 0.2939 | Val: 1.1343 | LR: 7.04e-05 | Time: 375.2s
+  [Metrics @74] CSI=0.6063 | POD=0.7186 | FAR=0.2050 | HSS=0.6972
+  [Metrics @133] CSI=0.2853 | POD=0.3342 | FAR=0.3390 | HSS=0.4154
+------------------------------------------------------------
+  [Epoch 19] Step 20/152 | Total: 1.0666 | KL: 0.2434 | CE: 1.6465 | CSI@74: 0.3047
+  [Epoch 19] Step 40/152 | Total: 0.9698 | KL: 0.1562 | CE: 1.6273 | CSI@74: 0.2964
+  [Epoch 19] Step 60/152 | Total: 1.0804 | KL: 0.2046 | CE: 1.7516 | CSI@74: 0.2962
+  [Epoch 19] Step 80/152 | Total: 1.0983 | KL: 0.2587 | CE: 1.6792 | CSI@74: 0.2864
+  [Epoch 19] Step 100/152 | Total: 1.2269 | KL: 0.2593 | CE: 1.9350 | CSI@74: 0.2888
+  [Epoch 19] Step 120/152 | Total: 0.9639 | KL: 0.1781 | CE: 1.5716 | CSI@74: 0.2868
+  [Epoch 19] Step 140/152 | Total: 1.0496 | KL: 0.2149 | CE: 1.6693 | CSI@74: 0.2842
+[Epoch 019/30] Train: 1.0608 (KL:0.2093 CE:1.7031) | Reward: 0.2871 | Val: 1.1125 | LR: 6.07e-05 | Time: 375.8s
+  [Metrics @74] CSI=0.5419 | POD=0.6012 | FAR=0.1539 | HSS=0.6435
+  [Metrics @133] CSI=0.1533 | POD=0.1605 | FAR=0.2277 | HSS=0.2470
+------------------------------------------------------------
+  [Epoch 20] Step 20/152 | Total: 1.0436 | KL: 0.1753 | CE: 1.7366 | CSI@74: 0.3030
+  [Epoch 20] Step 40/152 | Total: 1.0257 | KL: 0.2155 | CE: 1.6205 | CSI@74: 0.3037
+  [Epoch 20] Step 60/152 | Total: 1.0783 | KL: 0.2104 | CE: 1.7359 | CSI@74: 0.2992
+  [Epoch 20] Step 80/152 | Total: 1.0879 | KL: 0.2161 | CE: 1.7437 | CSI@74: 0.3000
+  [Epoch 20] Step 100/152 | Total: 0.9606 | KL: 0.1858 | CE: 1.5495 | CSI@74: 0.3008
+  [Epoch 20] Step 120/152 | Total: 1.0008 | KL: 0.2241 | CE: 1.5535 | CSI@74: 0.2987
+  [Epoch 20] Step 140/152 | Total: 1.0077 | KL: 0.2284 | CE: 1.5586 | CSI@74: 0.2927
+[Epoch 020/30] Train: 1.0562 (KL:0.2104 CE:1.6916) | Reward: 0.2928 | Val: 1.1641 | LR: 5.15e-05 | Time: 376.1s
+  [Metrics @74] CSI=0.3908 | POD=0.4083 | FAR=0.0988 | HSS=0.4994
+  [Metrics @133] CSI=0.1093 | POD=0.1125 | FAR=0.2015 | HSS=0.1825
+------------------------------------------------------------
+  [Epoch 21] Step 20/152 | Total: 1.0792 | KL: 0.2041 | CE: 1.7501 | CSI@74: 0.2922
+  [Epoch 21] Step 40/152 | Total: 1.0580 | KL: 0.2072 | CE: 1.7017 | CSI@74: 0.2903
+  [Epoch 21] Step 60/152 | Total: 1.0476 | KL: 0.1841 | CE: 1.7270 | CSI@74: 0.2906
+  [Epoch 21] Step 80/152 | Total: 1.0768 | KL: 0.2237 | CE: 1.7062 | CSI@74: 0.2913
+  [Epoch 21] Step 100/152 | Total: 1.0797 | KL: 0.2366 | CE: 1.6862 | CSI@74: 0.2934
+  [Epoch 21] Step 120/152 | Total: 0.9689 | KL: 0.1979 | CE: 1.5419 | CSI@74: 0.2951
+  [Epoch 21] Step 140/152 | Total: 1.0986 | KL: 0.2263 | CE: 1.7447 | CSI@74: 0.2975
+[Epoch 021/30] Train: 1.0525 (KL:0.2121 CE:1.6808) | Reward: 0.2970 | Val: 1.1310 | LR: 4.28e-05 | Time: 376.8s
+  [Metrics @74] CSI=0.6189 | POD=0.7590 | FAR=0.2297 | HSS=0.7061
+  [Metrics @133] CSI=0.3438 | POD=0.4388 | FAR=0.3863 | HSS=0.4802
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6189
+------------------------------------------------------------
+  [Epoch 22] Step 20/152 | Total: 1.0660 | KL: 0.2284 | CE: 1.6752 | CSI@74: 0.3048
+  [Epoch 22] Step 40/152 | Total: 1.0610 | KL: 0.2178 | CE: 1.6864 | CSI@74: 0.3071
+  [Epoch 22] Step 60/152 | Total: 1.0314 | KL: 0.1954 | CE: 1.6720 | CSI@74: 0.3071
+  [Epoch 22] Step 80/152 | Total: 1.0561 | KL: 0.2294 | CE: 1.6534 | CSI@74: 0.3105
+  [Epoch 22] Step 100/152 | Total: 1.0685 | KL: 0.2076 | CE: 1.7218 | CSI@74: 0.3090
+  [Epoch 22] Step 120/152 | Total: 1.0909 | KL: 0.2135 | CE: 1.7548 | CSI@74: 0.3075
+  [Epoch 22] Step 140/152 | Total: 1.0732 | KL: 0.2240 | CE: 1.6984 | CSI@74: 0.3084
+[Epoch 022/30] Train: 1.0457 (KL:0.2172 CE:1.6571) | Reward: 0.3106 | Val: 1.1238 | LR: 3.48e-05 | Time: 375.9s
+  [Metrics @74] CSI=0.6295 | POD=0.7883 | FAR=0.2424 | HSS=0.7142
+  [Metrics @133] CSI=0.3699 | POD=0.4988 | FAR=0.4114 | HSS=0.5071
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6295
+------------------------------------------------------------
+  [Epoch 23] Step 20/152 | Total: 1.0361 | KL: 0.2258 | CE: 1.6206 | CSI@74: 0.3070
+  [Epoch 23] Step 40/152 | Total: 1.1157 | KL: 0.2271 | CE: 1.7774 | CSI@74: 0.3042
+  [Epoch 23] Step 60/152 | Total: 1.0802 | KL: 0.2145 | CE: 1.7315 | CSI@74: 0.3093
+  [Epoch 23] Step 80/152 | Total: 1.0726 | KL: 0.2131 | CE: 1.7190 | CSI@74: 0.3111
+  [Epoch 23] Step 100/152 | Total: 1.0262 | KL: 0.2177 | CE: 1.6170 | CSI@74: 0.3112
+  [Epoch 23] Step 120/152 | Total: 1.0398 | KL: 0.2282 | CE: 1.6233 | CSI@74: 0.3132
+  [Epoch 23] Step 140/152 | Total: 0.9739 | KL: 0.2112 | CE: 1.5254 | CSI@74: 0.3112
+[Epoch 023/30] Train: 1.0452 (KL:0.2221 CE:1.6462) | Reward: 0.3106 | Val: 1.1268 | LR: 2.74e-05 | Time: 375.8s
+  [Metrics @74] CSI=0.6216 | POD=0.7528 | FAR=0.2189 | HSS=0.7095
+  [Metrics @133] CSI=0.3023 | POD=0.3552 | FAR=0.3300 | HSS=0.4358
+------------------------------------------------------------
+  [Epoch 24] Step 20/152 | Total: 1.1542 | KL: 0.2537 | CE: 1.8010 | CSI@74: 0.3083
+  [Epoch 24] Step 40/152 | Total: 1.0345 | KL: 0.2271 | CE: 1.6149 | CSI@74: 0.3118
+  [Epoch 24] Step 60/152 | Total: 1.0816 | KL: 0.2142 | CE: 1.7348 | CSI@74: 0.3140
+  [Epoch 24] Step 80/152 | Total: 1.1069 | KL: 0.2270 | CE: 1.7598 | CSI@74: 0.3136
+  [Epoch 24] Step 100/152 | Total: 1.0518 | KL: 0.2344 | CE: 1.6347 | CSI@74: 0.3130
+  [Epoch 24] Step 120/152 | Total: 1.0493 | KL: 0.2260 | CE: 1.6465 | CSI@74: 0.3147
+  [Epoch 24] Step 140/152 | Total: 1.0489 | KL: 0.2361 | CE: 1.6257 | CSI@74: 0.3144
+[Epoch 024/30] Train: 1.0412 (KL:0.2245 CE:1.6333) | Reward: 0.3162 | Val: 1.1018 | LR: 2.09e-05 | Time: 376.7s
+  [Metrics @74] CSI=0.6261 | POD=0.7496 | FAR=0.2083 | HSS=0.7144
+  [Metrics @133] CSI=0.3168 | POD=0.3735 | FAR=0.3240 | HSS=0.4529
+------------------------------------------------------------
+  [Epoch 25] Step 20/152 | Total: 0.9805 | KL: 0.2457 | CE: 1.4697 | CSI@74: 0.3098
+  [Epoch 25] Step 40/152 | Total: 1.0249 | KL: 0.2294 | CE: 1.5909 | CSI@74: 0.3142
+  [Epoch 25] Step 60/152 | Total: 1.0208 | KL: 0.1953 | CE: 1.6511 | CSI@74: 0.3153
+  [Epoch 25] Step 80/152 | Total: 1.0018 | KL: 0.2092 | CE: 1.5851 | CSI@74: 0.3195
+  [Epoch 25] Step 100/152 | Total: 1.0297 | KL: 0.2335 | CE: 1.5925 | CSI@74: 0.3154
+  [Epoch 25] Step 120/152 | Total: 1.0462 | KL: 0.2142 | CE: 1.6641 | CSI@74: 0.3163
+  [Epoch 25] Step 140/152 | Total: 1.0648 | KL: 0.2127 | CE: 1.7041 | CSI@74: 0.3180
+[Epoch 025/30] Train: 1.0417 (KL:0.2266 CE:1.6304) | Reward: 0.3181 | Val: 1.1011 | LR: 1.53e-05 | Time: 376.0s
+  [Metrics @74] CSI=0.6313 | POD=0.7652 | FAR=0.2170 | HSS=0.7181
+  [Metrics @133] CSI=0.3674 | POD=0.4762 | FAR=0.3836 | HSS=0.5060
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6313
+------------------------------------------------------------
+  [Epoch 26] Step 20/152 | Total: 1.0354 | KL: 0.2279 | CE: 1.6149 | CSI@74: 0.3242
+  [Epoch 26] Step 40/152 | Total: 1.0721 | KL: 0.2140 | CE: 1.7162 | CSI@74: 0.3206
+  [Epoch 26] Step 60/152 | Total: 1.0552 | KL: 0.2397 | CE: 1.6310 | CSI@74: 0.3133
+  [Epoch 26] Step 80/152 | Total: 1.0602 | KL: 0.2362 | CE: 1.6481 | CSI@74: 0.3164
+  [Epoch 26] Step 100/152 | Total: 1.0463 | KL: 0.2300 | CE: 1.6327 | CSI@74: 0.3171
+  [Epoch 26] Step 120/152 | Total: 1.0404 | KL: 0.2293 | CE: 1.6223 | CSI@74: 0.3158
+  [Epoch 26] Step 140/152 | Total: 1.0877 | KL: 0.2634 | CE: 1.6485 | CSI@74: 0.3189
+[Epoch 026/30] Train: 1.0459 (KL:0.2300 CE:1.6318) | Reward: 0.3185 | Val: 1.0863 | LR: 1.06e-05 | Time: 375.8s
+  [Metrics @74] CSI=0.6250 | POD=0.7391 | FAR=0.1980 | HSS=0.7143
+  [Metrics @133] CSI=0.3248 | POD=0.3855 | FAR=0.3263 | HSS=0.4619
+------------------------------------------------------------
+  [Epoch 27] Step 20/152 | Total: 1.0478 | KL: 0.2317 | CE: 1.6321 | CSI@74: 0.3261
+  [Epoch 27] Step 40/152 | Total: 1.0443 | KL: 0.2225 | CE: 1.6437 | CSI@74: 0.3233
+  [Epoch 27] Step 60/152 | Total: 1.0263 | KL: 0.2269 | CE: 1.5989 | CSI@74: 0.3195
+  [Epoch 27] Step 80/152 | Total: 1.0271 | KL: 0.2154 | CE: 1.6235 | CSI@74: 0.3158
+  [Epoch 27] Step 100/152 | Total: 1.0148 | KL: 0.2150 | CE: 1.5994 | CSI@74: 0.3172
+  [Epoch 27] Step 120/152 | Total: 1.1025 | KL: 0.2541 | CE: 1.6968 | CSI@74: 0.3164
+  [Epoch 27] Step 140/152 | Total: 0.9926 | KL: 0.2185 | CE: 1.5482 | CSI@74: 0.3174
+[Epoch 027/30] Train: 1.0412 (KL:0.2310 CE:1.6204) | Reward: 0.3185 | Val: 1.0669 | LR: 6.85e-06 | Time: 376.4s
+  [Metrics @74] CSI=0.5777 | POD=0.6394 | FAR=0.1432 | HSS=0.6769
+  [Metrics @133] CSI=0.2570 | POD=0.2828 | FAR=0.2614 | HSS=0.3842
+------------------------------------------------------------
+  [Epoch 28] Step 20/152 | Total: 1.0579 | KL: 0.2393 | CE: 1.6372 | CSI@74: 0.3215
+  [Epoch 28] Step 40/152 | Total: 1.0066 | KL: 0.2278 | CE: 1.5577 | CSI@74: 0.3208
+  [Epoch 28] Step 60/152 | Total: 1.0433 | KL: 0.2316 | CE: 1.6235 | CSI@74: 0.3236
+  [Epoch 28] Step 80/152 | Total: 1.0296 | KL: 0.2256 | CE: 1.6079 | CSI@74: 0.3182
+  [Epoch 28] Step 100/152 | Total: 1.0604 | KL: 0.2560 | CE: 1.6088 | CSI@74: 0.3216
+  [Epoch 28] Step 120/152 | Total: 1.0556 | KL: 0.2314 | CE: 1.6484 | CSI@74: 0.3213
+  [Epoch 28] Step 140/152 | Total: 1.0732 | KL: 0.2433 | CE: 1.6598 | CSI@74: 0.3220
+[Epoch 028/30] Train: 1.0422 (KL:0.2331 CE:1.6181) | Reward: 0.3217 | Val: 1.0879 | LR: 4.16e-06 | Time: 376.6s
+  [Metrics @74] CSI=0.6296 | POD=0.7500 | FAR=0.2032 | HSS=0.7179
+  [Metrics @133] CSI=0.3346 | POD=0.4019 | FAR=0.3334 | HSS=0.4726
+------------------------------------------------------------
+  [Epoch 29] Step 20/152 | Total: 1.0960 | KL: 0.2301 | CE: 1.7319 | CSI@74: 0.3312
+  [Epoch 29] Step 40/152 | Total: 1.0522 | KL: 0.2515 | CE: 1.6015 | CSI@74: 0.3257
+  [Epoch 29] Step 60/152 | Total: 1.0423 | KL: 0.2453 | CE: 1.5940 | CSI@74: 0.3241
+  [Epoch 29] Step 80/152 | Total: 1.0298 | KL: 0.2270 | CE: 1.6056 | CSI@74: 0.3255
+  [Epoch 29] Step 100/152 | Total: 1.0732 | KL: 0.2453 | CE: 1.6559 | CSI@74: 0.3278
+  [Epoch 29] Step 120/152 | Total: 0.9907 | KL: 0.2190 | CE: 1.5432 | CSI@74: 0.3279
+  [Epoch 29] Step 140/152 | Total: 1.0066 | KL: 0.2179 | CE: 1.5774 | CSI@74: 0.3274
+[Epoch 029/30] Train: 1.0370 (KL:0.2317 CE:1.6105) | Reward: 0.3253 | Val: 1.0957 | LR: 2.54e-06 | Time: 377.0s
+  [Metrics @74] CSI=0.6308 | POD=0.7536 | FAR=0.2052 | HSS=0.7187
+  [Metrics @133] CSI=0.3540 | POD=0.4403 | FAR=0.3564 | HSS=0.4929
+------------------------------------------------------------
+  [Epoch 30] Step 20/152 | Total: 1.0260 | KL: 0.2204 | CE: 1.6111 | CSI@74: 0.3304
+  [Epoch 30] Step 40/152 | Total: 1.0470 | KL: 0.2240 | CE: 1.6460 | CSI@74: 0.3259
+  [Epoch 30] Step 60/152 | Total: 1.0252 | KL: 0.2382 | CE: 1.5741 | CSI@74: 0.3222
+  [Epoch 30] Step 80/152 | Total: 1.0511 | KL: 0.2301 | CE: 1.6420 | CSI@74: 0.3242
+  [Epoch 30] Step 100/152 | Total: 1.0672 | KL: 0.2352 | CE: 1.6640 | CSI@74: 0.3241
+  [Epoch 30] Step 120/152 | Total: 1.0952 | KL: 0.2372 | CE: 1.7161 | CSI@74: 0.3259
+  [Epoch 30] Step 140/152 | Total: 1.0337 | KL: 0.2074 | CE: 1.6526 | CSI@74: 0.3257
+[Epoch 030/30] Train: 1.0382 (KL:0.2325 CE:1.6112) | Reward: 0.3257 | Val: 1.0863 | LR: 2.00e-06 | Time: 376.4s
+  [Metrics @74] CSI=0.6314 | POD=0.7547 | FAR=0.2055 | HSS=0.7192
+  [Metrics @133] CSI=0.3529 | POD=0.4369 | FAR=0.3527 | HSS=0.4919
+  [Checkpoint] 保存最佳 OPSD+RW 模型，CSI@74: 0.6314
+------------------------------------------------------------
+
+[Done] OPSD+RW 训练完成！最佳 CSI@74: 0.6314
+       最佳模型已保存至：checkpoints_cbam/opsd_rw/best.pth

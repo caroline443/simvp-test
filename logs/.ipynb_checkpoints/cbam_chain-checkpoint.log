@@ -1,0 +1,121 @@
+nohup: ignoring input
+[Device] 使用设备：cuda
+[Data] 正在加载 SEVIR VIL 数据集...
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=train, 使用样本数=10964, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=val, 使用样本数=1218, 来源文件事件总数=12182
+[SEVIRVILDataset] 发现 14 个 h5 文件
+  train_years=[2017, 2018] -> 9 个文件
+  test_years=[2019]  -> 5 个文件
+[SEVIRVILDataset] split=test, 使用样本数=8211, 来源文件事件总数=8211
+[Model] 正在构建 SimVP 模型...
+[Model] 可训练参数量：176.35M
+[Checkpoint] 已加载：checkpoints_cbam/baseline/checkpoint_epoch015.pth，epoch=15
+
+[Train] 开始 Baseline 训练，共 30 个 Epoch
+============================================================
+  [Epoch 16] Step 20/152 | Loss: 1.6857 (avg: 1.6881)
+  [Epoch 16] Step 40/152 | Loss: 1.6346 (avg: 1.6948)
+  [Epoch 16] Step 60/152 | Loss: 1.6909 (avg: 1.6821)
+  [Epoch 16] Step 80/152 | Loss: 1.6447 (avg: 1.6882)
+  [Epoch 16] Step 100/152 | Loss: 1.6615 (avg: 1.6879)
+  [Epoch 16] Step 120/152 | Loss: 1.6811 (avg: 1.6861)
+  [Epoch 16] Step 140/152 | Loss: 1.5887 (avg: 1.6834)
+[Epoch 016/30] Train Loss: 1.6832 | Val Loss: 1.1410 | LR: 2.52e-04 | Time: 297.6s
+  [Metrics @74] CSI=0.6067 | POD=0.7540 | FAR=0.2436 | HSS=0.6940
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6067
+------------------------------------------------------------
+  [Epoch 17] Step 20/152 | Loss: 1.8335 (avg: 1.6812)
+  [Epoch 17] Step 40/152 | Loss: 1.6384 (avg: 1.6676)
+  [Epoch 17] Step 60/152 | Loss: 1.7011 (avg: 1.6763)
+  [Epoch 17] Step 80/152 | Loss: 1.7527 (avg: 1.6783)
+  [Epoch 17] Step 100/152 | Loss: 1.7996 (avg: 1.6786)
+  [Epoch 17] Step 120/152 | Loss: 1.6815 (avg: 1.6823)
+  [Epoch 17] Step 140/152 | Loss: 1.5972 (avg: 1.6851)
+[Epoch 017/30] Train Loss: 1.6873 | Val Loss: 1.1745 | LR: 2.50e-04 | Time: 281.4s
+  [Metrics @74] CSI=0.6069 | POD=0.8084 | FAR=0.2911 | HSS=0.6889
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6069
+------------------------------------------------------------
+  [Epoch 18] Step 20/152 | Loss: 1.7502 (avg: 1.6802)
+  [Epoch 18] Step 40/152 | Loss: 1.7028 (avg: 1.6821)
+  [Epoch 18] Step 60/152 | Loss: 1.6323 (avg: 1.6662)
+  [Epoch 18] Step 80/152 | Loss: 1.6610 (avg: 1.6742)
+  [Epoch 18] Step 100/152 | Loss: 1.6049 (avg: 1.6762)
+  [Epoch 18] Step 120/152 | Loss: 1.7473 (avg: 1.6776)
+  [Epoch 18] Step 140/152 | Loss: 1.6825 (avg: 1.6767)
+[Epoch 018/30] Train Loss: 1.6816 | Val Loss: 1.1656 | LR: 2.46e-04 | Time: 289.1s
+  [Metrics @74] CSI=0.6114 | POD=0.7706 | FAR=0.2525 | HSS=0.6972
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6114
+------------------------------------------------------------
+  [Epoch 19] Step 20/152 | Loss: 1.5964 (avg: 1.6479)
+  [Epoch 19] Step 40/152 | Loss: 1.6462 (avg: 1.6570)
+  [Epoch 19] Step 60/152 | Loss: 1.7356 (avg: 1.6571)
+  [Epoch 19] Step 80/152 | Loss: 1.6672 (avg: 1.6647)
+  [Epoch 19] Step 100/152 | Loss: 1.6903 (avg: 1.6688)
+  [Epoch 19] Step 120/152 | Loss: 1.6685 (avg: 1.6698)
+  [Epoch 19] Step 140/152 | Loss: 1.6453 (avg: 1.6731)
+[Epoch 019/30] Train Loss: 1.6727 | Val Loss: 1.1350 | LR: 2.42e-04 | Time: 282.8s
+  [Metrics @74] CSI=0.5642 | POD=0.6422 | FAR=0.1771 | HSS=0.6620
+------------------------------------------------------------
+  [Epoch 20] Step 20/152 | Loss: 1.6454 (avg: 1.6308)
+  [Epoch 20] Step 40/152 | Loss: 1.6862 (avg: 1.6423)
+  [Epoch 20] Step 60/152 | Loss: 1.7436 (avg: 1.6477)
+  [Epoch 20] Step 80/152 | Loss: 1.7027 (avg: 1.6546)
+  [Epoch 20] Step 100/152 | Loss: 1.5920 (avg: 1.6584)
+  [Epoch 20] Step 120/152 | Loss: 1.6606 (avg: 1.6642)
+  [Epoch 20] Step 140/152 | Loss: 1.6675 (avg: 1.6623)
+[Epoch 020/30] Train Loss: 1.6642 | Val Loss: 1.1421 | LR: 2.36e-04 | Time: 279.2s
+  [Metrics @74] CSI=0.6135 | POD=0.7733 | FAR=0.2519 | HSS=0.6992
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6135
+------------------------------------------------------------
+  [Epoch 21] Step 20/152 | Loss: 1.7236 (avg: 1.7072)
+  [Epoch 21] Step 40/152 | Loss: 1.6473 (avg: 1.6929)
+  [Epoch 21] Step 60/152 | Loss: 1.7399 (avg: 1.6923)
+  [Epoch 21] Step 80/152 | Loss: 1.6885 (avg: 1.6868)
+  [Epoch 21] Step 100/152 | Loss: 1.6493 (avg: 1.6848)
+  [Epoch 21] Step 120/152 | Loss: 1.8057 (avg: 1.6802)
+  [Epoch 21] Step 140/152 | Loss: 1.6998 (avg: 1.6740)
+[Epoch 021/30] Train Loss: 1.6737 | Val Loss: 1.1276 | LR: 2.29e-04 | Time: 286.8s
+  [Metrics @74] CSI=0.6010 | POD=0.7123 | FAR=0.2064 | HSS=0.6924
+------------------------------------------------------------
+  [Epoch 22] Step 20/152 | Loss: 1.6922 (avg: 1.6405)
+  [Epoch 22] Step 40/152 | Loss: 1.6872 (avg: 1.6522)
+  [Epoch 22] Step 60/152 | Loss: 1.7188 (avg: 1.6575)
+  [Epoch 22] Step 80/152 | Loss: 1.6500 (avg: 1.6562)
+  [Epoch 22] Step 100/152 | Loss: 1.6129 (avg: 1.6544)
+  [Epoch 22] Step 120/152 | Loss: 1.6082 (avg: 1.6571)
+  [Epoch 22] Step 140/152 | Loss: 1.5520 (avg: 1.6561)
+[Epoch 022/30] Train Loss: 1.6575 | Val Loss: 1.0896 | LR: 2.21e-04 | Time: 289.9s
+  [Metrics @74] CSI=0.5870 | POD=0.6985 | FAR=0.2137 | HSS=0.6793
+------------------------------------------------------------
+  [Epoch 23] Step 20/152 | Loss: 1.5763 (avg: 1.6674)
+  [Epoch 23] Step 40/152 | Loss: 1.5847 (avg: 1.6673)
+  [Epoch 23] Step 60/152 | Loss: 1.5745 (avg: 1.6560)
+  [Epoch 23] Step 80/152 | Loss: 1.6505 (avg: 1.6567)
+  [Epoch 23] Step 100/152 | Loss: 1.6580 (avg: 1.6569)
+  [Epoch 23] Step 120/152 | Loss: 1.6228 (avg: 1.6550)
+  [Epoch 23] Step 140/152 | Loss: 1.6495 (avg: 1.6556)
+[Epoch 023/30] Train Loss: 1.6539 | Val Loss: 1.1214 | LR: 2.12e-04 | Time: 282.1s
+  [Metrics @74] CSI=0.6140 | POD=0.7476 | FAR=0.2254 | HSS=0.7022
+  [Checkpoint] 保存最佳模型，CSI@74: 0.6140
+------------------------------------------------------------
+  [Epoch 24] Step 20/152 | Loss: 1.5501 (avg: 1.6547)
+  [Epoch 24] Step 40/152 | Loss: 1.6271 (avg: 1.6498)
+  [Epoch 24] Step 60/152 | Loss: 1.6051 (avg: 1.6409)
+  [Epoch 24] Step 80/152 | Loss: 1.8059 (avg: 1.6419)
+  [Epoch 24] Step 100/152 | Loss: 1.5942 (avg: 1.6385)
+  [Epoch 24] Step 120/152 | Loss: 1.7200 (avg: 1.6428)
+  [Epoch 24] Step 140/152 | Loss: 1.6364 (avg: 1.6432)
+[Epoch 024/30] Train Loss: 1.6437 | Val Loss: 1.1945 | LR: 2.01e-04 | Time: 279.1s
+  [Metrics @74] CSI=0.6115 | POD=0.7487 | FAR=0.2305 | HSS=0.6995
+------------------------------------------------------------
+  [Epoch 25] Step 20/152 | Loss: 1.7502 (avg: 1.6803)
+  [Epoch 25] Step 40/152 | Loss: 1.6479 (avg: 1.6669)
+  [Epoch 25] Step 60/152 | Loss: 1.7095 (avg: 1.6585)
+  [Epoch 25] Step 80/152 | Loss: 1.6886 (avg: 1.6586)
+  [Epoch 25] Step 100/152 | Loss: 1.6165 (avg: 1.6557)
