@@ -1,0 +1,35 @@
+# default_predrnn.yaml — PredRNN baseline（Wang et al., NeurIPS 2017）
+
+data:
+  data_root: "/root/autodl-tmp/dataset/sevir_data"
+  crop_size: 128
+  in_seq_len: 12
+  out_seq_len: 12
+  num_bins: 16
+  vil_max: 255.0
+  num_workers: 8
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  hidden_channels: 64
+  num_layers: 4
+
+training:
+  baseline_epochs: 50
+  baseline_lr: 5.0e-4
+  baseline_batch_size: 64
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_predrnn/baseline"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 20
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]
