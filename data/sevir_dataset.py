@@ -125,12 +125,15 @@ class SEVIRVILDataset(Dataset):
         seed: int = 42,
         crop_size: int = None,
         full_size: int = 384,
+        frame_stride: int = 1,
     ):
         super().__init__()
         self.data_root = data_root
         self.in_seq_len = in_seq_len
         self.out_seq_len = out_seq_len
-        self.total_seq_len = in_seq_len + out_seq_len
+        self.frame_stride = frame_stride
+        # 实际需要从 h5 读取的帧数（考虑步长）
+        self.total_seq_len = (in_seq_len + out_seq_len - 1) * frame_stride + 1
         self.num_bins = num_bins
         self.vil_max = vil_max
         self.split = split
@@ -248,6 +251,11 @@ class SEVIRVILDataset(Dataset):
             # raw shape: [H, W, total_seq_len] -> [total_seq_len, H, W]
             frames = np.transpose(raw, (2, 0, 1))
 
+        # 步长采样：每隔 frame_stride 帧取一帧
+        if self.frame_stride > 1:
+            indices = [i * self.frame_stride for i in range(self.in_seq_len + self.out_seq_len)]
+            frames = frames[indices]
+
         # 归一化到 [0, 1]
         frames_norm = frames / self.vil_max  # [T, H, W]
 
@@ -300,6 +308,7 @@ def build_dataloaders(cfg: dict, batch_size: int = None):
         val_ratio=data_cfg.get("val_ratio", 0.1),
         seed=train_cfg["seed"],
         crop_size=data_cfg.get("crop_size", None),   # None = 使用完整 384×384
+        frame_stride=data_cfg.get("frame_stride", 1),  # 1=5min, 2=10min
     )
 
     train_ds = SEVIRVILDataset(split="train", **common_kwargs)

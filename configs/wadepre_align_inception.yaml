@@ -1,0 +1,51 @@
+# wadepre_align_inception.yaml — 对齐 WADEPre 设置，Inception 翻译器版本
+
+data:
+  data_root: "F:/zyx/dataset/sevir_data"
+  crop_size: 128
+  in_seq_len: 6
+  out_seq_len: 6
+  frame_stride: 2
+  num_bins: 16
+  vil_max: 255.0
+  num_workers: 4
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  hidden_channels: 64
+  encoder_layers: 4
+  translator_layers: 4
+  decoder_layers: 4
+  num_bins: 16
+  translator_type: "inception"
+  use_checkpoint: false
+
+training:
+  baseline_epochs: 50
+  baseline_lr: 5.0e-4
+  baseline_batch_size: 16
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_wadepre_align/inception_baseline"
+
+  opsd_epochs: 50
+  opsd_lr: 2.0e-4
+  opsd_batch_size: 8
+  opsd_weight_decay: 1.0e-4
+  opsd_kl_weight: 1.0
+  opsd_ce_weight: 0.5
+  opsd_ckpt_dir: "checkpoints_wadepre_align/inception_opsd"
+  opsd_rw_ckpt_dir: "checkpoints_wadepre_align/inception_opsd_rw"
+  opsd_pretrained: "checkpoints_wadepre_align/inception_baseline/best.pth"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 20
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]
