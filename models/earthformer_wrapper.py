@@ -23,7 +23,7 @@ class EarthFormerWrapper(nn.Module):
         in_seq_len: int = 6,
         out_seq_len: int = 6,
         img_size: int = 128,
-        base_units: int = 64,
+        base_units: int = 32,
     ):
         super().__init__()
         self.in_seq_len = in_seq_len
@@ -35,8 +35,8 @@ class EarthFormerWrapper(nn.Module):
             input_shape=[in_seq_len, img_size, img_size, 1],
             target_shape=[out_seq_len, img_size, img_size, 1],
             base_units=base_units,
-            # Encoder：2 层，每层深度 4
-            enc_depth=[4, 4],
+            # Encoder：2 层，每层深度 2（省显存）
+            enc_depth=[2, 2],
             enc_attn_patterns=None,
             enc_cuboid_size=[(4, 4, 4), (4, 4, 4)],
             enc_cuboid_strategy=[('l', 'l', 'l'), ('d', 'd', 'd')],

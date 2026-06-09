@@ -16,12 +16,12 @@ data:
 
 model:
   in_channels: 1
-  base_units: 64   # EarthFormer 基础通道数，原论文用 128，这里用 64 省显存
+  base_units: 32   # 缩小以适配 16GB 显存
 
 training:
   baseline_epochs: 50
-  baseline_lr: 1.0e-4     # EarthFormer 建议用更小的 LR
-  baseline_batch_size: 4  # 显存敏感，先从 4 开始
+  baseline_lr: 1.0e-4
+  baseline_batch_size: 2
   baseline_weight_decay: 1.0e-4
   baseline_ckpt_dir: "checkpoints_wadepre_align/earthformer_baseline"
 
