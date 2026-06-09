@@ -1,0 +1,36 @@
+# wadepre_align_earthformer.yaml — 对齐 WADEPre 设置，EarthFormer
+# 128×128，6→6，10分钟间隔
+
+data:
+  data_root: "F:/zyx/dataset/sevir_data"
+  crop_size: 128
+  in_seq_len: 6
+  out_seq_len: 6
+  frame_stride: 2
+  num_bins: 16
+  vil_max: 255.0
+  num_workers: 4
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  base_units: 64   # EarthFormer 基础通道数，原论文用 128，这里用 64 省显存
+
+training:
+  baseline_epochs: 50
+  baseline_lr: 1.0e-4     # EarthFormer 建议用更小的 LR
+  baseline_batch_size: 4  # 显存敏感，先从 4 开始
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_wadepre_align/earthformer_baseline"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 20
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]

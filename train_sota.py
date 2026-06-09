@@ -1,12 +1,12 @@
 """
-SOTA Baseline 训练脚本（ConvLSTM / PredRNN）
-=============================================
+SOTA Baseline 训练脚本（ConvLSTM / PredRNN / EarthFormer）
+=============================================================
 MSE 损失，一次性预测，与 train_vanilla.py 结构一致。
 
 用法：
-  python train_sota.py --model convlstm --config configs/default_convlstm.yaml
-  python train_sota.py --model predrnn  --config configs/default_predrnn.yaml
-  python train_sota.py --model convlstm --config configs/default_convlstm.yaml --resume checkpoints_convlstm/baseline/checkpoint_epoch010.pth
+  python train_sota.py --model convlstm    --config configs/wadepre_align_convlstm.yaml
+  python train_sota.py --model predrnn     --config configs/default_predrnn.yaml
+  python train_sota.py --model earthformer --config configs/wadepre_align_earthformer.yaml
 """
 
 import os
@@ -22,17 +22,19 @@ from utils import load_config, set_seed, save_checkpoint, load_checkpoint, Avera
 from data.sevir_dataset import build_dataloaders
 from models.convlstm import build_convlstm
 from models.predrnn import build_predrnn
+from models.earthformer_wrapper import build_earthformer
 
 
 MODEL_BUILDERS = {
-    "convlstm": build_convlstm,
-    "predrnn":  build_predrnn,
+    "convlstm":    build_convlstm,
+    "predrnn":     build_predrnn,
+    "earthformer": build_earthformer,
 }
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model",  type=str, required=True, choices=["convlstm", "predrnn"])
+    parser.add_argument("--model",  type=str, required=True, choices=["convlstm", "predrnn", "earthformer"])
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--resume", type=str, default=None)
     parser.add_argument("--device", type=str, default=None)
