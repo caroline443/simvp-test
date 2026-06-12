@@ -67,6 +67,7 @@ class ConvLSTM(nn.Module):
         self.in_seq_len = in_seq_len
         self.out_seq_len = out_seq_len
         self.num_layers = num_layers
+        self.in_channels = in_channels
 
         # 构建多层 ConvLSTM
         cells = []
@@ -103,9 +104,12 @@ class ConvLSTM(nn.Module):
                 x = h                   # 下一层的输入
 
         # 解码阶段：以零输入滚动 T_out 步
+        # 第一层 in_ch=in_channels，解码时用零帧作为输入
+        # 从第二步开始用上一步的预测帧作为输入（自回归）
         preds = []
-        x = torch.zeros(B, 1, H, W, device=device)
+        prev_pred = torch.zeros(B, self.in_channels, H, W, device=device)
         for t in range(self.out_seq_len):
+            x = prev_pred
             for i, cell in enumerate(self.cells):
                 h, c = states[i]
                 h, c = cell(x, h, c)
@@ -113,6 +117,7 @@ class ConvLSTM(nn.Module):
                 x = h
             pred = torch.sigmoid(self.output_conv(x))  # [B, 1, H, W]
             preds.append(pred)
+            prev_pred = pred  # 下一步用当前预测作为输入
 
         return torch.stack(preds, dim=1)    # [B, T_out, 1, H, W]
 
