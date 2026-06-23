@@ -1,0 +1,53 @@
+# wadepre_resize.yaml — 对齐 WADEPre 设置（bilinear resize 128×128，6→6，10分钟）
+# 关键区别：resize=128（整图双线性下采样），而非 crop_size=128（中心裁剪）
+# 参考 WADEPre Appendix C.1: "bilinearly downsampled to 128×128"
+
+data:
+  data_root: "F:/zyx/dataset/sevir_data"
+  resize: 128             # bilinear 下采样整图到 128×128（不设 crop_size）
+  in_seq_len: 6
+  out_seq_len: 6
+  frame_stride: 2         # 每隔一帧取一帧，5min×2=10min 间隔
+  num_bins: 16
+  vil_max: 255.0
+  num_workers: 4
+  train_years: [2017, 2018]
+  test_years: [2019]
+  val_ratio: 0.1
+
+model:
+  in_channels: 1
+  hidden_channels: 64
+  encoder_layers: 4
+  translator_layers: 4
+  decoder_layers: 4
+  num_bins: 16
+  translator_type: "mamba"
+  use_checkpoint: false
+
+training:
+  baseline_epochs: 50
+  baseline_lr: 5.0e-4
+  baseline_batch_size: 16
+  baseline_weight_decay: 1.0e-4
+  baseline_ckpt_dir: "checkpoints_wadepre_resize/mamba_baseline"
+
+  opsd_epochs: 50
+  opsd_lr: 2.0e-4
+  opsd_batch_size: 8
+  opsd_weight_decay: 1.0e-4
+  opsd_kl_weight: 1.0
+  opsd_ce_weight: 0.5
+  opsd_ckpt_dir: "checkpoints_wadepre_resize/mamba_opsd"
+  opsd_rw_ckpt_dir: "checkpoints_wadepre_resize/mamba_opsd_rw"
+  opsd_pretrained: "checkpoints_wadepre_resize/mamba_baseline/best.pth"
+
+  foreground_weight: 5.0
+  reward_threshold: 74
+
+  log_interval: 20
+  save_interval: 5
+  seed: 42
+
+eval:
+  thresholds: [16, 74, 133, 160, 181, 219]

@@ -124,6 +124,7 @@ class SEVIRVILDataset(Dataset):
         val_ratio: float = 0.1,
         seed: int = 42,
         crop_size: int = None,
+        resize: int = None,
         full_size: int = 384,
         frame_stride: int = 1,
     ):
@@ -138,13 +139,20 @@ class SEVIRVILDataset(Dataset):
         self.vil_max = vil_max
         self.split = split
 
-        # 空间裁剪：从原始 full_size×full_size 图像中心裁剪 crop_size×crop_size
-        # 直接在 h5 读取时传入切片范围，减少磁盘 I/O（不读无用像素）
-        if crop_size is not None and crop_size < full_size:
+        # 空间处理模式（二选一，resize 优先）：
+        #   resize:    读取完整 full_size×full_size 后 bilinear 下采样到 resize×resize
+        #   crop_size: 从中心裁剪 crop_size×crop_size（旧模式，保持兼容）
+        if resize is not None and resize < full_size:
+            self.resize = resize
+            self.crop_size = None
+            self.h0 = self.w0 = 0
+        elif crop_size is not None and crop_size < full_size:
+            self.resize = None
             self.crop_size = crop_size
             offset = (full_size - crop_size) // 2
             self.h0, self.w0 = offset, offset
         else:
+            self.resize = None
             self.crop_size = None   # None = 不裁剪，读取完整帧
             self.h0 = self.w0 = 0
 
@@ -242,14 +250,23 @@ class SEVIRVILDataset(Dataset):
 
         with h5py.File(fpath, "r") as f:
             # h5 原始 shape: [N, H, W, T]
-            # 直接用空间切片读取，避免把整张 384×384 加载进内存再裁
             if self.crop_size is not None:
+                # 中心裁剪模式（旧模式）
                 h0, w0, cs = self.h0, self.w0, self.crop_size
                 raw = f[VIL_KEY][event_idx, h0:h0+cs, w0:w0+cs, start:end].astype(np.float32)
             else:
+                # resize 模式或完整帧模式：读取完整 384×384
                 raw = f[VIL_KEY][event_idx, :, :, start:end].astype(np.float32)
             # raw shape: [H, W, total_seq_len] -> [total_seq_len, H, W]
             frames = np.transpose(raw, (2, 0, 1))
+
+        # bilinear 下采样（WADEPre 对齐模式）
+        if self.resize is not None:
+            import torch.nn.functional as F_resize
+            t = torch.from_numpy(frames).unsqueeze(1).float()  # [T, 1, H, W]
+            t = F_resize.interpolate(t, size=(self.resize, self.resize),
+                                     mode="bilinear", align_corners=False)
+            frames = t.squeeze(1).numpy()  # [T, resize, resize]
 
         # 步长采样：每隔 frame_stride 帧取一帧
         if self.frame_stride > 1:
@@ -307,7 +324,8 @@ def build_dataloaders(cfg: dict, batch_size: int = None):
         test_years=data_cfg.get("test_years", [2019]),
         val_ratio=data_cfg.get("val_ratio", 0.1),
         seed=train_cfg["seed"],
-        crop_size=data_cfg.get("crop_size", None),   # None = 使用完整 384×384
+        crop_size=data_cfg.get("crop_size", None),    # 中心裁剪（旧模式）
+        resize=data_cfg.get("resize", None),           # bilinear 下采样（WADEPre 对齐）
         frame_stride=data_cfg.get("frame_stride", 1),  # 1=5min, 2=10min
     )
 
