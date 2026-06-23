@@ -44,11 +44,9 @@ def parse_args():
 def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
     model.train()
     loss_meter = AverageMeter("MSE_Loss")
+    criterion = nn.MSELoss()
     log_interval = cfg["training"]["log_interval"]
     vil_max = cfg["data"]["vil_max"]
-    # 前景加权阈值（归一化后），≥该值的像素视为有回波
-    fg_thresh = cfg["training"].get("fg_thresh_norm", 16.0 / vil_max)
-    fg_weight = cfg["training"].get("foreground_weight", 5.0)
 
     for step, (input_frames, _target_bins, future_frames) in enumerate(loader):
         input_frames  = input_frames.to(device, non_blocking=True)
@@ -56,12 +54,7 @@ def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
 
         optimizer.zero_grad()
         pred = model(input_frames)                  # [B, T_out, 1, H, W]
-
-        # 前景加权 MSE：有回波区域权重 fg_weight，晴空权重 1.0
-        # 防止模型学到"预测全0"的捷径
-        weights = torch.ones_like(future_frames)
-        weights[future_frames >= fg_thresh] = fg_weight
-        loss = (weights * (pred - future_frames) ** 2).mean()
+        loss = criterion(pred, future_frames)
 
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.6f}，跳过该 batch")
@@ -87,10 +80,9 @@ def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
 def validate(model, loader, device, cfg):
     model.eval()
     loss_meter = AverageMeter("Val_MSE")
+    criterion = nn.MSELoss()
     vil_max = cfg["data"]["vil_max"]
     thresholds = cfg["eval"]["thresholds"]
-    fg_thresh = cfg["training"].get("fg_thresh_norm", 16.0 / vil_max)
-    fg_weight = cfg["training"].get("foreground_weight", 5.0)
 
     all_pred_vil = []
     all_true_vil = []
@@ -100,9 +92,7 @@ def validate(model, loader, device, cfg):
         future_frames = future_frames.to(device, non_blocking=True)
 
         pred = model(input_frames)
-        weights = torch.ones_like(future_frames)
-        weights[future_frames >= fg_thresh] = fg_weight
-        loss = (weights * (pred - future_frames) ** 2).mean()
+        loss = criterion(pred, future_frames)
         if torch.isfinite(loss):
             loss_meter.update(loss.item(), input_frames.size(0))
 
