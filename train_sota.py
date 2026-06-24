@@ -43,9 +43,8 @@ def parse_args():
 
 def weighted_mse_mae_loss(pred, target, vil_max, foreground_weight=5.0):
     """
-    Balanced MSE+MAE：对齐 Hzzone/Precipitation-Nowcasting 官方实现。
-    对 VIL>=16（归一化后约0.063）的前景像素赋予更高权重，
-    防止模型学到"预测全0"的捷径，使极端值也能被预测出来。
+    前景加权 MSE+MAE。
+    VIL>=16（有回波）的像素权重 foreground_weight，其余为 1.0。
     """
     fg_thresh = 16.0 / vil_max
     weights = torch.ones_like(target)
@@ -68,7 +67,7 @@ def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
 
         optimizer.zero_grad()
         pred = model(input_frames)                  # [B, T_out, 1, H, W]
-        loss = weighted_mse_mae_loss(pred, future_frames, vil_max, fg_weight)
+        loss = weighted_mse_mae_loss(pred, future_frames, vil_max, fg_weight)  # noqa
 
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.6f}，跳过该 batch")
@@ -108,7 +107,7 @@ def validate(model, loader, device, cfg):
         pred = model(input_frames)
         loss = weighted_mse_mae_loss(pred, future_frames, vil_max, fg_weight)
         if torch.isfinite(loss):
-            loss_meter.update(loss.item(), input_frames.size(0))
+            loss_meter.update(loss.item(), input_frames.size(0))  # noqa
 
         pred_vil = (pred.squeeze(2).cpu().numpy() * vil_max)
         true_vil = (future_frames.squeeze(2).cpu().numpy() * vil_max)
