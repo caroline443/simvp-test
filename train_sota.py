@@ -41,12 +41,26 @@ def parse_args():
     return parser.parse_args()
 
 
+def weighted_mse_mae_loss(pred, target, vil_max, foreground_weight=5.0):
+    """
+    Balanced MSE+MAE：对齐 Hzzone/Precipitation-Nowcasting 官方实现。
+    对 VIL>=16（归一化后约0.063）的前景像素赋予更高权重，
+    防止模型学到"预测全0"的捷径，使极端值也能被预测出来。
+    """
+    fg_thresh = 16.0 / vil_max
+    weights = torch.ones_like(target)
+    weights[target >= fg_thresh] = foreground_weight
+    mse = (weights * (pred - target) ** 2).mean()
+    mae = (weights * (pred - target).abs()).mean()
+    return mse + mae
+
+
 def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
     model.train()
-    loss_meter = AverageMeter("MSE_Loss")
-    criterion = nn.MSELoss()
+    loss_meter = AverageMeter("WMSEMAELoss")
     log_interval = cfg["training"]["log_interval"]
     vil_max = cfg["data"]["vil_max"]
+    fg_weight = cfg["training"].get("foreground_weight", 5.0)
 
     for step, (input_frames, _target_bins, future_frames) in enumerate(loader):
         input_frames  = input_frames.to(device, non_blocking=True)
@@ -54,7 +68,7 @@ def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
 
         optimizer.zero_grad()
         pred = model(input_frames)                  # [B, T_out, 1, H, W]
-        loss = criterion(pred, future_frames)
+        loss = weighted_mse_mae_loss(pred, future_frames, vil_max, fg_weight)
 
         if not torch.isfinite(loss):
             print(f"  [WARNING] Step {step+1}: loss={loss.item():.6f}，跳过该 batch")
@@ -79,10 +93,10 @@ def train_one_epoch(model, loader, optimizer, device, cfg, epoch, model_name):
 @torch.no_grad()
 def validate(model, loader, device, cfg):
     model.eval()
-    loss_meter = AverageMeter("Val_MSE")
-    criterion = nn.MSELoss()
+    loss_meter = AverageMeter("Val_WMSEMAELoss")
     vil_max = cfg["data"]["vil_max"]
     thresholds = cfg["eval"]["thresholds"]
+    fg_weight = cfg["training"].get("foreground_weight", 5.0)
 
     all_pred_vil = []
     all_true_vil = []
@@ -92,7 +106,7 @@ def validate(model, loader, device, cfg):
         future_frames = future_frames.to(device, non_blocking=True)
 
         pred = model(input_frames)
-        loss = criterion(pred, future_frames)
+        loss = weighted_mse_mae_loss(pred, future_frames, vil_max, fg_weight)
         if torch.isfinite(loss):
             loss_meter.update(loss.item(), input_frames.size(0))
 
