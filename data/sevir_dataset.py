@@ -260,6 +260,9 @@ class SEVIRVILDataset(Dataset):
             # raw shape: [H, W, total_seq_len] -> [total_seq_len, H, W]
             frames = np.transpose(raw, (2, 0, 1))
 
+        # 缺失值处理：WADEPre Appendix C.1 指出 255 表示缺失，映射为 0
+        frames[frames == 255] = 0.0
+
         # bilinear 下采样（WADEPre 对齐模式）
         if self.resize is not None:
             import torch.nn.functional as F_resize
