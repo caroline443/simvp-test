@@ -103,15 +103,15 @@ def evaluate_model(model, loader, device, cfg, n_vis=4, vis_dir=None, tag="model
     vis_count = 0
     bin_width = vil_max / num_bins
 
-    for batch_idx, (input_frames, target_bins, _future_frames) in enumerate(loader):
+    for batch_idx, (input_frames, target_bins, future_frames) in enumerate(loader):
         input_frames = input_frames.to(device, non_blocking=True)
-        target_bins_np = target_bins.numpy()  # [B, T_out, H, W]
 
         with torch.amp.autocast(device_type=device.type):
             all_logits = model(input_frames, privileged_future=None)
 
         pred_vil = logits_to_vil(all_logits, num_bins, vil_max)  # [B, T_out, H, W]
-        true_vil = (target_bins_np.astype(float) + 0.5) * bin_width
+        # 用原始连续 VIL 值作为真值（而非 bin 中心还原值），与 WADEPre 等方法对齐
+        true_vil = future_frames.squeeze(2).numpy() * vil_max  # [B, T_out, H, W]
 
         for t in range(out_seq_len):
             per_step_preds[t].append(pred_vil[:, t])
