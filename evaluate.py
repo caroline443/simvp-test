@@ -103,16 +103,15 @@ def evaluate_model(model, loader, device, cfg, n_vis=4, vis_dir=None, tag="model
     vis_count = 0
     bin_width = vil_max / num_bins
 
-    for batch_idx, (input_frames, _target_bins, future_frames) in enumerate(loader):
+    for batch_idx, (input_frames, target_bins, _future_frames) in enumerate(loader):
         input_frames = input_frames.to(device, non_blocking=True)
+        target_bins_np = target_bins.numpy()  # [B, T_out, H, W]
 
         with torch.amp.autocast(device_type=device.type):
             all_logits = model(input_frames, privileged_future=None)
 
-        # softmax 加权期望预测值（连续），与连续回归方法评测等价
         pred_vil = logits_to_vil(all_logits, num_bins, vil_max)  # [B, T_out, H, W]
-        # 真值使用原始连续 VIL（bilinear resize 后的连续值）
-        true_vil = future_frames.squeeze(2).numpy() * vil_max  # [B, T_out, H, W]
+        true_vil = (target_bins_np.astype(float) + 0.5) * bin_width
 
         for t in range(out_seq_len):
             per_step_preds[t].append(pred_vil[:, t])

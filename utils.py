@@ -144,10 +144,7 @@ def compute_mae(pred: np.ndarray, true: np.ndarray) -> float:
 
 def logits_to_vil(logits: torch.Tensor, num_bins: int, vil_max: float = 255.0) -> np.ndarray:
     """
-    将模型输出的 Logit 转换为连续 VIL 像素值（softmax 加权期望）。
-
-    使用 softmax 加权期望值而非 argmax bin 中心，使预测值分布连续，
-    与 WADEPre 等连续回归方法的评测方式等价。
+    将模型输出的 Logit 转换为 VIL 像素值（取 argmax bin 的中心值）。
 
     Args:
         logits:   [B, T, num_bins, H, W] 或 [B, num_bins, H, W]
@@ -157,18 +154,9 @@ def logits_to_vil(logits: torch.Tensor, num_bins: int, vil_max: float = 255.0) -
     Returns:
         vil_pred: numpy 数组，与输入形状对应（去掉 num_bins 维度），值域 [0, vil_max]
     """
+    pred_bins = torch.argmax(logits, dim=-3)  # 在 num_bins 维度取 argmax
     bin_width = vil_max / num_bins
-    # bin 中心值 [num_bins]
-    bin_centers = torch.arange(num_bins, dtype=torch.float32, device=logits.device)
-    bin_centers = (bin_centers + 0.5) * bin_width  # [num_bins]
-
-    # softmax 加权期望：沿 num_bins 维度（dim=-3）
-    probs = torch.softmax(logits, dim=-3)  # [B, T, num_bins, H, W]
-    # 广播 bin_centers 到对应维度
-    shape = [1] * logits.dim()
-    shape[-3] = num_bins
-    bc = bin_centers.view(shape)
-    vil_pred = (probs * bc).sum(dim=-3)  # [B, T, H, W] 或 [B, H, W]
+    vil_pred = (pred_bins.float() + 0.5) * bin_width
     return vil_pred.cpu().numpy()
 
 
